@@ -83,8 +83,8 @@ class System:
     def reactivity(self) -> float:
         return sum(action.activity for action in self.possible_actions)
 
-    def holding_time(self) -> float:
-        return expovariate(self.reactivity)
+    def wait(self) -> None:
+        self.time += expovariate(self.reactivity)
 
     def action(self) -> Action:
         possible_actions = self.possible_actions
@@ -93,11 +93,14 @@ class System:
             weights=[action.activity / self.reactivity for action in possible_actions],
         )[0]
 
-    def update(self):
-        self.time += self.holding_time()
+    def act(self) -> None:
         action = self.action()
         if action.bind:
             action.sites[0].bind(action.sites[1])
         else:
             action.sites[0].unbind(action.sites[1])
         self.molecules = [molecule for molecule in self.molecules if len(molecule)]
+
+    def update(self) -> None:
+        self.wait()
+        self.act()
