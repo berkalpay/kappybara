@@ -1,12 +1,23 @@
 from dataclasses import dataclass
 from random import expovariate, choices
-from itertools import chain
-from typing import NamedTuple
+from itertools import chain, product
+from typing import NamedTuple, Iterable
 
 from physics import Site, Agent, Molecule
 
 AVOGADRO = 6.02214e23
 ROOM_TEMPERATURE = 273.15 + 25
+
+
+def group(iterable: Iterable, key) -> dict:
+    groups = dict()
+    for item in iterable:
+        k = key(item)
+        if k in groups:
+            groups[k].append(item)
+        else:
+            groups[k] = [item]
+    return groups
 
 
 @dataclass
@@ -15,6 +26,9 @@ class Mixture:
 
     def __len__(self):
         return len(self.molecules)
+
+    def __iter__(self):
+        yield from self.molecules
 
     def add_molecule(self, molecule: Molecule) -> None:
         self.molecules.append(molecule)
@@ -25,17 +39,15 @@ class Mixture:
 
     @property
     def agents_by_type(self) -> dict[str, list[Agent]]:
-        agents_by_type = dict()
-        for agent in self.agents:
-            if agent.type not in agents_by_type:
-                agents_by_type[agent.type] = [agent]
-            else:
-                agents_by_type[agent.type].append(agent)
-        return agents_by_type
+        return group(self.agents, lambda x: x.type)
 
-    @property
-    def free_sites(self) -> list[Site]:
-        pass
+    def free_sites(self, site_label: str) -> list:
+        free_sites = []
+        for agent in self.agents:
+            site = agent.interface.get(site_label)
+            if site is not None and not site.bound:
+                free_sites.append(site)
+        return free_sites
 
 
 @dataclass
@@ -62,7 +74,6 @@ class System:
         actions = []
         for rule in self.rules:
             for agent in self.mixture.agents_by_type[rule.agent_types[0]]:
-                print(agent.interface)
                 agent1_site = agent.interface[rule.site_labels[0]]
                 # Assumes site labels are unique across agent types
                 if agent1_site.bound and agent1_site.partner.label == rule.sites[1]:
@@ -73,7 +84,13 @@ class System:
 
     @property
     def possible_bonds(self) -> list[Action]:
-        return []  # TODO: implement
+        actions = []
+        for rule in self.rules:
+            sites1 = self.mixture.free_sites(rule.site_labels[0])
+            sites2 = self.mixture.free_sites(rule.site_labels[1])
+            for site1, site2 in product(sites1, sites2):
+                actions.append(Action((site1, site2), "bind", rule.rate))
+        return actions
 
     @property
     def possible_actions(self) -> list[Action]:
@@ -88,7 +105,7 @@ class System:
 
     def action(self) -> Action:
         possible_actions = self.possible_actions
-        choices(
+        return choices(
             possible_actions,
             weights=[action.activity / self.reactivity for action in possible_actions],
         )[0]
@@ -99,7 +116,9 @@ class System:
             action.sites[0].bind(action.sites[1])
         else:
             action.sites[0].unbind(action.sites[1])
-        self.molecules = [molecule for molecule in self.molecules if len(molecule)]
+        self.mixture.molecules = [
+            molecule for molecule in self.mixture.molecules if len(molecule)
+        ]
 
     def update(self) -> None:
         self.wait()
