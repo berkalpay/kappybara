@@ -52,14 +52,14 @@ class Mixture:
 
 @dataclass
 class Rule:
-    agent_types: tuple[str, str]
+    agent_types: tuple[str, str]  # TODO: unneeded?
     site_labels: tuple[str, str]
     rate: float
 
 
 Action = NamedTuple(
     "Action", [("sites", tuple[Site]), ("bind", bool), ("activity", float)]
-)
+)  # TODO: refactor
 
 
 @dataclass
@@ -89,7 +89,7 @@ class System:
             sites1 = self.mixture.free_sites(rule.site_labels[0])
             sites2 = self.mixture.free_sites(rule.site_labels[1])
             for site1, site2 in product(sites1, sites2):
-                actions.append(Action((site1, site2), "bind", rule.rate))
+                actions.append(Action((site1, site2), True, rule.rate))
         return actions
 
     @property

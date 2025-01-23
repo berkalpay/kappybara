@@ -7,7 +7,6 @@ from typing import Self, Optional
 class Site:
     label: str
     partner: Optional[Self] = None
-    state: Optional[str] = None
     agent: Optional["Agent"] = None
 
     @property
