@@ -5,7 +5,7 @@ from typing import Self, Optional
 
 @dataclass
 class Site:
-    label = str
+    label: str
     partner: Optional[Self] = None
     state: Optional[str] = None
     agent: Optional["Agent"] = None

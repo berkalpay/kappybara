@@ -27,7 +27,7 @@ class Mixture:
     def agents_by_type(self) -> dict[str, list[Agent]]:
         agents_by_type = dict()
         for agent in self.agents:
-            if agent.type in agents_by_type:
+            if agent.type not in agents_by_type:
                 agents_by_type[agent.type] = [agent]
             else:
                 agents_by_type[agent.type].append(agent)
@@ -61,7 +61,8 @@ class System:
     def possible_unbonds(self) -> list[Action]:
         actions = []
         for rule in self.rules:
-            for agent in self.agents_by_type[rule.agent[0]]:
+            for agent in self.mixture.agents_by_type[rule.agent_types[0]]:
+                print(agent.interface)
                 agent1_site = agent.interface[rule.site_labels[0]]
                 # Assumes site labels are unique across agent types
                 if agent1_site.bound and agent1_site.partner.label == rule.sites[1]:
@@ -72,7 +73,7 @@ class System:
 
     @property
     def possible_bonds(self) -> list[Action]:
-        pass
+        return []  # TODO: implement
 
     @property
     def possible_actions(self) -> list[Action]:
