@@ -14,5 +14,5 @@ mixture = Mixture(
 system = System(mixture, rules)
 
 while True:
-    system.update()
     print([len(molecule) for molecule in system.mixture])
+    system.update()
