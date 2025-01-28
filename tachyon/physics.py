@@ -13,15 +13,19 @@ class Site:
     def bound(self) -> bool:
         self.partner is not None
 
-    def bind(self, site: Self) -> None:
-        self.partner = site
-        site.partner = self
-        site.agent.molecule.attach_agents(self.agent.molecule)
+    def bind(self, other: Self) -> None:
+        self.partner = other
+        other.partner = self
+        self.agent.molecule.merge(other.agent.molecule)
 
-    def unbind(self, site: Self) -> None:
+    def unbind(self) -> None:
+        assert self.bound
+        other = self.partner
         self.partner = None
-        site.partner = None
-        # TODO: check if molecule has split
+        other.partner = None
+        if not self.agent.same_molecule(other.agent):
+            self.agent.molecule.update()
+            other.agent.molecule.update()
 
 
 @dataclass
@@ -46,6 +50,9 @@ class Agent:
     def neighbors(self) -> list[Self]:
         [site.partner.agent for site in self]
 
+    def same_molecule(self, agent1: Self, agent2: Self) -> bool:
+        return agent1 in self.molecule.depth_first_traversal(agent2)
+
 
 @dataclass(frozen=True)
 class AgentType:
@@ -68,14 +75,19 @@ class Molecule:
         self.attach_agents()
 
     def attach_agents(self, molecule: Optional[Self] = None) -> None:
+        molecule = molecule if molecule is not None else self
         for agent in self.agents:
-            agent.molecule = molecule if molecule is not None else self
+            agent.molecule = molecule
 
     def __len__(self):
         return len(self.agents)
 
     def __iter__(self):
         yield from self.agents
+
+    def merge(self, molecule: Self) -> None:
+        self.agents.extend(molecule.agents)
+        self.attach_agents()
 
     @property
     def composition(self) -> Counter:
@@ -84,3 +96,19 @@ class Molecule:
     @property
     def rarest_type(self) -> str:
         next(iter(self.composition))  # TODO: fix
+
+    def depth_first_traversal(self, start: Agent) -> list[Self]:
+        visited = {}
+        traversal = []
+        stack = [start]
+        while stack:
+            if agent := stack.pop() not in visited:
+                visited.add(agent)
+                traversal.append(agent)
+                stack.extend(agent.neighbors)
+        return traversal
+
+    def update(self, start: Agent) -> Self:
+        molecule = Molecule(self.depth_first_traversal(start))
+        molecule.attach_agents()
+        return molecule
