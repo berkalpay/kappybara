@@ -16,7 +16,8 @@ class Site:
     def bind(self, other: Self) -> None:
         self.partner = other
         other.partner = self
-        self.agent.molecule.merge(other.agent.molecule)
+        if not self.agent.same_molecule(other.agent):
+            self.agent.molecule.merge(other.agent.molecule)
 
     def unbind(self) -> None:
         assert self.bound
@@ -50,8 +51,8 @@ class Agent:
     def neighbors(self) -> list[Self]:
         [site.partner.agent for site in self]
 
-    def same_molecule(self, agent1: Self, agent2: Self) -> bool:
-        return agent1 in self.molecule.depth_first_traversal(agent2)
+    def same_molecule(self, other: Self) -> bool:
+        return self in self.molecule.depth_first_traversal(other)
 
 
 @dataclass(frozen=True)
@@ -75,7 +76,7 @@ class Molecule:
         self.attach_agents()
 
     def attach_agents(self, molecule: Optional[Self] = None) -> None:
-        molecule = molecule if molecule is not None else self
+        molecule = self if molecule is None else molecule
         for agent in self.agents:
             agent.molecule = molecule
 
@@ -85,9 +86,10 @@ class Molecule:
     def __iter__(self):
         yield from self.agents
 
-    def merge(self, molecule: Self) -> None:
-        self.agents.extend(molecule.agents)
+    def merge(self, other: Self) -> None:
+        self.agents.extend(other.agents)
         self.attach_agents()
+        other.agents = []
 
     @property
     def composition(self) -> Counter:
@@ -110,5 +112,5 @@ class Molecule:
 
     def update(self, start: Agent) -> Self:
         molecule = Molecule(self.depth_first_traversal(start))
-        molecule.attach_agents()
+        molecule.attach_agents()  # TODO: add to system
         return molecule
