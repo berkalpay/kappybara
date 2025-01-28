@@ -9,14 +9,18 @@ class Site:
     partner: Optional[Self] = None
     agent: Optional["Agent"] = None
 
+    def __repr__(self):
+        return f"Site(label={self.label}, partner={self.partner.label if self.bound else None})"
+
     @property
     def bound(self) -> bool:
-        self.partner is not None
+        return self.partner is not None
 
     def bind(self, other: Self) -> None:
+        intramolecular = self.agent.same_molecule(other.agent)
         self.partner = other
         other.partner = self
-        if not self.agent.same_molecule(other.agent):
+        if not intramolecular:
             self.agent.molecule.merge(other.agent.molecule)
 
     def unbind(self) -> None:
@@ -43,16 +47,25 @@ class Agent:
     def __iter__(self):
         yield from self.sites
 
+    def __hash__(self):  # TODO: revise this system
+        return id(self)
+
+    def __repr__(self):
+        interface_str = [str(site) for _, site in self.interface.items()]
+        return f"Agent(type={self.type}, interface={interface_str})"
+
     @property
     def bound_sites(self) -> list[Site]:
         return [site for site in self if site.bound]
 
     @property
     def neighbors(self) -> list[Self]:
-        [site.partner.agent for site in self]
+        return [site.partner.agent for site in self if site.bound]
 
     def same_molecule(self, other: Self) -> bool:
-        return self in self.molecule.depth_first_traversal(other)
+        return any(
+            self is agent for agent in other.molecule.depth_first_traversal(other)
+        )
 
 
 @dataclass(frozen=True)
@@ -101,11 +114,11 @@ class Molecule:
         next(iter(self.composition))  # TODO: fix
 
     def depth_first_traversal(self, start: Agent) -> list[Self]:
-        visited = {}
+        visited = set()
         traversal = []
         stack = [start]
         while stack:
-            if agent := stack.pop() not in visited:
+            if (agent := stack.pop()) not in visited:
                 visited.add(agent)
                 traversal.append(agent)
                 stack.extend(agent.neighbors)

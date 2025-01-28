@@ -94,7 +94,8 @@ class System:
             sites1 = self.mixture.free_sites(rule.site_labels[0])
             sites2 = self.mixture.free_sites(rule.site_labels[1])
             for site1, site2 in product(sites1, sites2):
-                actions.append(Action((site1, site2), True, rule.rate))
+                if site1.agent is not site2.agent:
+                    actions.append(Action((site1, site2), True, rule.rate))
         return actions
 
     @property
