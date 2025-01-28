@@ -67,6 +67,7 @@ class AgentType:
 @dataclass
 class Molecule:
     agents: list[Agent]
+    mixture: Optional["Mixture"] = None
 
     @classmethod
     def create(cls, agent_types: list[AgentType], bonds=None):
@@ -89,7 +90,7 @@ class Molecule:
     def merge(self, other: Self) -> None:
         self.agents.extend(other.agents)
         self.attach_agents()
-        other.agents = []
+        other.clear()
 
     @property
     def composition(self) -> Counter:
@@ -110,7 +111,11 @@ class Molecule:
                 stack.extend(agent.neighbors)
         return traversal
 
+    def clear(self) -> None:
+        self.agents = []
+
     def update(self, start: Agent) -> Self:
         molecule = Molecule(self.depth_first_traversal(start))
-        molecule.attach_agents()  # TODO: add to system
+        self.mixture.add(molecule)
+        self.clear()
         return molecule

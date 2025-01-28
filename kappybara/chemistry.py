@@ -24,6 +24,10 @@ def group(iterable: Iterable, key) -> dict:
 class Mixture:
     molecules: list[Molecule]
 
+    def __post_init__(self):
+        for molecule in self.molecules:
+            molecule.mixture = self
+
     def __len__(self):
         return len(self.molecules)
 
@@ -32,6 +36,7 @@ class Mixture:
 
     def add_molecule(self, molecule: Molecule) -> None:
         self.molecules.append(molecule)
+        molecule.mixture = self
 
     @property
     def agents(self) -> chain[Agent]:
