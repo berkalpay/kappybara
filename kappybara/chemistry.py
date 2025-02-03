@@ -34,7 +34,7 @@ class Mixture:
     def __iter__(self):
         yield from self.molecules
 
-    def add_molecule(self, molecule: Molecule) -> None:
+    def add(self, molecule: Molecule) -> None:
         self.molecules.append(molecule)
         molecule.mixture = self
 
@@ -81,7 +81,10 @@ class System:
             for agent in self.mixture.agents_by_type[rule.agent_types[0]]:
                 agent1_site = agent.interface[rule.site_labels[0]]
                 # Assumes site labels are unique across agent types
-                if agent1_site.bound and agent1_site.partner.label == rule.sites[1]:
+                if (
+                    agent1_site.bound
+                    and agent1_site.partner.label == rule.site_labels[1]
+                ):
                     actions.append(
                         Action((agent1_site, agent1_site.partner), False, rule.rate)
                     )  # TODO: stochastic rate, unimolecular
@@ -121,7 +124,7 @@ class System:
         if action.bind:
             action.sites[0].bind(action.sites[1])
         else:
-            action.sites[0].unbind(action.sites[1])
+            action.sites[0].unbind()
         self.mixture.molecules = [
             molecule for molecule in self.mixture.molecules if len(molecule)
         ]

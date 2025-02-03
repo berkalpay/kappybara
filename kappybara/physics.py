@@ -29,8 +29,8 @@ class Site:
         self.partner = None
         other.partner = None
         if not self.agent.same_molecule(other.agent):
-            self.agent.molecule.update()
-            other.agent.molecule.update()
+            self.agent.molecule.update(self.agent)
+            other.agent.molecule.update(other.agent)
 
 
 @dataclass
