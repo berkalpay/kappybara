@@ -12,6 +12,9 @@ class Site:
     def __repr__(self):
         return f"Site(label={self.label}, partner={self.partner.label if self.bound else None})"
 
+    def __hash__(self):  # TODO: revise this system
+        return id(self)
+
     @property
     def bound(self) -> bool:
         return self.partner is not None
@@ -22,6 +25,8 @@ class Site:
         other.partner = self
         if not intramolecular:
             self.agent.molecule.merge(other.agent.molecule)
+        for site in [self, other]:
+            self.agent.molecule.mixture.unfree_site(site)
 
     def unbind(self) -> None:
         assert self.bound
@@ -31,6 +36,8 @@ class Site:
         if not self.agent.same_molecule(other.agent):
             self.agent.molecule.update(self.agent)
             other.agent.molecule.update(other.agent)
+        for site in [self, other]:
+            self.agent.molecule.mixture.free_site(site)
 
 
 @dataclass
@@ -57,6 +64,10 @@ class Agent:
     @property
     def bound_sites(self) -> list[Site]:
         return [site for site in self if site.bound]
+
+    @property
+    def free_sites(self) -> list[Site]:
+        return [site for site in self if not site.bound]
 
     @property
     def neighbors(self) -> list[Self]:

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from random import expovariate, choices
 from itertools import chain, product
-from typing import NamedTuple, Iterable
+from typing import Hashable, NamedTuple, Iterable
 
 from physics import Site, Agent, Molecule
 
@@ -9,7 +9,7 @@ AVOGADRO = 6.02214e23
 ROOM_TEMPERATURE = 273.15 + 25
 
 
-def group(iterable: Iterable, key) -> dict:
+def group(iterable: Iterable, key) -> dict[Hashable, list | set]:
     groups = dict()
     for item in iterable:
         k = key(item)
@@ -46,13 +46,25 @@ class Mixture:
     def agents_by_type(self) -> dict[str, list[Agent]]:
         return group(self.agents, lambda x: x.type)
 
-    def free_sites(self, site_label: str) -> list:
-        free_sites = []
-        for agent in self.agents:
-            site = agent.interface.get(site_label)
-            if site is not None and not site.bound:
-                free_sites.append(site)
-        return free_sites
+    @property
+    def free_sites(self) -> dict[str, set]:
+        """
+        Generate free sites dictionary {site label: set of sites} from scratch
+        if it hasn't be created yet, otherwise access updated.
+        """
+        if not hasattr(self, "_free_sites"):
+            free_sites_lists = group(
+                chain.from_iterable(agent.free_sites for agent in self.agents),
+                lambda site: site.label,
+            )
+            self._free_sites = {k: set(free_sites_lists[k]) for k in free_sites_lists}
+        return self._free_sites
+
+    def free_site(self, site: Site) -> None:
+        self._free_sites[site.label].add(site)
+
+    def unfree_site(self, site: Site) -> None:
+        self._free_sites[site.label].remove(site)
 
 
 @dataclass
@@ -94,8 +106,8 @@ class System:
     def possible_bonds(self) -> list[Action]:
         actions = []
         for rule in self.rules:
-            sites1 = self.mixture.free_sites(rule.site_labels[0])
-            sites2 = self.mixture.free_sites(rule.site_labels[1])
+            sites1 = self.mixture.free_sites[rule.site_labels[0]]
+            sites2 = self.mixture.free_sites[rule.site_labels[1]]
             for site1, site2 in product(sites1, sites2):
                 if site1.agent is not site2.agent:
                     actions.append(Action((site1, site2), True, rule.rate))
