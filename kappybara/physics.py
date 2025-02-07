@@ -20,6 +20,7 @@ class Site:
         return self.partner is not None
 
     def bind(self, other: Self) -> None:
+        assert self.agent is not other.agent
         intramolecular = self.agent.same_molecule(other.agent)
         self.partner = other
         other.partner = self

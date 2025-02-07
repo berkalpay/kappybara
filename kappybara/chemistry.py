@@ -82,7 +82,7 @@ class Rule:
 
     def n_embeddings(self, mixture: Mixture) -> int:
         if self.bind:
-            # TODO: this isn't quite right
+            # Note: counts illegal intra-agent bond opportunities
             site1_choices = mixture.free_sites[self.site_labels[0]]
             site2_choices = mixture.free_sites[self.site_labels[1]]
             return len(site1_choices) * len(site2_choices)
@@ -96,11 +96,9 @@ class Rule:
 
     def _select(self, mixture: Mixture) -> tuple[Site, Optional[Site]]:
         if self.bind:
+            # Note: might be an illegal intra-agent bond
             site1 = choice(tuple(mixture.free_sites[self.site_labels[0]]))
-            site2_choices = tuple(mixture.free_sites[self.site_labels[1]])
-            site2 = site1
-            while site2.agent is site1.agent:
-                site2 = choice(site2_choices)
+            site2 = choice(tuple(mixture.free_sites[self.site_labels[1]]))
             return (site1, site2)
         else:
             site_choices = []
@@ -139,7 +137,10 @@ class System:
 
     def act(self) -> None:
         rule = choices(self.rules, weights=self.rule_reactivities)[0]
-        rule.act(self.mixture)
+        try:
+            rule.act(self.mixture)
+        except AssertionError:
+            return
         self.mixture.molecules = [
             molecule for molecule in self.mixture.molecules if len(molecule)
         ]
