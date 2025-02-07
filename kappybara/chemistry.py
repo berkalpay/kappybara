@@ -99,7 +99,7 @@ class Rule:
             site1 = choice(tuple(mixture.free_sites[self.site_labels[0]]))
             site2_choices = tuple(mixture.free_sites[self.site_labels[1]])
             site2 = site1
-            while site2 is site1:
+            while site2.agent is site1.agent:
                 site2 = choice(site2_choices)
             return (site1, site2)
         else:
