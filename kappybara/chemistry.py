@@ -82,10 +82,9 @@ class Rule:
 
     def n_embeddings(self, mixture: Mixture) -> int:
         if self.bind:
+            # TODO: this isn't quite right
             site1_choices = mixture.free_sites[self.site_labels[0]]
-            site2_choices = mixture.free_sites[
-                self.site_labels[0]
-            ]  # TODO: this isn't quite right
+            site2_choices = mixture.free_sites[self.site_labels[1]]
             return len(site1_choices) * len(site2_choices)
         else:
             site_choices = []
