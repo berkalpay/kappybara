@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from random import expovariate, choice, choices
 from itertools import chain
+from functools import cached_property
 from typing import Hashable, Iterable, Optional
 
 from physics import Site, Agent, Molecule
@@ -42,9 +43,9 @@ class Mixture:
     def agents(self) -> chain[Agent]:
         return chain.from_iterable(molecule.agents for molecule in self.molecules)
 
-    @property
+    @cached_property  # TODO: update if agent composition changes
     def agents_by_type(self) -> dict[str, list[Agent]]:
-        return group(self.agents, lambda x: x.type)
+        return group(self.agents, lambda agent: agent.type)
 
     @property
     def free_sites(self) -> dict[str, set]:
