@@ -1,5 +1,9 @@
+import random
+
 from physics import AgentType, Molecule
 from chemistry import Rule, Mixture, System
+
+random.seed(42)
 
 
 # %sig: A@100(p[a1.P$m a2.P$m a3.P$m], l[r.A$w], r[l.A]), P@100(a1[p.A], a2[p.A], a3[p.A], d[d.P$m])
