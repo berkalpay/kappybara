@@ -142,9 +142,6 @@ class System:
             rule.act(self.mixture)
         except AssertionError:
             return
-        self.mixture.molecules = [
-            molecule for molecule in self.mixture.molecules if len(molecule)
-        ]
 
     def update(self) -> None:
         self.wait()

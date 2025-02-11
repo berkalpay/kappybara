@@ -112,10 +112,16 @@ class Molecule:
     def __iter__(self):
         yield from self.agents
 
+    def __hash__(self):  # TODO: revise this system
+        return id(self)
+
+    def __eq__(self, other):  # TODO: revise this system
+        return id(self) == id(other)
+
     def merge(self, other: Self) -> None:
         self.agents.extend(other.agents)
         self.attach_agents()
-        other.clear()
+        other.mixture.molecules.remove(other)
 
     @property
     def composition(self) -> Counter:
@@ -135,9 +141,6 @@ class Molecule:
                 traversal.append(agent)
                 stack.extend(agent.neighbors)
         return traversal
-
-    def clear(self) -> None:
-        self.agents = []
 
     def update(self, start: Agent) -> Self:
         molecule = Molecule(self.depth_first_traversal(start))
