@@ -13,8 +13,12 @@ rules = [
     Rule(("A", "A"), ("l", "r"), False, 1),
     Rule(("P", "P"), ("d", "d"), True, 1),
     Rule(("P", "P"), ("d", "d"), False, 1),
-    Rule(("P", "a"), ("a1", "p"), True, 1),
-    Rule(("P", "a"), ("a1", "p"), False, 1),
+    Rule(("P", "A"), ("a1", "p"), True, 1),
+    Rule(("P", "A"), ("a1", "p"), False, 1),
+    Rule(("P", "A"), ("a2", "p"), True, 1),
+    Rule(("P", "A"), ("a2", "p"), False, 1),
+    Rule(("P", "A"), ("a3", "p"), True, 1),
+    Rule(("P", "A"), ("a3", "p"), False, 1),
 ]
 
 A0 = P0 = 10**4
@@ -24,7 +28,8 @@ mixture = Mixture(
 )
 system = System(mixture, rules)
 
-for _ in range(1000):
-    molecule_sizes = [len(molecule) for molecule in system.mixture]
-    print(max(molecule_sizes))
+for i in range(10**2):
+    if not i % 10:
+        molecule_sizes = [len(molecule) for molecule in system.mixture]
+        print(max(molecule_sizes))
     system.update()
