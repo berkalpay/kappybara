@@ -108,11 +108,10 @@ class Rule:
             site2_choices = mixture.free_sites[self.site_labels[1]]
             return len(site1_choices) * len(site2_choices)
         else:
-            site_choices = []
-            for site in mixture.bound_sites.get(self.site_labels[0], []):
-                if site.partner.label == self.site_labels[1]:
-                    site_choices.append(site)
-            return len(site_choices)
+            return [
+                site.partner.label == self.site_labels[1]
+                for site in mixture.bound_sites.get(self.site_labels[0], [])
+            ].count(True)
 
     def _select(self, mixture: Mixture) -> tuple[Site, Optional[Site]]:
         if self.bind:
