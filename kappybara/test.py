@@ -23,8 +23,10 @@ rules = [
 
 A0 = P0 = 10**4
 mixture = Mixture(
-    [Molecule.create([agent_types[0]]) for _ in range(A0)]
-    + [Molecule.create([agent_types[1]]) for _ in range(P0)]
+    set(
+        [Molecule.create([agent_types[0]]) for _ in range(A0)]
+        + [Molecule.create([agent_types[1]]) for _ in range(P0)]
+    )
 )
 system = System(mixture, rules)
 

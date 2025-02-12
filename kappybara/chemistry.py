@@ -23,7 +23,7 @@ def group(iterable: Iterable, key) -> dict[Hashable, list | set]:
 
 @dataclass
 class Mixture:
-    molecules: list[Molecule]
+    molecules: set[Molecule]
 
     def __post_init__(self):
         for molecule in self.molecules:
@@ -36,7 +36,7 @@ class Mixture:
         yield from self.molecules
 
     def add(self, molecule: Molecule) -> None:
-        self.molecules.append(molecule)
+        self.molecules.add(molecule)
         molecule.mixture = self
 
     @property
