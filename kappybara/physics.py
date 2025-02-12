@@ -118,6 +118,9 @@ class Molecule:
     def __eq__(self, other):  # TODO: revise this system
         return id(self) == id(other)
 
+    def __repr__(self):  # TODO: add detail
+        return f"Molecule with id {id(self)} and composition {self.composition}"
+
     def merge(self, other: Self) -> None:
         self.agents.extend(other.agents)
         self.attach_agents()
