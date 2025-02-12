@@ -145,5 +145,5 @@ class Molecule:
     def update(self, start: Agent) -> Self:
         molecule = Molecule(self.depth_first_traversal(start))
         self.mixture.add(molecule)
-        self.clear()
+        self.mixture.molecules.remove(self)
         return molecule
