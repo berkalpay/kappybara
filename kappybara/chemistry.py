@@ -4,7 +4,7 @@ from itertools import chain
 from functools import cached_property
 from typing import Hashable, Iterable, Optional
 
-from physics import Site, Agent, Molecule
+from kappybara.physics import Site, Agent, Molecule
 
 AVOGADRO = 6.02214e23
 ROOM_TEMPERATURE = 273.15 + 25
