@@ -64,11 +64,31 @@ class Mixture:
             }
         return self._free_sites
 
+    @property
+    def bound_sites(self) -> dict[str, set]:
+        """The complement of free_sites."""
+        # TODO: refactor to avoid duplications with free_sites
+        if not hasattr(self, "_bound_sites"):
+            bound_sites_lists = group(
+                chain.from_iterable(agent.bound_sites for agent in self.agents),
+                lambda site: site.label,
+            )
+            self._bound_sites = {
+                site_label: set(bound_sites_lists[site_label])
+                for site_label in bound_sites_lists
+            }
+        return self._bound_sites
+
     def free_site(self, site: Site) -> None:
         self._free_sites[site.label].add(site)
+        self._bound_sites[site.label].remove(site)
 
     def unfree_site(self, site: Site) -> None:
         self._free_sites[site.label].remove(site)
+        if site.label in self._bound_sites:
+            self._bound_sites[site.label].add(site)
+        else:
+            self._bound_sites[site.label] = set([site])
 
 
 @dataclass
@@ -89,9 +109,8 @@ class Rule:
             return len(site1_choices) * len(site2_choices)
         else:
             site_choices = []
-            for agent in mixture.agents_by_type[self.agent_types[0]]:
-                site = agent.interface[self.site_labels[0]]
-                if site.bound and site.partner.label == self.site_labels[1]:
+            for site in mixture.bound_sites.get(self.site_labels[0], []):
+                if site.partner.label == self.site_labels[1]:
                     site_choices.append(site)
             return len(site_choices)
 
