@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from collections import Counter
-from typing import Self, Optional
+from typing import Self, Optional, Iterator
 
 
 @dataclass
@@ -125,6 +125,12 @@ class Molecule:
         self.agents.extend(other.agents)
         self.attach_agents()
         other.mixture.molecules.remove(other)
+
+    @property
+    def sites(self) -> Iterator[Site]:
+        for agent in self.agents:
+            for site in agent:
+                yield site
 
     @property
     def composition(self) -> Counter:

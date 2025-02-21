@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from collections import defaultdict
 from random import expovariate, choice, choices
 from itertools import chain
 from functools import cached_property
@@ -21,13 +22,18 @@ def group(iterable: Iterable, key) -> dict[Hashable, list | set]:
     return groups
 
 
-@dataclass
 class Mixture:
     molecules: set[Molecule]
+    free_sites: dict[str, set]
+    bound_sites: dict[str, set]
 
-    def __post_init__(self):
-        for molecule in self.molecules:
-            molecule.mixture = self
+    def __init__(self, molecules: set[Molecule]):
+        self.molecules = set()
+        # TODO: a data structure to handle two complementary sets?
+        self.free_sites = defaultdict(set)
+        self.bound_sites = defaultdict(set)
+        for molecule in molecules:
+            self.add(molecule)
 
     def __len__(self):
         return len(self.molecules)
@@ -38,6 +44,11 @@ class Mixture:
     def add(self, molecule: Molecule) -> None:
         self.molecules.add(molecule)
         molecule.mixture = self
+        for site in molecule.sites:
+            if site.bound:
+                self.bound_sites[site.label].add(site)
+            else:
+                self.free_sites[site.label].add(site)
 
     @property
     def agents(self) -> chain[Agent]:
@@ -47,48 +58,13 @@ class Mixture:
     def agents_by_type(self) -> dict[str, list[Agent]]:
         return group(self.agents, lambda agent: agent.type)
 
-    @property
-    def free_sites(self) -> dict[str, set]:
-        """
-        Generate free sites dictionary {site label: set of sites} from scratch
-        if it hasn't be created yet, otherwise access updated.
-        """
-        if not hasattr(self, "_free_sites"):
-            free_sites_lists = group(
-                chain.from_iterable(agent.free_sites for agent in self.agents),
-                lambda site: site.label,
-            )
-            self._free_sites = {
-                site_label: set(free_sites_lists[site_label])
-                for site_label in free_sites_lists
-            }
-        return self._free_sites
-
-    @property
-    def bound_sites(self) -> dict[str, set]:
-        """The complement of free_sites."""
-        # TODO: refactor to avoid duplications with free_sites
-        if not hasattr(self, "_bound_sites"):
-            bound_sites_lists = group(
-                chain.from_iterable(agent.bound_sites for agent in self.agents),
-                lambda site: site.label,
-            )
-            self._bound_sites = {
-                site_label: set(bound_sites_lists[site_label])
-                for site_label in bound_sites_lists
-            }
-        return self._bound_sites
-
     def free_site(self, site: Site) -> None:
-        self._free_sites[site.label].add(site)
-        self._bound_sites[site.label].remove(site)
+        self.free_sites[site.label].add(site)
+        self.bound_sites[site.label].remove(site)
 
     def unfree_site(self, site: Site) -> None:
-        self._free_sites[site.label].remove(site)
-        if site.label in self._bound_sites:
-            self._bound_sites[site.label].add(site)
-        else:
-            self._bound_sites[site.label] = set([site])
+        self.free_sites[site.label].remove(site)
+        self.bound_sites[site.label].add(site)
 
 
 @dataclass
