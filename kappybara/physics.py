@@ -35,8 +35,10 @@ class Site:
         self.partner = None
         other.partner = None
         if not self.agent.same_molecule(other.agent):
-            self.agent.molecule.update(self.agent)
-            other.agent.molecule.update(other.agent)
+            molecule = self.agent.molecule
+            molecule.mixture.remove(molecule)
+            molecule.update(self.agent)
+            molecule.update(other.agent)
         for site in [self, other]:
             self.agent.molecule.mixture.free_site(site)
 
@@ -154,5 +156,5 @@ class Molecule:
     def update(self, start: Agent) -> Self:
         molecule = Molecule(self.depth_first_traversal(start))
         self.mixture.add(molecule)
-        self.mixture.molecules.remove(self)
+        # TODO: remove old molecule here instead?
         return molecule

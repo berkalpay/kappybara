@@ -1,17 +1,18 @@
+import random
 from dataclasses import dataclass
 from collections import defaultdict
-from random import expovariate, choice, choices
 from itertools import chain
 from functools import cached_property
 from typing import Hashable, Iterable, Optional
 
 from kappybara.physics import Site, Agent, Molecule
+from kappybara.utils import OrderedSet
 
 AVOGADRO = 6.02214e23
 ROOM_TEMPERATURE = 273.15 + 25
 
 
-def group(iterable: Iterable, key) -> dict[Hashable, list | set]:
+def group(iterable: Iterable, key) -> dict[Hashable, list]:
     groups = dict()
     for item in iterable:
         k = key(item)
@@ -28,10 +29,10 @@ class Mixture:
     bound_sites: dict[str, set]
 
     def __init__(self, molecules: set[Molecule]):
-        self.molecules = set()
+        self.molecules = OrderedSet()
         # TODO: a data structure to handle two complementary sets?
-        self.free_sites = defaultdict(set)
-        self.bound_sites = defaultdict(set)
+        self.free_sites = defaultdict(OrderedSet)
+        self.bound_sites = defaultdict(OrderedSet)
         for molecule in molecules:
             self.add(molecule)
 
@@ -49,6 +50,14 @@ class Mixture:
                 self.bound_sites[site.label].add(site)
             else:
                 self.free_sites[site.label].add(site)
+
+    def remove(self, molecule: Molecule) -> None:
+        self.molecules.remove(molecule)
+        for site in molecule.sites:
+            try:
+                self.free_sites[site.label].remove(site)
+            except KeyError:
+                self.bound_sites[site.label].remove(site)
 
     @property
     def agents(self) -> chain[Agent]:
@@ -92,8 +101,8 @@ class Rule:
     def _select(self, mixture: Mixture) -> tuple[Site, Optional[Site]]:
         if self.bind:
             # Note: might be an illegal intra-agent bond
-            site1 = choice(tuple(mixture.free_sites[self.site_labels[0]]))
-            site2 = choice(tuple(mixture.free_sites[self.site_labels[1]]))
+            site1 = random.choice(tuple(mixture.free_sites[self.site_labels[0]]))
+            site2 = random.choice(tuple(mixture.free_sites[self.site_labels[1]]))
             return (site1, site2)
         else:
             site_choices = []
@@ -101,7 +110,7 @@ class Rule:
                 site = agent.interface[self.site_labels[0]]
                 if site.bound and site.partner.label == self.site_labels[1]:
                     site_choices.append(site)
-            site_choice = choice(site_choices)
+            site_choice = random.choice(site_choices)
             return (site_choice, None)
 
     def act(self, mixture: Mixture) -> None:
@@ -128,10 +137,10 @@ class System:
         return sum(self.rule_reactivities)
 
     def wait(self) -> None:
-        self.time += expovariate(self.reactivity)
+        self.time += random.expovariate(self.reactivity)
 
     def act(self) -> None:
-        rule = choices(self.rules, weights=self.rule_reactivities)[0]
+        rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
         try:
             rule.act(self.mixture)
         except AssertionError:
