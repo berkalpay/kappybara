@@ -12,7 +12,7 @@ class Site:
     def __repr__(self):
         return f"Site(label={self.label}, partner={self.partner.label if self.bound else None})"
 
-    def __hash__(self):  # TODO: revise this system
+    def __hash__(self):
         return id(self)
 
     @property
@@ -57,7 +57,7 @@ class Agent:
     def __iter__(self):
         yield from self.sites
 
-    def __hash__(self):  # TODO: revise this system
+    def __hash__(self):
         return id(self)
 
     def __repr__(self):
@@ -114,11 +114,8 @@ class Molecule:
     def __iter__(self):
         yield from self.agents
 
-    def __hash__(self):  # TODO: revise this system
+    def __hash__(self):
         return id(self)
-
-    def __eq__(self, other):  # TODO: revise this system
-        return id(self) == id(other)
 
     def __repr__(self):  # TODO: add detail
         return f"Molecule with id {id(self)} and composition {self.composition}"
