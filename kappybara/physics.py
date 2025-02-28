@@ -39,8 +39,9 @@ class Site:
             molecule.mixture.remove(molecule)
             molecule.update(self.agent)
             molecule.update(other.agent)
-        for site in [self, other]:
-            self.agent.molecule.mixture.free_site(site)
+        else:
+            self.agent.molecule.mixture.free_site(self)
+            other.agent.molecule.mixture.free_site(other)
 
 
 @dataclass
