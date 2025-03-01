@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 from itertools import chain
 from functools import cached_property
-from typing import Hashable, Iterable, Optional
+from typing import Hashable, Iterable
 
 from kappybara.physics import Site, Agent, Molecule
 from kappybara.utils import OrderedSet
@@ -77,54 +77,9 @@ class Mixture:
 
 
 @dataclass
-class Rule:
-    agent_types: tuple[str, str]  # TODO: unneeded?
-    site_labels: tuple[str, str]
-    bind: bool
-    rate: float
-
-    def reactivity(self, mixture: Mixture) -> float:
-        return self.n_embeddings(mixture) * self.rate
-
-    def n_embeddings(self, mixture: Mixture) -> int:
-        if self.bind:
-            # Note: counts illegal intra-agent bond opportunities
-            site1_choices = mixture.free_sites[self.site_labels[0]]
-            site2_choices = mixture.free_sites[self.site_labels[1]]
-            return len(site1_choices) * len(site2_choices)
-        else:
-            return [
-                site.partner.label == self.site_labels[1]
-                for site in mixture.bound_sites.get(self.site_labels[0], [])
-            ].count(True)
-
-    def _select(self, mixture: Mixture) -> tuple[Site, Optional[Site]]:
-        if self.bind:
-            # Note: might be an illegal intra-agent bond
-            site1 = random.choice(tuple(mixture.free_sites[self.site_labels[0]]))
-            site2 = random.choice(tuple(mixture.free_sites[self.site_labels[1]]))
-            return (site1, site2)
-        else:
-            site_choices = []
-            for agent in mixture.agents_by_type[self.agent_types[0]]:
-                site = agent.interface[self.site_labels[0]]
-                if site.bound and site.partner.label == self.site_labels[1]:
-                    site_choices.append(site)
-            site_choice = random.choice(site_choices)
-            return (site_choice, None)
-
-    def act(self, mixture: Mixture) -> None:
-        site1, site2 = self._select(mixture)
-        if self.bind:
-            site1.bind(site2)
-        else:
-            site1.unbind()
-
-
-@dataclass
 class System:
     mixture: Mixture
-    rules: list[Rule]
+    rules: list["Rule"]
     temperature: float = ROOM_TEMPERATURE
     time: float = 0
 
