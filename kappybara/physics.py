@@ -136,10 +136,6 @@ class Molecule:
     def composition(self) -> Counter:
         return Counter(agent.type for agent in self)
 
-    @property
-    def rarest_type(self) -> str:
-        next(iter(self.composition))  # TODO: fix
-
     def depth_first_traversal(self, start: Agent) -> list[Self]:
         visited = set()
         traversal = []
