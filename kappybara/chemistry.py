@@ -2,25 +2,12 @@ import random
 from dataclasses import dataclass
 from collections import defaultdict
 from itertools import chain
-from functools import cached_property
-from typing import Hashable, Iterable
 
 from kappybara.physics import Site, Agent, Molecule
 from kappybara.utils import OrderedSet
 
 AVOGADRO = 6.02214e23
 ROOM_TEMPERATURE = 273.15 + 25
-
-
-def group(iterable: Iterable, key) -> dict[Hashable, list]:
-    groups = dict()
-    for item in iterable:
-        k = key(item)
-        if k in groups:
-            groups[k].append(item)
-        else:
-            groups[k] = [item]
-    return groups
 
 
 class Mixture:
@@ -31,6 +18,7 @@ class Mixture:
     def __init__(self, molecules: set[Molecule]):
         self.molecules = OrderedSet()
         # TODO: a data structure to handle two complementary sets?
+        self.agents_by_type = defaultdict(OrderedSet)
         self.free_sites = defaultdict(OrderedSet)
         self.bound_sites = defaultdict(OrderedSet)
         for molecule in molecules:
@@ -45,6 +33,8 @@ class Mixture:
     def add(self, molecule: Molecule) -> None:
         self.molecules.add(molecule)
         molecule.mixture = self
+        for agent in molecule.agents:
+            self.agents_by_type[agent.type].add(agent)
         for site in molecule.sites:
             if site.bound:
                 self.bound_sites[site.label].add(site)
@@ -53,6 +43,8 @@ class Mixture:
 
     def remove(self, molecule: Molecule) -> None:
         self.molecules.remove(molecule)
+        for agent in molecule.agents:
+            self.agents_by_type[agent.type].remove(agent)
         for site in molecule.sites:
             try:
                 self.free_sites[site.label].remove(site)
@@ -61,11 +53,9 @@ class Mixture:
 
     @property
     def agents(self) -> chain[Agent]:
-        return chain.from_iterable(molecule.agents for molecule in self.molecules)
-
-    @cached_property  # TODO: update if agent composition changes
-    def agents_by_type(self) -> dict[str, list[Agent]]:
-        return group(self.agents, lambda agent: agent.type)
+        return chain.from_iterable(
+            self.agents_by_type[agent_type] for agent_type in self.molecules
+        )
 
     def free_site(self, site: Site) -> None:
         self.free_sites[site.label].add(site)
