@@ -10,16 +10,16 @@ random.seed(42)
 # %sig: A@100(p[a1.P$m a2.P$m a3.P$m], l[r.A$w], r[l.A]), P@100(a1[p.A], a2[p.A], a3[p.A], d[d.P$m])
 agent_types = [AgentType("A", ["p", "l", "r"]), AgentType("P", ["a1", "a2", "a3", "d"])]
 rules = [
-    BasicBindingRule(("A", "A"), ("l", "r"), True, 1),
-    BasicBindingRule(("A", "A"), ("l", "r"), False, 1),
-    BasicBindingRule(("P", "P"), ("d", "d"), True, 1),
-    BasicBindingRule(("P", "P"), ("d", "d"), False, 1),
-    BasicBindingRule(("P", "A"), ("a1", "p"), True, 1),
-    BasicBindingRule(("P", "A"), ("a1", "p"), False, 1),
-    BasicBindingRule(("P", "A"), ("a2", "p"), True, 1),
-    BasicBindingRule(("P", "A"), ("a2", "p"), False, 1),
-    BasicBindingRule(("P", "A"), ("a3", "p"), True, 1),
-    BasicBindingRule(("P", "A"), ("a3", "p"), False, 1),
+    BasicBindingRule(True, ("A", "A"), ("l", "r"), 1),
+    BasicBindingRule(False, ("A", "A"), ("l", "r"), 1),
+    BasicBindingRule(True, ("P", "P"), ("d", "d"), 1),
+    BasicBindingRule(False, ("P", "P"), ("d", "d"), 1),
+    BasicBindingRule(True, ("P", "A"), ("a1", "p"), 1),
+    BasicBindingRule(False, ("P", "A"), ("a1", "p"), 1),
+    BasicBindingRule(True, ("P", "A"), ("a2", "p"), 1),
+    BasicBindingRule(False, ("P", "A"), ("a2", "p"), 1),
+    BasicBindingRule(True, ("P", "A"), ("a3", "p"), 1),
+    BasicBindingRule(False, ("P", "A"), ("a3", "p"), 1),
 ]
 
 A0 = P0 = 10**4

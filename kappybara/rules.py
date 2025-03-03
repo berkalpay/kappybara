@@ -8,15 +8,10 @@ from kappybara.chemistry import Mixture
 
 class Rule(ABC):
     def __init__(
-        self,
-        agent_types: tuple[str, str],
-        site_labels: tuple[str, str],
-        bind: bool,
-        rate: float,
+        self, agent_types: tuple[str, str], site_labels: tuple[str, str], rate: float
     ):
         self.agent_types = agent_types  # TODO: unneeded?
         self.site_labels = site_labels
-        self.bind = bind
         self.rate = rate
 
     def reactivity(self, mixture: Mixture) -> float:
@@ -36,8 +31,9 @@ class Rule(ABC):
 
 
 class BasicBindingRule(Rule):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, bind: bool, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.bind = bind
 
     def n_embeddings(self, mixture: Mixture) -> int:
         if self.bind:
