@@ -11,9 +11,9 @@ ROOM_TEMPERATURE = 273.15 + 25
 
 
 class Mixture:
-    molecules: set[Molecule]
-    free_sites: dict[str, set]
-    bound_sites: dict[str, set]
+    molecules: OrderedSet[Molecule]
+    free_sites: dict[str, OrderedSet[Site]]
+    bound_sites: dict[str, OrderedSet[Site]]
 
     def __init__(self, molecules: set[Molecule]):
         self.molecules = OrderedSet()

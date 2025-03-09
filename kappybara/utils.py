@@ -1,8 +1,8 @@
 from typing import Any, Optional, Iterable
 
 
-class OrderedSet:
-    def __init__(self, items: Optional[Iterable] = None):
+class OrderedSet[T]:
+    def __init__(self, items: Optional[Iterable[T]] = None):
         self.dict = dict() if items is None else dict.fromkeys(items)
 
     def __iter__(self):

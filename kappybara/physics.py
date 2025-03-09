@@ -47,7 +47,7 @@ class Site:
 @dataclass
 class Agent:
     type: str
-    sites: tuple[Site]
+    sites: tuple[Site, ...]
     molecule: Optional["Molecule"] = None
 
     def __post_init__(self):
@@ -136,7 +136,7 @@ class Molecule:
     def composition(self) -> Counter:
         return Counter(agent.type for agent in self)
 
-    def depth_first_traversal(self, start: Agent) -> list[Self]:
+    def depth_first_traversal(self, start: Agent) -> list[Agent]:
         visited = set()
         traversal = []
         stack = [start]
@@ -148,7 +148,7 @@ class Molecule:
         return traversal
 
     def update(self, start: Agent) -> Self:
-        molecule = Molecule(self.depth_first_traversal(start))
+        molecule = self.__class__(self.depth_first_traversal(start))
         self.mixture.add(molecule)
         # TODO: remove old molecule here instead?
         return molecule
