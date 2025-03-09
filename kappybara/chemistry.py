@@ -11,16 +11,14 @@ ROOM_TEMPERATURE = 273.15 + 25
 
 
 class Mixture:
-    molecules: OrderedSet[Molecule]
-    free_sites: dict[str, OrderedSet[Site]]
-    bound_sites: dict[str, OrderedSet[Site]]
-
     def __init__(self, molecules: set[Molecule]):
-        self.molecules = OrderedSet()
+        self.molecules: OrderedSet = OrderedSet()
         # TODO: a data structure to handle two complementary sets?
-        self.agents_by_type = defaultdict(OrderedSet)
-        self.free_sites = defaultdict(OrderedSet)
-        self.bound_sites = defaultdict(OrderedSet)
+        self.agents_by_type: defaultdict[str, OrderedSet[Agent]] = defaultdict(
+            OrderedSet
+        )
+        self.free_sites: defaultdict[str, OrderedSet[Site]] = defaultdict(OrderedSet)
+        self.bound_sites: defaultdict[str, OrderedSet[Site]] = defaultdict(OrderedSet)
         for molecule in molecules:
             self.add(molecule)
 
