@@ -1,0 +1,18 @@
+[project]
+name = "kappybara"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+dev-dependencies = [
+  "kappybara",
+  "py-spy>=0.4.0",
+  "pytest",
+  "black",
+]
+
+[tool.uv.sources]
+kappybara = { workspace = true }
