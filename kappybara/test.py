@@ -1,8 +1,7 @@
 import random
 
-from physics import AgentType, Molecule
-from chemistry import Mixture, System
-from rules import BasicBindingRule
+from kappybara.physics import AgentType, mixture
+from kappybara.chemistry import BasicBindingRule, System
 
 random.seed(42)
 
@@ -22,14 +21,10 @@ rules = [
     BasicBindingRule(False, ("P", "A"), ("a3", "p"), 1),
 ]
 
-A0 = P0 = 10**4
-mixture = Mixture(
-    set(
-        [Molecule.create([agent_types[0]]) for _ in range(A0)]
-        + [Molecule.create([agent_types[1]]) for _ in range(P0)]
-    )
-)
+num_each = 10**4
 system = System(mixture, rules)
+for _ in range(num_each):
+    system.mixture.add(agent_types[0].molecule())
 
 for i in range(10**5):
     if not i % 10**3:

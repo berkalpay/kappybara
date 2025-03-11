@@ -1,74 +1,80 @@
 import random
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from collections import defaultdict
-from itertools import chain
+from typing import Optional
 
-from kappybara.physics import Site, Agent, Molecule
-from kappybara.utils import OrderedSet
-
-AVOGADRO = 6.02214e23
-ROOM_TEMPERATURE = 273.15 + 25
+from kappybara.physics import Site, Mixture
 
 
-class Mixture:
-    def __init__(self, molecules: set[Molecule]):
-        self.molecules: OrderedSet = OrderedSet()
-        # TODO: a data structure to handle two complementary sets?
-        self.agents_by_type: defaultdict[str, OrderedSet[Agent]] = defaultdict(
-            OrderedSet
-        )
-        self.free_sites: defaultdict[str, OrderedSet[Site]] = defaultdict(OrderedSet)
-        self.bound_sites: defaultdict[str, OrderedSet[Site]] = defaultdict(OrderedSet)
-        for molecule in molecules:
-            self.add(molecule)
+class Rule(ABC):
+    def __init__(
+        self, agent_types: tuple[str, str], site_labels: tuple[str, str], rate: float
+    ):
+        self.agent_types = agent_types  # TODO: unneeded?
+        self.site_labels = site_labels
+        self.rate = rate
 
-    def __len__(self):
-        return len(self.molecules)
+    def reactivity(self, mixture: Mixture) -> float:
+        return self.n_embeddings(mixture) * self.rate
 
-    def __iter__(self):
-        yield from self.molecules
+    @abstractmethod
+    def n_embeddings(self, mixture: Mixture) -> int:
+        pass
 
-    def add(self, molecule: Molecule) -> None:
-        self.molecules.add(molecule)
-        molecule.mixture = self
-        for agent in molecule.agents:
-            self.agents_by_type[agent.type].add(agent)
-        for site in molecule.sites:
-            if site.bound:
-                self.bound_sites[site.label].add(site)
-            else:
-                self.free_sites[site.label].add(site)
+    @abstractmethod
+    def _select(self, mixture: Mixture) -> tuple[Site, Optional[Site]]:
+        pass
 
-    def remove(self, molecule: Molecule) -> None:
-        self.molecules.remove(molecule)
-        for agent in molecule.agents:
-            self.agents_by_type[agent.type].remove(agent)
-        for site in molecule.sites:
-            try:
-                self.free_sites[site.label].remove(site)
-            except KeyError:
-                self.bound_sites[site.label].remove(site)
+    @abstractmethod
+    def act(self, mixture: Mixture) -> None:
+        pass
 
-    @property
-    def agents(self) -> chain[Agent]:
-        return chain.from_iterable(
-            self.agents_by_type[agent_type] for agent_type in self.molecules
-        )
 
-    def free_site(self, site: Site) -> None:
-        self.free_sites[site.label].add(site)
-        self.bound_sites[site.label].remove(site)
+class BasicBindingRule(Rule):
+    def __init__(self, bind: bool, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bind = bind
 
-    def unfree_site(self, site: Site) -> None:
-        self.free_sites[site.label].remove(site)
-        self.bound_sites[site.label].add(site)
+    def n_embeddings(self, mixture: Mixture) -> int:
+        if self.bind:
+            # Note: counts illegal intra-agent bond opportunities
+            site1_choices = mixture.free_sites[self.site_labels[0]]
+            site2_choices = mixture.free_sites[self.site_labels[1]]
+            return len(site1_choices) * len(site2_choices)
+        else:
+            return [
+                site.partner.label == self.site_labels[1]
+                for site in mixture.bound_sites.get(self.site_labels[0], [])
+            ].count(True)
+
+    def _select(self, mixture: Mixture) -> tuple[Site, Optional[Site]]:
+        if self.bind:
+            # Note: might be an illegal intra-agent bond
+            site1 = random.choice(tuple(mixture.free_sites[self.site_labels[0]]))
+            site2 = random.choice(tuple(mixture.free_sites[self.site_labels[1]]))
+            return (site1, site2)
+        else:
+            site_choices = []
+            for agent in mixture.agents_by_type[self.agent_types[0]]:
+                site = agent.interface[self.site_labels[0]]
+                if site.bound and site.partner.label == self.site_labels[1]:
+                    site_choices.append(site)
+            site_choice = random.choice(site_choices)
+            return (site_choice, None)
+
+    def act(self, mixture: Mixture) -> None:
+        site1, site2 = self._select(mixture)
+        if site2 is not None:
+            site1.bind(site2)
+        else:
+            site1.unbind()
 
 
 @dataclass
 class System:
     mixture: Mixture
-    rules: list["Rule"]
-    temperature: float = ROOM_TEMPERATURE
+    rules: list[Rule]
+    temperature: float = 273.15 + 25  # Room temperature
     time: float = 0
 
     @property
