@@ -1,3 +1,5 @@
+import pytest
+
 from kappybara.physics import AgentType, Molecule, Mixture
 
 agent_types = {
@@ -17,10 +19,19 @@ def test_binding():
     assert agent1.same_molecule(agent2)
 
 
-def test_molecule_init():
-    molecule = Molecule(
-        [("A", {"l": 1, "p": None, "r": None}), ("A", {"l": None, "p": None, "r": 1})]
-    )
+@pytest.mark.parametrize(
+    "molecule",
+    [
+        Molecule(
+            [
+                ("A", {"l": 1, "p": None, "r": None}),
+                ("A", {"l": None, "p": None, "r": 1}),
+            ]
+        ),
+        Molecule.from_kappa("A(l[1] p[.] r[.]), A(l[.] p[.] r[1])"),
+    ],
+)
+def test_molecule_init(molecule):
     assert len(molecule) == 2
     assert molecule.agents[0].interface["l"].partner.agent.type == "A"
     assert molecule.agents[1].interface["r"].partner.agent.type == "A"

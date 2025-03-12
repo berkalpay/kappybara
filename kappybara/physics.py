@@ -135,9 +135,21 @@ class Molecule:
         return molecule
 
     @classmethod
-    def from_kappa(cls):
-        # TODO: initialize from a kappa string representation
-        pass
+    def from_kappa(cls, kappa_str: str) -> Self:
+        """
+        Initialize molecule from a kappa string representation, like
+            "A(l[1] p[2] r[3]), A(l[3] p[4] r[5]), A(l[5] p[6] r[7])".
+        """
+        agent_signatures = []
+        for agent_signature_str in kappa_str.split(", "):
+            agent_type = agent_signature_str[0]
+            interface_str = agent_signature_str[2:-1]
+            interface = dict()
+            for site_str in interface_str.split(" "):
+                bond_str = site_str[2:-1]
+                interface[site_str[0]] = None if bond_str == "." else int(bond_str)
+            agent_signatures.append((agent_type, interface))
+        return cls(agent_signatures)
 
     def __len__(self):
         return len(self.agents)
