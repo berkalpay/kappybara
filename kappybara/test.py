@@ -1,24 +1,18 @@
 import random
 
 from kappybara.physics import AgentType, mixture
-from kappybara.chemistry import BasicBindingRule, System
+from kappybara.chemistry import basic_binding_unbinding, KDS, System
 
 random.seed(42)
-
 
 # %sig: A@100(p[a1.P$m a2.P$m a3.P$m], l[r.A$w], r[l.A]), P@100(a1[p.A], a2[p.A], a3[p.A], d[d.P$m])
 agent_types = [AgentType("A", ["p", "l", "r"]), AgentType("P", ["a1", "a2", "a3", "d"])]
 rules = [
-    BasicBindingRule(True, ("A", "A"), ("l", "r"), 1),
-    BasicBindingRule(False, ("A", "A"), ("l", "r"), 1),
-    BasicBindingRule(True, ("P", "P"), ("d", "d"), 1),
-    BasicBindingRule(False, ("P", "P"), ("d", "d"), 1),
-    BasicBindingRule(True, ("P", "A"), ("a1", "p"), 1),
-    BasicBindingRule(False, ("P", "A"), ("a1", "p"), 1),
-    BasicBindingRule(True, ("P", "A"), ("a2", "p"), 1),
-    BasicBindingRule(False, ("P", "A"), ("a2", "p"), 1),
-    BasicBindingRule(True, ("P", "A"), ("a3", "p"), 1),
-    BasicBindingRule(False, ("P", "A"), ("a3", "p"), 1),
+    *basic_binding_unbinding(("A", "A"), ("l", "r"), kd=KDS["weak"]),
+    *basic_binding_unbinding(("P", "P"), ("d", "d"), kd=KDS["moderate"]),
+    *basic_binding_unbinding(("P", "A"), ("a1", "p"), kd=KDS["moderate"]),
+    *basic_binding_unbinding(("P", "A"), ("a2", "p"), kd=KDS["moderate"]),
+    *basic_binding_unbinding(("P", "A"), ("a3", "p"), kd=KDS["moderate"]),
 ]
 
 num_each = 10**4
