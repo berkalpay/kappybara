@@ -1,0 +1,380 @@
+// Walter Fontana, 2024
+// Streamlined Wnt model
+
+%def: "maxConsecutiveClash" "20"
+%def: "seed" "365457"
+
+// Agent signatures 
+	
+%agent: Axin(dix_t[dix_h.Axin dix_h.Dvl]        // DIX domain, head region
+             dix_h[dix_t.Axin dix_t.Dvl]        // DIX domain, tail region
+             cbd[arm.bCat]                      // (*$\beta$*)-catenin binding site
+             rgs[samp1.APC samp2.APC samp3.APC] // RGS domain binding the SAMP repeats of APC
+             gsk[dom.GSK3b]                     // GSK3(*$\beta$*) binding site
+             kb[dom.CK1a dom.CK1e]              // site for binding the CK1 family
+             TSx{u p}                           // modification increases affinity to (*$\beta$*)-catenin
+             Sx{u p})                           // modification increases affinity to GSK3(*$\beta$*)
+%agent: APC(rpt1[arm.bCat]{u p}                 // 20 amino acid repeats binding (*$\beta$*)-catenin
+            rpt3[arm.bCat]{u p}
+            rpt4[arm.bCat]{u p}
+            rpt5[arm.bCat]{u p}
+            rpt6[arm.bCat]{u p}
+            rpt7[arm.bCat]{u p}
+            pr{u p}                             // Serine primed by GSK3b, required for CK1e action on APC
+            dim[dim.APC]                        // site for APC dimerization
+            samp1[rgs.Axin]                     // SAMP domains binding Axin
+            samp2[rgs.Axin]
+            samp3[rgs.Axin])
+%agent: bCat(S45{u p}                           // part of the (*$\beta$*)-catenin degron
+             T41{u p}                           // part of the (*$\beta$*)-catenin degron 
+             S37{u p}                           // part of the (*$\beta$*)-catenin degron 
+             S33{u p}                           // part of the (*$\beta$*)-catenin degron 
+             arm[rpt1.APC                       // armadillo repeat binding APC and Axin
+                 rpt3.APC 
+                 rpt4.APC 
+                 rpt5.APC 
+                 rpt6.APC 
+                 rpt7.APC 
+                 cbd.Axin])
+%agent: LRP(wnt[lrp.Wnt] 
+            dim[dim.LRP]
+            TSx{u p}[lrp.GSK3b])
+%agent: Wnt(lrp[wnt.LRP] 
+            fzd[wnt.Fzd])
+%agent: Fzd(dvl[dep.Dvl] 
+            wnt[fzd.Wnt] 
+            dim[dim.Fzd])
+%agent: Dvl(dep[dvl.Fzd] 
+            dix_h[dix_t.Axin dix_t.Dvl] 
+            dix_t[dix_h.Axin dix_h.Dvl]
+            ck1[dom.CK1e]
+            TSx{u p})
+%agent: CK1e(dom[kb.Axin ck1.Dvl])
+%agent: CK1a(dom[kb.Axin])
+%agent: GSK3b(dom[gsk.Axin]
+              lrp[TSx.LRP])
+
+
+//----------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------
+
+// model constants
+
+%var: 'rescale'    0.03
+%var: 'alpha'      1.0e5 * 'rescale'
+%var: 'Avogadro'   6.022e23
+%var: 'nano'       1.0e-9
+%var: 'Vol'        2.25e-12 * 'rescale'
+%var: 'nanomolar'  'nano' * 'Avogadro' * 'Vol'
+
+%var: 'Kd_medium'    1.0e-7       // used as generic Kd = k_off/k_on; 100nM
+%var: 'Kd_weak'      1.0e-6       // used as weak Kd
+%var: 'Kd_DIX_DIX'   5.0e-6
+%var: 'Kd_DAX_DAX'   1.0e-6
+%var: 'Kd_DIX_DAX'   5.0e-6
+%var: 'Kd_Axin_GSK3' 30.0e-9
+%var: 'Kd_Axin_bCat' 1.0e-6
+
+// deterministic rate constants
+
+%var: 'k_on'             1.0e8                   // bi
+%var: 'k_off'            'Kd_medium' * 'k_on'    // uni
+%var: 'k_off_w'          'Kd_weak' * 'k_on'      // uni
+%var: 'k_off_dix_dix'    'Kd_DIX_DIX' * 'k_on'   // uni
+%var: 'k_off_dax_dax'    'Kd_DAX_DAX' * 'k_on'   // uni
+%var: 'k_off_dix_dax'    'Kd_DIX_DAX' * 'k_on'   // uni
+%var: 'k_off_Axin_GSK3'  'Kd_Axin_GSK3' * 'k_on' // uni
+%var: 'k_off_Axin_bCat'  'Kd_Axin_bCat' * 'k_on' // uni
+%var: 'k_p'              0.1                     // uni
+%var: 'k_p_off'          0.01                     // uni
+%var: 'k_x'              0.5                     // uni
+%var: 'k_deg'            0.05                    // uni
+%var: 'k_influx'         1.0e-9                  // M s^-1
+%var: 'k_turnover'       0.5                     // uni 
+
+
+// stochastic rate constants
+
+%var: 'g_on'            'k_on' / ('Avogadro' * 'Vol')   // bi
+%var: 'g_off'           'k_off'                         // uni
+%var: 'g_off_w'         'k_off_w'                       // uni
+%var: 'g_off_dix_dix'   'k_off_dix_dix'                 // uni
+%var: 'g_off_dax_dax'   'k_off_dax_dax'                 // uni
+%var: 'g_off_dix_dax'   'k_off_dix_dax'                 // uni
+%var: 'g_off_Axin_GSK3' 'k_off_Axin_GSK3'               // uni
+%var: 'g_off_Axin_bCat' 'k_off_Axin_bCat'               // uni
+%var: 'g_p'             'k_p'                           // uni
+%var: 'g_p_off'         'k_p_off'                       // uni
+%var: 'g_x'             'k_x'                           // uni
+%var: 'g_deg'           'k_deg'                         // uni
+%var: 'g_influx'        'k_influx' * 'Avogadro' * 'Vol' // zero order
+%var: 'g_turnover'      'k_turnover'
+
+// initial agent population
+
+%init:  100 * 'nanomolar' Axin()
+%init:  100 * 'nanomolar' APC()
+%init:    0               bCat()
+%init:   40 * 'nanomolar' LRP()
+%init:    0               Wnt()
+%init:   50 * 'nanomolar' Fzd()
+%init:  100 * 'nanomolar' Dvl()
+%init:   10 * 'nanomolar' CK1e()
+%init:   40 * 'nanomolar' CK1a()
+%init:   40 * 'nanomolar' GSK3b()
+
+//----------------------------------------------------------------------------------------
+
+// >>>>> observables
+
+%obs: 'bCat_total'          |bCat()|
+%obs: 'bCat_GSKp_only'      |bCat(S45{u}, T41{p}, S33{p}, S37{p})|
+%obs: 'bCat_GSKp_all'       |bCat(T41{p}, S33{p}, S37{p})|
+%obs: 'bCat_all_S33S37'     |bCat(S33{p}, S37{p})|
+%obs: 'bCat_S45T41'         |bCat(S45{p}, T41{p}, S37{u}, S33{u})|
+%obs: 'bCat_S45'            |bCat(S45{p}, T41{u}, S37{u}, S33{u})|
+
+%obs: 'bCat-Axin'           |Axin(cbd[_])|
+%obs: 'bCat-APC'            |bCat(arm[rpt1.APC])| + |bCat(arm[rpt3.APC])| + |bCat(arm[rpt4.APC])| + |bCat(arm[rpt5.APC])| + |bCat(arm[rpt6.APC])| + |bCat(arm[rpt7.APC])|
+
+%obs: 'Axin-Axin'           |Axin(dix_t[1]), Axin(dix_h[1])|
+%obs: 'Axin-APC'            |Axin(rgs[_])|
+
+%obs: 'Dvl-Dvl'             |Dvl(dix_h[1]), Dvl(dix_t[1])|
+%obs: 'Dvl-Axin'            |Dvl(dix_h[1]), Axin(dix_t[1])| + |Dvl(dix_t[1]), Axin(dix_h[1])|
+%obs: 'Dvl_Fzd'             |Dvl(dep[_])|
+%obs: 'Dvl.TSx'             |Dvl(TSx{p})|
+
+%obs: 'Wnt_total'           |Wnt()|
+%obs: 'Wnt_Fzd_LRP'         |Wnt(fzd[_], lrp[_])|
+
+%obs: 'GSK3_LRP'            |GSK3b(lrp[1]), LRP(TSx[1])|
+%obs: 'GSK3_Axin'           |GSK3b(dom[1]), Axin(gsk[1])|
+
+//----------------------------------------------------------------------------------------
+
+// >>>>> influx of bCat
+
+. -> bCat() @ 'g_influx'
+
+// >>>>> degradation of bCat from APC only
+
+bCat(S33{p}, S37{p}, arm[rpt1.APC]) -> . @ 'g_deg'
+bCat(S33{p}, S37{p}, arm[rpt3.APC]) -> . @ 'g_deg'
+bCat(S33{p}, S37{p}, arm[rpt4.APC]) -> . @ 'g_deg'
+bCat(S33{p}, S37{p}, arm[rpt5.APC]) -> . @ 'g_deg'
+bCat(S33{p}, S37{p}, arm[rpt6.APC]) -> . @ 'g_deg'
+bCat(S33{p}, S37{p}, arm[rpt7.APC]) -> . @ 'g_deg'
+
+// >>>>> phosphorylation of APC's 20aa repeats rpt1 to rpt7
+
+APC(rpt1[.]{u}, pr{p}), CK1e() -> APC(rpt1[.]{p}, pr{p}), CK1e() @ 0 {'g_p'}
+APC(rpt3[.]{u}, pr{p}), CK1e() -> APC(rpt3[.]{p}, pr{p}), CK1e() @ 0 {'g_p'}
+APC(rpt4[.]{u}, pr{p}), CK1e() -> APC(rpt4[.]{p}, pr{p}), CK1e() @ 0 {'g_p'}
+APC(rpt5[.]{u}, pr{p}), CK1e() -> APC(rpt5[.]{p}, pr{p}), CK1e() @ 0 {'g_p'}
+APC(rpt6[.]{u}, pr{p}), CK1e() -> APC(rpt6[.]{p}, pr{p}), CK1e() @ 0 {'g_p'}
+APC(rpt7[.]{u}, pr{p}), CK1e() -> APC(rpt7[.]{p}, pr{p}), CK1e() @ 0 {'g_p'}
+
+//  >>>>> APC-bCat binding reactions
+//
+// For the p'd rpt sites, binding constants are augmented by a factor of 10 and 
+// dissociation constants are reduced by a factor of 10 compared to the unphosphorylated case.
+
+APC(rpt1[.]), bCat(arm[.]) -> APC(rpt1[1]), bCat(arm[1]) @ 'g_on'
+APC(rpt3[.]), bCat(arm[.]) -> APC(rpt3[1]), bCat(arm[1]) @ 'g_on'
+APC(rpt4[.]), bCat(arm[.]) -> APC(rpt4[1]), bCat(arm[1]) @ 'g_on'
+APC(rpt5[.]), bCat(arm[.]) -> APC(rpt5[1]), bCat(arm[1]) @ 'g_on'
+APC(rpt6[.]), bCat(arm[.]) -> APC(rpt6[1]), bCat(arm[1]) @ 'g_on'
+APC(rpt7[.]), bCat(arm[.]) -> APC(rpt7[1]), bCat(arm[1]) @ 'g_on'
+
+//  >>>>> APC-bCat dissociation reactions
+
+APC(rpt1[1]{u}), bCat(arm[1]) -> APC(rpt1[.]{u}), bCat(arm[.]) @ 'g_off' * 10
+APC(rpt3[1]{u}), bCat(arm[1]) -> APC(rpt3[.]{u}), bCat(arm[.]) @ 'g_off' * 10
+APC(rpt4[1]{u}), bCat(arm[1]) -> APC(rpt4[.]{u}), bCat(arm[.]) @ 'g_off' * 10
+APC(rpt5[1]{u}), bCat(arm[1]) -> APC(rpt5[.]{u}), bCat(arm[.]) @ 'g_off' * 10
+APC(rpt6[1]{u}), bCat(arm[1]) -> APC(rpt6[.]{u}), bCat(arm[.]) @ 'g_off' * 10
+APC(rpt7[1]{u}), bCat(arm[1]) -> APC(rpt7[.]{u}), bCat(arm[.]) @ 'g_off' * 10
+
+APC(rpt1[1]{p}), bCat(arm[1]) -> APC(rpt1[.]{p}), bCat(arm[.]) @ 'g_off' / 10
+APC(rpt3[1]{p}), bCat(arm[1]) -> APC(rpt3[.]{p}), bCat(arm[.]) @ 'g_off' / 10
+APC(rpt4[1]{p}), bCat(arm[1]) -> APC(rpt4[.]{p}), bCat(arm[.]) @ 'g_off' / 10
+APC(rpt5[1]{p}), bCat(arm[1]) -> APC(rpt5[.]{p}), bCat(arm[.]) @ 'g_off' / 10
+APC(rpt6[1]{p}), bCat(arm[1]) -> APC(rpt6[.]{p}), bCat(arm[.]) @ 'g_off' / 10
+APC(rpt7[1]{p}), bCat(arm[1]) -> APC(rpt7[.]{p}), bCat(arm[.]) @ 'g_off' / 10
+
+// >>>>> APC captures bCat from Axin
+//
+// (This is dependent of the degron state at bCat, and requires the rpt site of APC to be phosphorylated.)
+
+APC(rpt1[.]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[1]) -> APC(rpt1[1]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[.]) @ 0 {'g_x'}
+APC(rpt3[.]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[1]) -> APC(rpt3[1]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[.]) @ 0 {'g_x'}
+APC(rpt4[.]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[1]) -> APC(rpt4[1]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[.]) @ 0 {'g_x'}
+APC(rpt5[.]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[1]) -> APC(rpt5[1]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[.]) @ 0 {'g_x'}
+APC(rpt6[.]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[1]) -> APC(rpt6[1]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[.]) @ 0 {'g_x'}
+APC(rpt7[.]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[1]) -> APC(rpt7[1]{p}), bCat(S33{p}, S37{p}, arm[1]), Axin(cbd[.]) @ 0 {'g_x'}
+
+// >>>>> Simplified phosphorylation of Axin by GSK3
+// TS{p} by GSK3b increases affinity of Axin-bCat
+// Sx{p} by CK1a increases affinity of Axin-GSK3 (and stabilizes against degradation by tankyrase)
+
+Axin(TSx{u}), GSK3b(dom[gsk.Axin], lrp[.]) -> Axin(TSx{p}), GSK3b(dom[gsk.Axin], lrp[.]) @ 0 {'g_p'}
+Axin(Sx{u}), CK1a(dom[kb.Axin]) -> Axin(Sx{p}), CK1a(dom[kb.Axin]) @ 0 {'g_p'}
+
+// >>>>> Simplified priming of APC by GSK3
+
+GSK3b(dom[gsk.Axin], lrp[.]), APC(pr{u}) -> GSK3b(dom[gsk.Axin], lrp[.]), APC(pr{p}) @ 0 {'g_p'}
+
+// >>>>> bCat degron phosphorylation
+
+bCat(S45{u}), CK1a(dom[kb.Axin]) -> bCat(S45{p}), CK1a(dom[kb.Axin]) @ 0 {'g_p'}
+bCat(T41{u}, S45{p}), GSK3b(dom[gsk.Axin], lrp[.]) -> bCat(T41{p}, S45{p}), GSK3b(dom[gsk.Axin], lrp[.]) @ 0 {'g_p'}
+bCat(S37{u}, T41{p}), GSK3b(dom[gsk.Axin], lrp[.]) -> bCat(S37{p}, T41{p}), GSK3b(dom[gsk.Axin], lrp[.]) @ 0 {'g_p'}
+bCat(S33{u}, T41{p}), GSK3b(dom[gsk.Axin], lrp[.]) -> bCat(S33{p}, T41{p}), GSK3b(dom[gsk.Axin], lrp[.]) @ 0 {'g_p'}
+
+// >>>>> APC dimerization
+
+APC(dim[.]), APC(dim[.]) -> APC(dim[1]), APC(dim[1])     @ 1/2 * 'g_on' {1/2 * 'alpha' * 'g_on'}
+APC(dim[1]), APC(dim[1]) -> APC(dim[.]), APC(dim[.])     @ 1/2 * 'g_off'
+
+// >>>>> Axin polymerization
+
+Axin(dix_t[.]), Axin(dix_h[.]) -> Axin(dix_t[1]), Axin(dix_h[1]) @ 'g_on' {'alpha' * 'g_on'}
+Axin(dix_t[1]), Axin(dix_h[1]) -> Axin(dix_t[.]), Axin(dix_h[.]) @ 'g_off_dax_dax'
+
+// >>>>> Axin binding to APC is exclusive of Axin binding to Dvl
+
+APC(samp1[.]), Axin(rgs[.], dix_t[.], dix_h[.]) -> APC(samp1[1]), Axin(rgs[1], dix_t[.], dix_h[.]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp2[.]), Axin(rgs[.], dix_t[.], dix_h[.]) -> APC(samp2[1]), Axin(rgs[1], dix_t[.], dix_h[.]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp3[.]), Axin(rgs[.], dix_t[.], dix_h[.]) -> APC(samp3[1]), Axin(rgs[1], dix_t[.], dix_h[.]) @ 'g_on' {'alpha' * 'g_on'}
+
+APC(samp1[.]), Axin(rgs[.], dix_t[dix_h.Axin], dix_h[.]) -> APC(samp1[1]), Axin(rgs[1], dix_t[dix_h.Axin], dix_h[.]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp2[.]), Axin(rgs[.], dix_t[dix_h.Axin], dix_h[.]) -> APC(samp2[1]), Axin(rgs[1], dix_t[dix_h.Axin], dix_h[.]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp3[.]), Axin(rgs[.], dix_t[dix_h.Axin], dix_h[.]) -> APC(samp3[1]), Axin(rgs[1], dix_t[dix_h.Axin], dix_h[.]) @ 'g_on' {'alpha' * 'g_on'}
+
+APC(samp1[.]), Axin(rgs[.], dix_t[.], dix_h[dix_t.Axin]) -> APC(samp1[1]), Axin(rgs[1], dix_t[.], dix_h[dix_t.Axin]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp2[.]), Axin(rgs[.], dix_t[.], dix_h[dix_t.Axin]) -> APC(samp2[1]), Axin(rgs[1], dix_t[.], dix_h[dix_t.Axin]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp3[.]), Axin(rgs[.], dix_t[.], dix_h[dix_t.Axin]) -> APC(samp3[1]), Axin(rgs[1], dix_t[.], dix_h[dix_t.Axin]) @ 'g_on' {'alpha' * 'g_on'}
+
+APC(samp1[.]), Axin(rgs[.], dix_t[dix_h.Axin], dix_h[dix_t.Axin]) -> APC(samp1[1]), Axin(rgs[1], dix_t[dix_h.Axin], dix_h[dix_t.Axin]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp2[.]), Axin(rgs[.], dix_t[dix_h.Axin], dix_h[dix_t.Axin]) -> APC(samp2[1]), Axin(rgs[1], dix_t[dix_h.Axin], dix_h[dix_t.Axin]) @ 'g_on' {'alpha' * 'g_on'}
+APC(samp3[.]), Axin(rgs[.], dix_t[dix_h.Axin], dix_h[dix_t.Axin]) -> APC(samp3[1]), Axin(rgs[1], dix_t[dix_h.Axin], dix_h[dix_t.Axin]) @ 'g_on' {'alpha' * 'g_on'}
+
+APC(samp1[1]), Axin(rgs[1]) -> APC(samp1[.]), Axin(rgs[.]) @ 'g_off'
+APC(samp2[1]), Axin(rgs[1]) -> APC(samp2[.]), Axin(rgs[.]) @ 'g_off'
+APC(samp3[1]), Axin(rgs[1]) -> APC(samp3[.]), Axin(rgs[.]) @ 'g_off'
+
+// >>>>> Axin binds bCat
+
+Axin(cbd[.], TSx{u}), bCat(arm[.]) -> Axin(cbd[1], TSx{u}), bCat(arm[1]) @ 'g_on'
+Axin(cbd[.], TSx{p}), bCat(arm[.]) -> Axin(cbd[1], TSx{p}), bCat(arm[1]) @ 'g_on'
+
+Axin(cbd[1], TSx{u}), bCat(arm[1]) -> Axin(cbd[.], TSx{u}), bCat(arm[.]) @ 'g_off_Axin_bCat' * 10
+Axin(cbd[1], TSx{p}), bCat(arm[1]) -> Axin(cbd[.], TSx{p}), bCat(arm[.]) @ 'g_off_Axin_bCat' / 10
+
+// >>>>> (un)binding of Axin to CK1a, CK1e and GSK3b
+
+Axin(kb[.]), CK1e(dom[.]) -> Axin(kb[1]), CK1e(dom[1]) @ 'g_on'
+Axin(kb[1]), CK1e(dom[1]) -> Axin(kb[.]), CK1e(dom[.]) @ 'g_off'
+Axin(kb[.]), CK1a(dom[.]) -> Axin(kb[1]), CK1a(dom[1]) @ 'g_on'
+Axin(kb[1]), CK1a(dom[1]) -> Axin(kb[.]), CK1a(dom[.]) @ 'g_off'
+Axin(gsk[.]), GSK3b(dom[.]) -> Axin(gsk[1]), GSK3b(dom[1]) @ 'g_on' {'alpha' * 'g_on'}
+Axin(gsk[1], Sx{u}), GSK3b(dom[1]) -> Axin(gsk[.], Sx{u}), GSK3b(dom[.]) @ 'g_off' * 10
+Axin(gsk[1], Sx{p}), GSK3b(dom[1]) -> Axin(gsk[.], Sx{p}), GSK3b(dom[.]) @ 'g_off'
+
+// >>>>> Dvl self-interactions
+
+Dvl(dix_h[.]), Dvl(dix_t[.]) -> Dvl(dix_h[1]), Dvl(dix_t[1]) @ 'g_on' {'alpha' * 'g_on'}
+Dvl(dix_h[1]), Dvl(dix_t[1]) -> Dvl(dix_h[.]), Dvl(dix_t[.]) @ 'g_off_dix_dix'
+
+// >>>>> Axin binding to Dvl is exclusive of Axin binding to APC
+// depends on p'lation state of site TSx of Dvl
+
+Axin(rgs[.], dix_t[.]), Dvl(dix_h[.], TSx{u}) -> Axin(rgs[.], dix_t[1]), Dvl(dix_h[1], TSx{u}) @ 'g_on' {'alpha' * 'g_on'}
+Axin(rgs[.], dix_h[.]), Dvl(dix_t[.], TSx{u}) -> Axin(rgs[.], dix_h[1]), Dvl(dix_t[1], TSx{u}) @ 'g_on' {'alpha' * 'g_on'}
+Axin(rgs[.], dix_t[.]), Dvl(dix_h[.], TSx{p}) -> Axin(rgs[.], dix_t[1]), Dvl(dix_h[1], TSx{p}) @ 'g_on' {'alpha' * 'g_on'}
+Axin(rgs[.], dix_h[.]), Dvl(dix_t[.], TSx{p}) -> Axin(rgs[.], dix_h[1]), Dvl(dix_t[1], TSx{p}) @ 'g_on' {'alpha' * 'g_on'}
+
+Axin(rgs[.], dix_t[1]), Dvl(dix_h[1], TSx{u}) -> Axin(rgs[.], dix_t[.]), Dvl(dix_h[.], TSx{u}) @ 'g_off_dix_dax'
+Axin(rgs[.], dix_h[1]), Dvl(dix_t[1], TSx{u}) -> Axin(rgs[.], dix_h[.]), Dvl(dix_t[.], TSx{u}) @ 'g_off_dix_dax'
+Axin(rgs[.], dix_t[1]), Dvl(dix_h[1], TSx{p}) -> Axin(rgs[.], dix_t[.]), Dvl(dix_h[.], TSx{p}) @ 'g_off_dix_dax' / 100.
+Axin(rgs[.], dix_h[1]), Dvl(dix_t[1], TSx{p}) -> Axin(rgs[.], dix_h[.]), Dvl(dix_t[.], TSx{p}) @ 'g_off_dix_dax' / 100.
+
+// >>>>> phosphorylation of Dvl by CK1e
+
+// mechanism 1
+CK1e(dom[kb.Axin]), Dvl(dep[dvl.Fzd], TSx{u}) -> CK1e(dom[kb.Axin]), Dvl(dep[dvl.Fzd], TSx{p}) @ 0 {'g_p'}
+
+// mechanism 2 (MM-like)
+CK1e(dom[.]), Dvl(dep[dvl.Fzd], TSx{u}, ck1[.]) -> CK1e(dom[1]), Dvl(dep[dvl.Fzd], TSx{u}, ck1[1]) @ 'g_on'
+CK1e(dom[1]), Dvl(ck1[1]) -> CK1e(dom[.]), Dvl(ck1[.]) @ 'g_off'
+CK1e(dom[1]), Dvl(TSx{u}, ck1[1]) -> CK1e(dom[1]), Dvl(TSx{p}, ck1[1]) @ 'g_p'
+
+// >>>>> (un)binding of Fzd to Dvl
+// requires Fzd to be bound to Wnt
+
+Fzd(wnt[fzd.Wnt], dvl[.]), Dvl(dep[.]) -> Fzd(wnt[fzd.Wnt], dvl[1]), Dvl(dep[1]) @ 'g_on' {'alpha' * 'g_on'}
+Fzd(wnt[fzd.Wnt], dvl[1]), Dvl(dep[1]) -> Fzd(wnt[fzd.Wnt], dvl[.]), Dvl(dep[.]) @ 'g_off'
+
+// >>>>> dimerization of Fzd
+
+Fzd(dim[.]), Fzd(dim[.]) -> Fzd(dim[1]), Fzd(dim[1]) @ 1/2 * 'g_on' {1/2 * 'alpha' * 'g_on'}
+Fzd(dim[1]), Fzd(dim[1]) -> Fzd(dim[.]), Fzd(dim[.]) @ 1/2 * 'g_off'
+
+// >>>>> dimerization of LRP
+
+LRP(dim[.]), LRP(dim[.]) -> LRP(dim[1]), LRP(dim[1]) @ 1/2 * 'g_on' {1/2 * 'alpha' * 'g_on'}
+LRP(dim[1]), LRP(dim[1]) -> LRP(dim[.]), LRP(dim[.]) @ 1/2 * 'g_off'
+
+// >>>>> (un)binding interactions of Wnt with Fzd and LRP
+
+Wnt(fzd[.]), Fzd(wnt[.]) -> Wnt(fzd[1]), Fzd(wnt[1]) @ 'g_on' {'alpha' * 'g_on'}
+Wnt(fzd[1]), Fzd(wnt[1]) -> Wnt(fzd[.]), Fzd(wnt[.]) @ 'g_off' / 100.
+Wnt(lrp[.]), LRP(wnt[.]) -> Wnt(lrp[1]), LRP(wnt[1]) @ 'g_on' {'alpha' * 'g_on'}
+Wnt(lrp[1]), LRP(wnt[1]) -> Wnt(lrp[.]), LRP(wnt[.]) @ 'g_off' / 100.
+
+// an alternative would be to have Wnt bind irreversibly in bimolecular fashion
+// Wnt(fzd[.]), Fzd(wnt[.]) -> Wnt(fzd[1]), Fzd(wnt[1]) @ 'g_on'
+// Wnt(lrp[.]), LRP(wnt[.]) -> Wnt(lrp[1]), LRP(wnt[1]) @ 'g_on'
+
+// >>>>> GSK3b phosphorylates LRP intramolecularly
+
+GSK3b(dom[gsk.Axin], lrp[.]), LRP(TSx{u}[.]) -> GSK3b(dom[gsk.Axin], lrp[.]), LRP(TSx{p}[.]) @ 0 {'g_p'}
+
+// >>>>> LRP binds and inactivates GSK3b
+
+LRP(TSx{p}[.]), GSK3b(lrp[.]) -> LRP(TSx{p}[1]), GSK3b(lrp[1]) @ 'g_on' {'alpha' * 'g_on'}
+LRP(TSx[1]), GSK3b(lrp[1]) -> LRP(TSx[.]), GSK3b(lrp[.]) @ 'g_off' / 10.
+
+// >>>>> generic dephosphorylations
+
+APC(rpt1[.]{p}) -> APC(rpt1[.]{u}) @ 'g_p_off'
+APC(rpt3[.]{p}) -> APC(rpt3[.]{u}) @ 'g_p_off'
+APC(rpt4[.]{p}) -> APC(rpt4[.]{u}) @ 'g_p_off'
+APC(rpt5[.]{p}) -> APC(rpt5[.]{u}) @ 'g_p_off'
+APC(rpt6[.]{p}) -> APC(rpt6[.]{u}) @ 'g_p_off'
+APC(rpt7[.]{p}) -> APC(rpt7[.]{u}) @ 'g_p_off'
+APC(pr{p}) -> APC(pr{u}) @ 'g_p_off'
+
+Axin(TSx{p}) -> Axin(TSx{u}) @ 'g_p_off'
+Axin(Sx{p}) -> Axin(Sx{u}) @ 'g_p_off'
+
+Dvl(TSx{p}) -> Dvl(TSx{u}) @ 'g_p_off'
+LRP(TSx{p}[.]) -> LRP(TSx{u}[.]) @ 'g_p_off'
+
+bCat(S45{p}, arm[1]), Axin(cbd[1]) -> bCat(S45{u}, arm[1]), Axin(cbd[1]) @ 'g_p_off'
+bCat(T41{p}, arm[1]), Axin(cbd[1]) -> bCat(T41{u}, arm[1]), Axin(cbd[1]) @ 'g_p_off'
+bCat(S37{p}, arm[1]), Axin(cbd[1]) -> bCat(S37{u}, arm[1]), Axin(cbd[1]) @ 'g_p_off'
+bCat(S33{p}, arm[1]), Axin(cbd[1]) -> bCat(S33{u}, arm[1]), Axin(cbd[1]) @ 'g_p_off'
+
+bCat(S45{p}, arm[.]) -> bCat(S45{u}, arm[.]) @ 'g_p_off'
+bCat(T41{p}, arm[.]) -> bCat(T41{u}, arm[.]) @ 'g_p_off'
+bCat(S37{p}, arm[.]) -> bCat(S37{u}, arm[.]) @ 'g_p_off'
+bCat(S33{p}, arm[.]) -> bCat(S33{u}, arm[.]) @ 'g_p_off'
+
+// >>>>> Axin turn-over
+
+Axin(), . -> ., Axin() @ 'g_turnover'
+
+
