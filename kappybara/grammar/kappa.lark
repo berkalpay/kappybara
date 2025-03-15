@@ -1,0 +1,175 @@
+// Walter Fontana 2024
+//
+// Kappa syntax EBNF
+//
+
+kappa_input : ( f_rule
+            | fr_rule
+            | ambi_rule
+            | ambi_fr_rule
+            | variable_declaration
+            | plot_declaration
+            | observable_declaration
+            | signature_declaration
+            | init_declaration
+            | declared_token 
+            | definition
+            | pattern )*
+
+// TERMINALS
+
+NAME : LETTER (LETTER | INT | "_" | "~" | "-" | "+")*
+     | "_" (LETTER | INT | "_" | "~" | "-" | "+")+
+LABEL : ("'" /[^\n']+/ "'") | ("\"" /[^\n'\"]+/ "\"")
+COMMENT: "//" /[^\n]/*
+
+// */ Fix syntax highlighting
+// symbols
+HASH : "#"
+DOT : "."
+UNDERSCORE : "_"
+RARROW : "->"
+LRARROW : "<->"
+
+// binary ops
+PLUS : "+"
+MINUS : "-"
+MULT : "*" 
+DIV :  "/"
+POW : "^"
+MOD : "mod"
+
+// unary ops
+LOG : "[log]"
+EXP : "[exp]"
+SIN : "[sin]"
+COS : "[cos]"
+TAN : "[tan]"
+SQRT : "[sqrt]"
+
+// defined constants
+PI : "[pi]"
+
+// boolean
+TRUE : "[true]"
+FALSE : "[false]"
+
+// list ops
+MAX : "[max]"
+MIN : "[min]"
+
+%import common.INT
+%import common.FLOAT
+%import common.SIGNED_FLOAT
+%import common.SIGNED_INT
+%import common.LETTER
+%import common.WS
+
+%ignore COMMENT
+%ignore WS
+
+// pattern expressions
+
+agent_name : NAME
+site_name : NAME
+pattern : agent [ ([","] pattern)* ]
+agent : agent_name "(" interface ")"         
+interface : [ site ([","] site)* ]
+site : site_name internal_state link_state   
+     | site_name link_state internal_state
+internal_state : "{" NAME "}"
+               | "{" HASH "}" // NOTE: It seems like this kind of stuff is allowed in initial condition declarations
+               | undetermined // NOTE: precise difference between HASH and undetermined?
+link_state : "[" INT "]"
+           | "[" site_name "." agent_name "]" // NOTE: What about agent_name with unspecified site_name?
+           | "[" DOT "]"
+           | "[" UNDERSCORE "]" 
+           | "[" HASH "]"
+           | undetermined
+undetermined : [] -> unspecified
+
+// rule expressions (chemical notation)
+
+label : LABEL
+f_rule : [ label ] rule_expression [ "|" token ] "@" rate
+fr_rule : [ label ] rev_rule_expression [ "|" token ] "@" rate "," rate
+ambi_rule : [ label ] rule_expression [ "|" token ] "@" rate "{" rate "}"
+ambi_fr_rule : [ label ] rev_rule_expression [ "|" token ] "@" rate "{" rate "}" "," rate
+
+rule_expression : ( agent | DOT ) _more ( agent | DOT )  // this form of recursion ensures a rule 
+_more : "," ( agent | DOT ) _more ( agent | DOT ) ","    // has the same number of "slots" L and R
+      | RARROW
+
+rev_rule_expression : ( agent |DOT ) _revmore ( agent | DOT )
+_revmore : "," ( agent | DOT ) _revmore ( agent | DOT ) "," 
+         | LRARROW
+
+rate : algebraic_expression
+
+// variables, algebraic expressions, observables
+
+variable_declaration : "%var:" declared_variable_name algebraic_expression
+declared_variable_name : LABEL
+!algebraic_expression : defined_constant
+                      | declared_variable_name
+                      | reserved_variable_name
+                      | algebraic_expression binary_op algebraic_expression
+                      | "(" algebraic_expression ")"
+                      | unary_op "(" algebraic_expression ")"
+                      | list_op "(" algebraic_expression [ ([","] algebraic_expression)* ] ")"
+                      | boolean_expression "[?]" algebraic_expression "[:]" algebraic_expression
+                      | SIGNED_FLOAT
+                      | SIGNED_INT
+reserved_variable_name : "[E]"    -> productive_events
+                       | "[E-]"   -> null_events
+                       | "[T]"    -> simulated_time
+                       | "[Tsim]" -> cpu_time
+                       | "|" declared_token_name "|"
+                       | "|" pattern "|"
+                       | "inf"    -> infinity
+!boolean_expression : algebraic_expression ("=" | "<" | ">") algebraic_expression 
+                    | boolean_expression "||" boolean_expression
+                    | boolean_expression "&&" boolean_expression
+                    | "[not]" boolean_expression
+                    | "(" boolean_expression ")"
+                    | TRUE
+                    | FALSE
+
+unary_op : LOG | EXP | SIN | COS | TAN | SQRT
+binary_op : PLUS | MINUS |  MULT | DIV | POW | MOD
+defined_constant : PI
+list_op : MAX | MIN
+
+plot_declaration : "%plot:" declared_variable_name
+observable_declaration : "%obs:" LABEL algebraic_expression
+
+// agent signature
+
+signature_declaration : "%agent:" signature_expression
+signature_expression : agent_name "(" signature_interface ")"
+signature_interface : site_name set_of_internal_states set_of_link_states ([","] signature_interface)* 
+                    | site_name set_of_link_states set_of_internal_states ([","] signature_interface)* 
+// NOTE: Which of these is the default when initializing an agent but leaving an internal state unspecified?
+// Seems sensible to just use the first in the list, but it might be nice to be able to explicitly specify a default.
+set_of_internal_states : [ "{" [ state_value (" " state_value)* ] "}" ]
+state_value : NAME | HASH
+set_of_link_states : [ "[" [ site_name "." agent_name (" " site_name "." agent_name)* ] "]" ]
+
+// initial condition
+
+// NOTE: Mind the distinction between initialized agents and agent patterns
+init_declaration : "%init:" algebraic_expression pattern
+                 | "%init:" algebraic_expression declared_token_name
+
+// token expressions
+
+token : algebraic_expression declared_token_name _another_token 
+_another_token : [ "," token ]
+declared_token : "%token:" declared_token_name 
+declared_token_name : NAME
+
+// definitions
+
+reserved_name : LABEL
+value : INT
+definition : "%def:" reserved_name "\"" value "\""
