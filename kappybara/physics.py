@@ -167,20 +167,22 @@ class Molecule:
     def kappa_str(self) -> str:
         # TODO: add arg to canonicalize?
         bond_num_counter = 1
-        bond_nums = dict()
+        bond_nums: dict[Site, int] = dict()
         agent_signatures = []
         for agent in self.agents:
             site_strs = []
             for site in agent.sites:
                 if site.partner is None:
-                    bond_num = "."
-                elif site.partner in bond_nums:
-                    bond_num = bond_nums[site.partner]
+                    bond_num = None
+                elif site in bond_nums:
+                    bond_num = bond_nums[site]
                 else:
                     bond_num = bond_num_counter
-                    bond_nums[site] = bond_num
+                    bond_nums[site.partner] = bond_num
                     bond_num_counter += 1
-                site_strs.append(f"{site.label}[{bond_num}]")
+                site_strs.append(
+                    f"{site.label}[{"." if bond_num is None else bond_num}]"
+                )
             agent_signatures.append(f"{agent.type}({' '.join(site_strs)})")
         return ", ".join(agent_signatures)
 
