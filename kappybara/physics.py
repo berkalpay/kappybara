@@ -161,11 +161,28 @@ class Molecule:
         return id(self)
 
     def __repr__(self):  # TODO: add detail
-        return f"Molecule with id {id(self)} and composition {self.composition}"
+        return f'Molecule(id={id(self)}, kappa_str="{self.kappa_str}")'
 
-    def __str__(self):
-        # TODO: return the canonical kappa string representation
-        pass
+    @property
+    def kappa_str(self) -> str:
+        # TODO: add arg to canonicalize?
+        bond_num_counter = 1
+        bond_nums = dict()
+        agent_signatures = []
+        for agent in self.agents:
+            site_strs = []
+            for site in agent.sites:
+                if site.partner is None:
+                    bond_num = "."
+                elif site.partner in bond_nums:
+                    bond_num = bond_nums[site.partner]
+                else:
+                    bond_num = bond_num_counter
+                    bond_nums[site] = bond_num
+                    bond_num_counter += 1
+                site_strs.append(f"{site.label}[{bond_num}]")
+            agent_signatures.append(f"{agent.type}({' '.join(site_strs)})")
+        return ", ".join(agent_signatures)
 
     def attach_agents(self, molecule: Optional[Self] = None) -> None:
         molecule = self if molecule is None else molecule

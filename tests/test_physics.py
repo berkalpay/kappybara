@@ -36,3 +36,10 @@ def test_molecule_init(molecule):
     assert molecule.agents[0].interface["l"].partner.agent.type == "A"
     assert molecule.agents[1].interface["r"].partner.agent.type == "A"
     assert not molecule.agents[0].interface["r"].bound
+
+
+def test_molecule_kappa_str():
+    assert Molecule.from_kappa("A(l[1] p[.] r[.]), A(l[.] p[.] r[1])").kappa_str in (
+        "A(l[1] p[.] r[.]), A(l[.] p[.] r[1])",
+        "A(l[.] p[.] r[1]), A(l[1] p[.] r[.])",
+    )
