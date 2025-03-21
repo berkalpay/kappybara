@@ -1,2 +1,4 @@
 .direnv/
 tests/cpu-profiles/results/
+.DS_store
+__pycache__/
