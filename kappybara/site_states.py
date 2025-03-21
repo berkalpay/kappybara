@@ -1,7 +1,13 @@
-from dataclasses import dataclass
-from typing import Optional
+# TODO: this isn't working like I thought it would
+# I want to remove the quotes around types in
+# `LinkState` and `LinkStatePattern`
+from __future__ import annotations
 
-from kappybara.physics import Site
+from dataclasses import dataclass
+from typing import Optional, Union
+
+# from kappybara.physics import Site
+# from kappybara.pattern import SitePattern
 
 # Specified as '.' in the Kappa language
 EmptyState = type(None)
@@ -53,7 +59,7 @@ class SiteTypePredicate:
 InternalState = str
 InternalStatePattern = InternalState | WildCardPredicate | UndeterminedState
 
-LinkState = Site | EmptyState
+LinkState = Union["Site"] | EmptyState
 LinkStatePattern = (
     WildCardPredicate
     | BoundPredicate
@@ -61,6 +67,9 @@ LinkStatePattern = (
     | int
     | EmptyState
     | UndeterminedState
+    | Union[
+        "SitePattern"
+    ]  # Hack to make this a forward ref to avoid cyclic dependencies, same as Site in LinkState. TODO something better
 )
 
 # NOTE: This pattern (lru_cache) might help with memory overhead in the future
