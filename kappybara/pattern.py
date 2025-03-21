@@ -1,36 +1,46 @@
 from dataclasses import dataclass
-from typing import Self
+from typing import Self, List
 
 from kappybara.grammar import kappa_parser
-from lark import ParseTree, Visitor
+from kappybara.site_states import *
+from lark import ParseTree, Visitor, Tree, Token
+
 
 @dataclass
 class SitePattern:
     label: str
-    internal_state: str
-    link_state: str
+    internal_state: InternalStatePattern
+    link_state: LinkStatePattern
 
     @classmethod
     def from_parse_tree(cls, tree: ParseTree) -> Self:
+        print(tree.pretty())
         print(tree)
         assert tree.data == "site"
 
         builder = SitePatternBuilder(tree)
-        return cls(builder.parsed_site_name,
-                   builder.parsed_internal_state,
-                   builder.parsed_link_state)
+        return cls(
+            builder.parsed_site_name,
+            builder.parsed_internal_state,
+            builder.parsed_link_state,
+        )
 
+
+@dataclass
 class AgentPattern:
-    def __init__(self, type: str, sites: tuple["Site"]):
+    type: str
+    sites: List[SitePattern]
+
+    def __init__(self, type: str, sites: List[SitePattern]):
         self.type = type
-        self.interface: tuple[Site] = sites
+        self.sites = sites
 
     @classmethod
     def from_parse_tree(cls, tree: ParseTree) -> Self:
         assert tree.data == "agent"
         builder = AgentPatternBuilder(tree)
 
-        return cls(builder.parsed_type, builder.parsed_sites)
+        return cls(builder.parsed_type, builder.parsed_interface)
 
     @classmethod
     def from_kappa(cls, kappa_str: str) -> Self:
@@ -47,43 +57,87 @@ class AgentPattern:
         agent_tree = pattern_tree.children[0]
         return cls.from_parse_tree(agent_tree)
 
+
+@dataclass
 class AgentPatternBuilder(Visitor):
+    parsed_type: str
+    parsed_interface: List[SitePattern]
+
     def __init__(self, tree: ParseTree):
         super().__init__()
 
         self.parsed_type = None
-        self.parsed_sites = ()
+        self.parsed_interface: List[SitePattern] = []
 
         assert tree.data == "agent"
         self.visit(tree)
 
+    # Visitor method for Lark
     def agent_name(self, tree: ParseTree):
         self.parsed_type = str(tree.children[0])
 
+    # Visitor method for Lark
     def site(self, tree: ParseTree):
-        print("working?")
-        self.parsed_sites = self.parsed_sites + (SitePattern.from_parse_tree(tree),)
-        # self.parsed_sites = self.parsed_sites + ("placeholder",)
+        self.parsed_interface.append(SitePattern.from_parse_tree(tree))
+
 
 @dataclass
 class SitePatternBuilder(Visitor):
     parsed_site_name: str
-    parsed_link_state = None
-    parsed_internal_state = None
+    parsed_internal_state: InternalStatePattern = None
+    parsed_link_state: LinkStatePattern = None
+
     def __init__(self, tree: ParseTree):
         super().__init__()
 
-        assert tree.data == "site"
+        self.parsed_agents: List[AgentPattern] = []
+
+        assert tree.data == "pattern"
         self.visit(tree)
 
+    # Visitor method for Lark
     def site_name(self, tree: ParseTree):
         self.parsed_site_name = str(tree.children[0])
 
-    def link_state(self, tree: ParseTree):
-        self.parsed_link_state = str(tree.children[0])
-
+    # Visitor method for Lark
     def internal_state(self, tree: ParseTree):
-        self.parsed_internal_state = str(tree.children[0])
+        match tree.children[0]:
+            case "#":
+                self.parsed_internal_state = WildCardPredicate()
+            case str(internal_state):
+                # TODO: check if this is a legal option as specified by the agent signature
+                # this object would need to hold the agent type this site is being built for and do some checks against that
+                self.parsed_internal_state = str(internal_state)
+            case Tree(data="unspecified"):
+                self.parsed_internal_state = UndeterminedState()
+            case _:
+                raise ValueError(
+                    f"Unexpected internal state in Lark's parse tree: {tree}"
+                )
+
+    # Visitor method for Lark
+    def link_state(self, tree: ParseTree):
+        match tree.children:
+            case ["#"]:
+                self.parsed_link_state = WildCardPredicate()
+            case ["_"]:
+                self.parsed_link_state = BoundPredicate()
+            case ["."]:
+                self.parsed_link_state = EmptyState()
+            case [Token("INT", x)]:
+                self.parsed_link_state = int(x)
+            case [
+                Tree(data="site_name", children=[site_name]),
+                Tree(data="agent_name", children=[agent_name]),
+            ]:
+                self.parsed_link_state = SiteTypePredicate(
+                    str(site_name), str(agent_name)
+                )
+            case [Tree(data="unspecified")]:
+                self.parsed_link_state = UndeterminedState()
+            case _:
+                raise ValueError(f"Unexpected link state in Lark's parse tree: {tree}")
+
 
 def test_agent_pattern_from_kappa():
     a = AgentPattern.from_kappa(
