@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from kappybara.physics import Site
 
@@ -54,10 +55,11 @@ InternalStatePattern = InternalState | WildCardPredicate | UndeterminedState
 
 LinkState = Site | EmptyState
 LinkStatePattern = (
-    LinkState
-    | WildCardPredicate
+    WildCardPredicate
     | BoundPredicate
     | SiteTypePredicate
+    | int
+    | EmptyState
     | UndeterminedState
 )
 
