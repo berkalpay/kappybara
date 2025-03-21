@@ -79,9 +79,11 @@ site : site_name internal_state link_state
      | site_name link_state internal_state
 internal_state : "{" NAME "}"
                | "{" HASH "}" // NOTE: It seems like this kind of stuff is allowed in initial condition declarations
-               | undetermined // NOTE: precise difference between HASH and undetermined?
+               // You just tell user that it's underspecified for initialized
+               // | "{" INT  "}"
+               | undetermined
 link_state : "[" INT "]"
-           | "[" site_name "." agent_name "]" // NOTE: What about agent_name with unspecified site_name?
+           | "[" site_name "." agent_name "]" // NOTE: What about agent_name with unspecified site_name? Not allowed
            | "[" DOT "]"
            | "[" UNDERSCORE "]" 
            | "[" HASH "]"
@@ -96,6 +98,8 @@ fr_rule : [ label ] rev_rule_expression [ "|" token ] "@" rate "," rate
 ambi_rule : [ label ] rule_expression [ "|" token ] "@" rate "{" rate "}"
 ambi_fr_rule : [ label ] rev_rule_expression [ "|" token ] "@" rate "{" rate "}" "," rate
 
+// NOTE: Should there be an implicit condition that agents in different slot must be distinct agents?
+// Yeah
 rule_expression : ( agent | DOT ) _more ( agent | DOT )  // this form of recursion ensures a rule 
 _more : "," ( agent | DOT ) _more ( agent | DOT ) ","    // has the same number of "slots" L and R
       | RARROW
@@ -125,6 +129,8 @@ reserved_variable_name : "[E]"    -> productive_events
                        | "[T]"    -> simulated_time
                        | "[Tsim]" -> cpu_time
                        | "|" declared_token_name "|"
+                       // NOTE: Think about rectangular approx. with observation patterns.
+                       // If we overcount, we don't have the quick fix of dropping invalid matches later
                        | "|" pattern "|"
                        | "inf"    -> infinity
 !boolean_expression : algebraic_expression ("=" | "<" | ">") algebraic_expression 
@@ -151,6 +157,7 @@ signature_interface : site_name set_of_internal_states set_of_link_states ([","]
                     | site_name set_of_link_states set_of_internal_states ([","] signature_interface)* 
 // NOTE: Which of these is the default when initializing an agent but leaving an internal state unspecified?
 // Seems sensible to just use the first in the list, but it might be nice to be able to explicitly specify a default.
+// Yeah just use first
 set_of_internal_states : [ "{" [ state_value (" " state_value)* ] "}" ]
 state_value : NAME | HASH
 set_of_link_states : [ "[" [ site_name "." agent_name (" " site_name "." agent_name)* ] "]" ]
