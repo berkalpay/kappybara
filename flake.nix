@@ -109,6 +109,7 @@
             python
             pkgs.uv
             pkgs.flamegraph
+            pkgs.python3Packages.python-lsp-server
           ];
           env =
             {

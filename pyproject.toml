@@ -12,6 +12,7 @@ dev-dependencies = [
   "py-spy>=0.4.0",
   "pytest",
   "black",
+  "mypy>=1.15.0",
 ]
 
 [tool.uv.sources]
