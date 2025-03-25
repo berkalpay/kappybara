@@ -9,6 +9,18 @@ from kappybara.physics import Site, Agent, Mixture
 from lark import ParseTree, Visitor, Tree, Token
 
 
+def depth_first_traversal(start: Agent) -> list[Agent]:
+    visited = set()
+    traversal = []
+    stack = [start]
+    while stack:
+        if (agent := stack.pop()) not in visited:
+            visited.add(agent)
+            traversal.append(agent)
+            stack.extend(agent.neighbors)
+    return traversal
+
+
 @dataclass
 class SitePattern:
     label: str
@@ -98,6 +110,14 @@ class AgentPattern:
 
         agent_tree = pattern_tree.children[0]
         return cls.from_parse_tree(agent_tree)
+
+    @property
+    def neighbors(self) -> list[Self]:
+        return [
+            site.link_state.agent
+            for site in self.sites
+            if (isinstance(site.link_state, SitePattern))
+        ]
 
 
 @dataclass
