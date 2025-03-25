@@ -59,6 +59,7 @@ class SiteTypePredicate:
 InternalState = str
 InternalStatePattern = InternalState | WildCardPredicate | UndeterminedState
 
+# This is the same as Optional[Site], just makes what the None type actually means in context
 LinkState = Union["Site"] | EmptyState
 LinkStatePattern = (
     WildCardPredicate
