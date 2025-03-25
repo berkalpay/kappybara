@@ -66,8 +66,12 @@ class SitePattern:
 
 @dataclass
 class AgentPattern:
+    id: int  # You must ensure this is unique in its context
     type: str
     sites: List[SitePattern]
+
+    def __hash__(self):
+        return self.id
 
     def create_instance(self) -> Site:
         assert (
@@ -86,10 +90,21 @@ class AgentPattern:
 
     @classmethod
     def from_parse_tree(cls, tree: ParseTree) -> Self:
+        """
+        Parse an agent from a Kappa expression, whose `id` defaults to 0.
+
+        Wherever you use this method, you *must* manually reassign
+        the id of the created agent to ensure uniqueness in its context.
+
+        TODO: Think about refactoring this to explicitly require an id assignment.
+        One way would be to require a `Mixture` as an argument just to be able
+        to call this method in the first place, and using the `Mixture`'s nonce
+        to determine the id.
+        """
         assert tree.data == "agent"
         builder = AgentPatternBuilder(tree)
 
-        agent = cls(builder.parsed_type, builder.parsed_interface)
+        agent = cls(id=0, type=builder.parsed_type, sites=builder.parsed_interface)
 
         for site in agent.sites:
             site.agent = agent
@@ -150,15 +165,14 @@ class Pattern:
         """
         Compile a pattern from a list of `AgentPatterns` whose edges are implied by integer
         link states. Replaces integer link states with references to actual partners, and
-        divides up agents into their respective connected components.
+        constructs a helper object which tracks connected components in the pattern.
         """
         self.agents = agents
-        self.connected_components = []
-
-        integer_links: defaultdict[int, list[SitePattern]] = defaultdict(list)
 
         # Parse out site connections implied by integer LinkStates
         # TODO: probs do a @property method that directly gives an iterable over all sites like in `physics.py`
+        integer_links: defaultdict[int, list[SitePattern]] = defaultdict(list)
+
         for agent in self.agents:
             for site in agent.sites:
                 if isinstance(site.link_state, int):
@@ -184,12 +198,17 @@ class Pattern:
                     linked_sites[1].link_state = linked_sites[0]
 
         # Discover connected components
-        # NOTE: some redundant traversals but prioritized simplicity of code.
+        # NOTE: some redundant loops but prioritized code simplicity;
+        # worst this can do is slow down initialization.
+        self.components = []
         not_seen: Set[AgentPattern] = set(agents)
 
         while not_seen:
-            # Pop from not_seen and DFS from it
-            raise NotImplementedError
+            component = depth_first_traversal(next(iter(not_seen)))
+            for agent in component:
+                not_seen.remove(agent)
+
+            self.components.append(component)
 
     def create_instance(self) -> Site:
         assert (
