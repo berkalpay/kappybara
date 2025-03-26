@@ -3,10 +3,9 @@ from collections import defaultdict
 from functools import cached_property
 from typing import Self, List, Dict
 
-from kappybara.grammar import kappa_parser
 from kappybara.site_states import *
 from kappybara.physics import Site, Agent, Mixture
-from lark import ParseTree, Visitor, Tree, Token
+from lark import ParseTree#, Visitor, Tree, Token
 
 
 def depth_first_traversal(start: Agent) -> list[Agent]:
@@ -52,17 +51,6 @@ class SitePattern:
             case _:
                 return False
 
-    @classmethod
-    def from_parse_tree(cls, tree: ParseTree) -> Self:
-        assert tree.data == "site"
-
-        builder = SitePatternBuilder(tree)
-        return cls(
-            label=builder.parsed_site_name,
-            internal_state=builder.parsed_internal_state,
-            link_state=builder.parsed_link_state,
-        )
-
 
 @dataclass
 class AgentPattern:
@@ -87,44 +75,6 @@ class AgentPattern:
         from this pattern, i.e. whether there are any underspecified sites
         """
         return all(site.underspecified for site in self.sites)
-
-    @classmethod
-    def from_parse_tree(cls, tree: ParseTree) -> Self:
-        """
-        Parse an agent from a Kappa expression, whose `id` defaults to 0.
-
-        Wherever you use this method, you *must* manually reassign
-        the id of the created agent to ensure uniqueness in its context.
-
-        TODO: Think about refactoring this to explicitly require an id assignment.
-        One way would be to require a `Mixture` as an argument just to be able
-        to call this method in the first place, and using the `Mixture`'s nonce
-        to determine the id.
-        """
-        assert tree.data == "agent"
-        builder = AgentPatternBuilder(tree)
-
-        agent = cls(id=0, type=builder.parsed_type, sites=builder.parsed_interface)
-
-        for site in agent.sites:
-            site.agent = agent
-
-        return agent
-
-    @classmethod
-    def from_kappa(cls, kappa_str: str) -> Self:
-        input_tree = kappa_parser.parse(kappa_str)
-        assert input_tree.data == "kappa_input"
-        assert len(input_tree.children) == 1
-
-        pattern_tree = input_tree.children[0]
-        assert pattern_tree.data == "pattern"
-        assert (
-            len(pattern_tree.children) == 1
-        ), "Zero or more than one agent patterns were specified."
-
-        agent_tree = pattern_tree.children[0]
-        return cls.from_parse_tree(agent_tree)
 
     @property
     def neighbors(self) -> list[Self]:
@@ -153,13 +103,33 @@ class MoleculePattern:
     - Cost of detailed structs when it comes to FFI conversions
     """
 
-    pass
+    agents: List[AgentPattern]
+
+    def isomorphic(self, other: MoleculePattern):
+        """
+        NOTE: There is some potential ambiguity to 'isomorphism' in the context of what
+        we're trying to accomplish in this codebase.
+        with potentially distinct meanings. Consider two patterns, p1="A(site1[a])" and
+        p2="A(site1[a], site2[b])". If we consider p1 as a rule pattern and p2 as a component
+        in a mixture, then p2 should match p1,
+
+        But when we're tracking identical components (which is what this ), we cannot
+        consider these as equivalent patterns. For the purpose of
+        This method not only checks for a bijection which respects links in the site graph,
+        but also ensures that any internal site state specified in one compononent must
+        exist and be the same in the other.
+
+        We assume that both of these components are
+        """
+
 
 
 @dataclass
 class Pattern:
     agents: List[AgentPattern]
-    connected_components: List[List[AgentPattern]]
+    connected_components: List[
+        List[AgentPattern]
+    ]  # An index on the constituent connected components making up the pattern
 
     def __init__(self, agents: List[AgentPattern]):
         """
@@ -170,7 +140,6 @@ class Pattern:
         self.agents = agents
 
         # Parse out site connections implied by integer LinkStates
-        # TODO: probs do a @property method that directly gives an iterable over all sites like in `physics.py`
         integer_links: defaultdict[int, list[SitePattern]] = defaultdict(list)
 
         for agent in self.agents:
@@ -210,6 +179,10 @@ class Pattern:
 
             self.components.append(component)
 
+    @cached_property
+    def underspecified(self) -> bool:
+        return all(agent.underspecified for agent in self.agents)
+
     def create_instance(self) -> Site:
         assert (
             not self.underspecified
@@ -223,149 +196,8 @@ class Pattern:
     def find_all_matches(self, mixture: Mixture):
         raise NotImplementedError
 
-    @cached_property
-    def underspecified(self) -> bool:
-        return all(agent.underspecified for agent in self.agents)
 
-    @classmethod
-    def from_parse_tree(cls, tree: ParseTree) -> Self:
-        assert tree.data == "pattern"
-
-        builder = PatternBuilder(tree)
-
-        # Reassign agent id's so they are unique (in the
-        # context of this individual Pattern)
-        for i in range(len(builder.parsed_agents)):
-            builder.parsed_agents[i].id = i
-
-        return cls(agents=builder.parsed_agents)
-
-    @classmethod
-    def from_kappa(cls, kappa_str: str) -> Self:
-        input_tree = kappa_parser.parse(kappa_str)
-        assert input_tree.data == "kappa_input"
-        assert (
-            len(input_tree.children) == 1
-        ), "Zero or more than one patterns were specified."
-        assert len(input_tree.children) == 1
-
-        pattern_tree = input_tree.children[0]
-        return cls.from_parse_tree(pattern_tree)
+def test_pattern_isomorphism():
+    pass
 
 
-@dataclass
-class SitePatternBuilder(Visitor):
-    parsed_site_name: str
-    parsed_internal_state: "InternalStatePattern"
-    parsed_link_state: "LinkStatePattern"
-
-    def __init__(self, tree: ParseTree):
-        super().__init__()
-
-        self.parsed_agents: List[AgentPattern] = []
-
-        assert tree.data == "site"
-        self.visit(tree)
-
-    # Visitor method for Lark
-    def site_name(self, tree: ParseTree):
-        self.parsed_site_name = str(tree.children[0])
-
-    # Visitor method for Lark
-    def internal_state(self, tree: ParseTree):
-        match tree.children[0]:
-            case "#":
-                self.parsed_internal_state = WildCardPredicate()
-            case str(internal_state):
-                # TODO: check if this is a legal option as specified by the agent signature
-                # this object would need to hold the agent type this site is being built for and do some checks against that
-                # NOTE: Actually probably ignore the above. According to Walter Kappa models shouldn't require explicitly
-                # declared agent signatures in the first place.
-                self.parsed_internal_state = str(internal_state)
-            case Tree(data="unspecified"):
-                self.parsed_internal_state = UndeterminedState()
-            case _:
-                raise ValueError(
-                    f"Unexpected internal state in site parse tree: {tree}"
-                )
-
-    # Visitor method for Lark
-    def link_state(self, tree: ParseTree):
-        match tree.children:
-            case ["#"]:
-                self.parsed_link_state = WildCardPredicate()
-            case ["_"]:
-                self.parsed_link_state = BoundPredicate()
-            case ["."]:
-                self.parsed_link_state = EmptyState()
-            case [Token("INT", x)]:
-                self.parsed_link_state = int(x)
-            case [
-                Tree(data="site_name", children=[site_name]),
-                Tree(data="agent_name", children=[agent_name]),
-            ]:
-                self.parsed_link_state = SiteTypePredicate(
-                    str(site_name), str(agent_name)
-                )
-            case [Tree(data="unspecified")]:
-                self.parsed_link_state = UndeterminedState()
-            case _:
-                raise ValueError(f"Unexpected link state in site parse tree: {tree}")
-
-
-@dataclass
-class AgentPatternBuilder(Visitor):
-    parsed_type: str
-    parsed_interface: List[SitePattern]
-
-    def __init__(self, tree: ParseTree):
-        super().__init__()
-
-        self.parsed_type = None
-        self.parsed_interface: List[SitePattern] = []
-
-        assert tree.data == "agent"
-        self.visit(tree)
-
-    # Visitor method for Lark
-    def agent_name(self, tree: ParseTree):
-        self.parsed_type = str(tree.children[0])
-
-    # Visitor method for Lark
-    def site(self, tree: ParseTree):
-        self.parsed_interface.append(SitePattern.from_parse_tree(tree))
-
-
-@dataclass
-class PatternBuilder(Visitor):
-    parsed_agents: List[AgentPattern]
-
-    def __init__(self, tree: ParseTree):
-        super().__init__()
-
-        self.parsed_agents: List[AgentPattern] = []
-
-        assert tree.data == "pattern"
-        self.visit(tree)
-
-        # The agents get visited in reverse order
-        self.parsed_agents.reverse()
-
-    # Visitor method for Lark
-    def agent(self, tree: ParseTree):
-        self.parsed_agents.append(AgentPattern.from_parse_tree(tree))
-
-
-def test_pattern_from_kappa():
-    test_kappa = """
-        A(a[.]{blah}, b[_]{bleh}, c[#], d[some_site_name.some_agent_name], e[13]),
-        B(),
-        C(),
-        D()
-    """
-    pattern = Pattern.from_kappa(test_kappa)
-
-    assert ["A", "B", "C", "D"] == list(map(lambda agent: agent.type, pattern.agents))
-    assert ["a", "b", "c", "d", "e"] == list(
-        map(lambda site: site.label, pattern.agents[0].sites)
-    )
