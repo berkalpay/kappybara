@@ -77,8 +77,22 @@ def test_component_isomorphism(test_case):
     assert expected_result == a.isomorphic(b)
 
 
-# def test_isomorphism_counting():
-#     raise NotImplementedError
+@pytest.mark.parametrize(
+    "test_case",
+    [
+        ("A(a1[1]), A(a1[1])", 2),
+        ("A(a1[1]), A(a2[1])", 1),
+        ("A(a1[3], a2[1]), A(a1[1], a2[2]), A(a1[2], a2[3])", 3),
+    ],
+)
+def test_automorphism_counting(test_case):
+    kappa_str, n_automorphisms_expected = test_case
+
+    component = MoleculePattern.from_kappa(kappa_str)
+
+    assert component.isomorphic(component)
+    assert n_automorphisms_expected == len(component.find_isomorphisms(component))
+
 
 if __name__ == "__main__":
     test_kappa = """
