@@ -17,3 +17,21 @@ dev-dependencies = [
 
 [tool.uv.sources]
 kappybara = { workspace = true }
+
+[tool.pytest.ini_options]
+testpaths = [
+  "tests",
+  "kappybara",
+]
+norecursedirs = [
+  ".*",
+  "*site-packages*",
+  "*dist-packages*",
+]
+python_files = [
+  "*.py",
+]
+python_functions = [ "test_*" ]
+addopts = [
+    "--ignore=kappybara/test.py",
+]
