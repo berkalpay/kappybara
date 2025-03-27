@@ -1,23 +1,10 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, List, Dict
+from typing import Self, List, Dict, Set
 
 from kappybara.site_states import *
 from kappybara.physics import Site, Agent, Mixture
-from lark import ParseTree#, Visitor, Tree, Token
-
-
-def depth_first_traversal(start: Agent) -> list[Agent]:
-    visited = set()
-    traversal = []
-    stack = [start]
-    while stack:
-        if (agent := stack.pop()) not in visited:
-            visited.add(agent)
-            traversal.append(agent)
-            stack.extend(agent.neighbors)
-    return traversal
 
 
 @dataclass
@@ -33,6 +20,16 @@ class SitePattern:
         ), f"Site pattern: {self} is not specific enough to be instantiated in a mixture"
 
         raise NotImplementedError
+
+    def undetermined(self) -> bool:
+        """
+        Returns true if this site is in a state that would be equivalent to leaving it
+        unnamed in an agent pattern.
+        """
+        return isinstance(self.internal_state, UndeterminedState) and (
+            isinstance(self.link_state, UndeterminedState)
+            or isinstance(self.link_state, EmptyState)
+        )
 
     @cached_property
     def underspecified(self) -> bool:
@@ -56,7 +53,12 @@ class SitePattern:
 class AgentPattern:
     id: int  # You must ensure this is unique in its context
     type: str
-    sites: List[SitePattern]
+    sites: dict[str, SitePattern]
+
+    def __init__(self, id: int, type: str, sites: list[SitePattern]):
+        self.id = id
+        self.type = type
+        self.sites = {site.label: site for site in sites}
 
     def __hash__(self):
         return self.id
@@ -74,61 +76,184 @@ class AgentPattern:
         Tells you whether or not concrete `Agent` instances can be created
         from this pattern, i.e. whether there are any underspecified sites
         """
-        return all(site.underspecified for site in self.sites)
+        return all(site.underspecified for site in self.sites.values())
 
     @property
     def neighbors(self) -> list[Self]:
         return [
             site.link_state.agent
-            for site in self.sites
+            for site in self.sites.values()
             if (isinstance(site.link_state, SitePattern))
         ]
+
+
+# TODO: think of a more sensible place to put this.
+# I don't think it makes sense as a class method for Molecule, since it
+# doesn't actually depend on anything there.
+def depth_first_traversal(start: AgentPattern) -> list[AgentPattern]:
+    visited = set()
+    traversal = []
+    stack = [start]
+    while stack:
+        if (agent := stack.pop()) not in visited:
+            visited.add(agent)
+            traversal.append(agent)
+            stack.extend(agent.neighbors)
+    return traversal
 
 
 @dataclass
 class MoleculePattern:
     """
     A set of agents that are all in the same connected component (this is
-    not guaranteed statically), you have to make sure it's enforced when you create it.
+    not guaranteed statically), you have to make sure it's enforced whenever
+    you create or manipulate it.
 
     NOTE: I'm including this class as a demonstration that stylistically
     follows the ideas in physics.py, but I'm pretty hesitant about committing
     to this pattern unless it's strictly just a dataclass without implemented
     methods for pattern matching/isomorphism; one concrete consideration is
     w.r.t. rectangular approximation and the necessary computations for
-    observable patterns. Will try to elaborate later.
+    observable patterns. Will try to elaborate later. (Update 26-03-2025: eh
+    just go with this for now. It's actually not that important to be able to
+    correct rect. approximation analytically according to Walter. Just warning
+    users when they declare an %obs pattern with more than one connected component
+    should be enough.)
 
     NOTE(24-03-2025): Some new considerations following convo w/ Walter, elaborate.
     - Optionally turning off connected component tracking
     - Cost of detailed structs when it comes to FFI conversions
     """
 
-    agents: List[AgentPattern]
+    agents: list[AgentPattern]
+    agents_by_type: dict[str, set[AgentPattern]]
 
-    def isomorphic(self, other: MoleculePattern):
+    def __init__(self, agents: list[AgentPattern]):
+        assert len(agents) >= 1
+
+        self.agents = agents  # TODO: I want this to be ordered by graph traversal
+        self.agents_by_type = defaultdict(set)  # Reverse index on agent type
+
+        for agent in agents:
+            self.agents_by_type[agent.type].add(agent)
+
+    def isomorphic(self, other: Self) -> bool:
         """
         NOTE: There is some potential ambiguity to 'isomorphism' in the context of what
-        we're trying to accomplish in this codebase.
-        with potentially distinct meanings. Consider two patterns, p1="A(site1[a])" and
+        we're trying to accomplish in this codebase. Consider two patterns, p1="A(site1[a])" and
         p2="A(site1[a], site2[b])". If we consider p1 as a rule pattern and p2 as a component
-        in a mixture, then p2 should match p1,
+        in a mixture, then p2 should match p1, since we can embed p1 into it.
 
-        But when we're tracking identical components (which is what this ), we cannot
-        consider these as equivalent patterns. For the purpose of
+        But when we're tracking identical components in a mixture (which is what this this
+        method is written for), we cannot consider these as equivalent patterns.
         This method not only checks for a bijection which respects links in the site graph,
         but also ensures that any internal site state specified in one compononent must
         exist and be the same in the other.
 
-        We assume that both of these components are
-        """
+        NOTE: re: convo with Walter, we can't assume that agents with the same type
+        will have the same site signatures.
 
+        NOTE: This code isn't nearly as readable as most of what Berk has written so far.
+        Part of this is just that it's a complicated operation. Another part is that this
+        is trying to handle the problem in a bit more generality than just isomorphisms
+        between instantiated components in a mixture so that we can also potentially
+        check isomorphism between rule patterns. However, should discuss w/ Berk some
+        of the tradeoffs here.
+
+        TODO: There will be times when we need the explicit bijection to know which
+        agents to apply rule transformations to. We'll also need methods that count
+        every possible
+        """
+        if len(self.agents) != len(other.agents):
+            return False
+
+        # Variables labelled with "a" are associate with `self`, as with "b" and `other`
+        a_root = self.agents[0]
+
+        # # The set of valid bijections
+        # valid_maps: set[dict[AgentPattern, AgentPattern]] = set()
+
+        for b_root in other.agents_by_type[a_root.type]:
+            # The bijection between agents of `self` and `other` that we're trying to construct
+            agent_map: dict[AgentPattern, AgentPattern] = {a_root: b_root}
+
+            frontier: set[AgentPattern] = {a_root}
+            search_failed: bool = False
+
+            while frontier and not search_failed:
+                a: AgentPattern = frontier.pop()
+                # TODO: sanity check, can remove if confident about correctness
+                assert a in agent_map
+                b: AgentPattern = agent_map[a]
+
+                if a.type != b.type:
+                    search_failed = True
+                    break
+
+                # We use this to track sites in b which aren't mentioned in a
+                b_sites_leftover = set(b.sites.keys())
+
+                for site_name in a.sites:
+                    a_site: SitePattern = a.sites[site_name]
+
+                    # Check that `b` has a site with the same name
+                    if site_name not in b.sites and not a_site.undetermined():
+                        search_failed = True
+                        break
+
+                    b_site: SitePattern = b.sites[site_name]
+                    b_sites_leftover.remove(
+                        site_name
+                    )  # In this way we are left with any unexamined sites in b at the end
+
+                    # TODO: make sure types work the way we intend (singleton)
+                    if a_site.internal_state != b_site.internal_state:
+                        search_failed = True
+                        break
+
+                    match (a_site.link_state, b_site.link_state):
+                        case (
+                            SitePattern(agent=a_partner),
+                            SitePattern(agent=b_partner),
+                        ):
+                            if (
+                                a_partner in agent_map
+                                and agent_map[a_partner] != b_partner
+                            ):
+                                search_failed = True
+                                break
+
+                            elif a_partner not in agent_map:
+                                frontier.add(a_partner)
+                                agent_map[a_partner] = b_partner
+                        case (a_state, b_state) if a_state != b_state:
+                            search_failed = True
+                            break
+
+                # Check leftovers not mentioned in a_sites
+                for site_name in b_sites_leftover:
+                    leftover_site: SitePattern = b.sites[site_name]
+
+                    if not leftover_site.undetermined():
+                        search_failed = True
+                        break
+
+            if not search_failed:
+                # valid_maps.append(agent_map) # If we want to explicitly count and characterize isomorphisms
+                return True  # If we want to count all isomorphisms, don't return here
+
+        return False
 
 
 @dataclass
 class Pattern:
+    """
+    Class methods for constructing `Pattern`s from Kappa strings are defined in grammar/pattern_method_patch.py
+    """
+
     agents: List[AgentPattern]
-    connected_components: List[
-        List[AgentPattern]
+    components: List[
+        MoleculePattern
     ]  # An index on the constituent connected components making up the pattern
 
     def __init__(self, agents: List[AgentPattern]):
@@ -143,12 +268,9 @@ class Pattern:
         integer_links: defaultdict[int, list[SitePattern]] = defaultdict(list)
 
         for agent in self.agents:
-            for site in agent.sites:
+            for site in agent.sites.values():
                 if isinstance(site.link_state, int):
-                    if site.link_state in integer_links:
-                        integer_links[site.link_state].append(site)
-                    else:
-                        integer_links[site.link_state] = [site]
+                    integer_links[site.link_state].append(site)
 
         # Replace integer LinkStates with AgentPattern references
         for i in integer_links:
@@ -173,11 +295,11 @@ class Pattern:
         not_seen: Set[AgentPattern] = set(agents)
 
         while not_seen:
-            component = depth_first_traversal(next(iter(not_seen)))
-            for agent in component:
+            agents_in_component = depth_first_traversal(next(iter(not_seen)))
+            for agent in agents_in_component:
                 not_seen.remove(agent)
 
-            self.components.append(component)
+            self.components.append(MoleculePattern(agents_in_component))
 
     @cached_property
     def underspecified(self) -> bool:
@@ -190,14 +312,7 @@ class Pattern:
 
         raise NotImplementedError
 
-    def matches(self, mixture: Mixture):
+    # NOTE: Might want to orchestrate this with all other rules after doing isomorphism/dependency checks
+    # If we want to avoid redundant caching, then have to rethink this pattern
+    def find_embeddings(self, mixture: Mixture):
         raise NotImplementedError
-
-    def find_all_matches(self, mixture: Mixture):
-        raise NotImplementedError
-
-
-def test_pattern_isomorphism():
-    pass
-
-
