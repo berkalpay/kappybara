@@ -138,6 +138,11 @@ class MoleculePattern:
             self.agents_by_type[agent.type].add(agent)
 
     def isomorphic(self, other: Self) -> bool:
+        return len(self.find_isomorphisms(other, stop_on_first=True)) > 0
+
+    def find_isomorphisms(
+        self, other: Self, stop_on_first: bool = False
+    ) -> list[dict[AgentPattern, AgentPattern]]:
         """
         NOTE: There is some potential ambiguity to 'isomorphism' in the context of what
         we're trying to accomplish in this codebase. Consider two patterns, p1="A(site1[a])" and
@@ -165,14 +170,16 @@ class MoleculePattern:
         every possible
         """
         if len(self.agents) != len(other.agents):
-            return False
+            return []
 
         # Variables labelled with "a" are associate with `self`, as with "b" and `other`
         a_root = self.agents[0]
 
-        # # The set of valid bijections
-        # valid_maps: set[dict[AgentPattern, AgentPattern]] = set()
+        # The set of valid bijections
+        valid_maps: list[dict[AgentPattern, AgentPattern]] = []
 
+        # Narrow down our search space by only attempting to map `a_root` with
+        # agents in `other` with the same type.
         for b_root in other.agents_by_type[a_root.type]:
             # The bijection between agents of `self` and `other` that we're trying to construct
             agent_map: dict[AgentPattern, AgentPattern] = {a_root: b_root}
@@ -239,10 +246,13 @@ class MoleculePattern:
                         break
 
             if not search_failed:
-                # valid_maps.append(agent_map) # If we want to explicitly count and characterize isomorphisms
-                return True  # If we want to count all isomorphisms, don't return here
+                # We know we've constructed an acceptable isomorphism
+                valid_maps.append(agent_map)
 
-        return False
+                if stop_on_first:
+                    return valid_maps
+
+        return valid_maps
 
 
 @dataclass
