@@ -9,7 +9,7 @@ us from cluttering up pattern.py with all this stuff.
 """
 
 from lark import ParseTree
-from kappybara.pattern import SitePattern, AgentPattern, Pattern
+from kappybara.pattern import SitePattern, AgentPattern, MoleculePattern, Pattern
 from kappybara.grammar import kappa_parser
 from kappybara.grammar.pattern_builder import (
     SitePatternBuilder,
@@ -46,9 +46,11 @@ def agent_from_parse_tree(cls, tree: ParseTree) -> AgentPattern:
     assert tree.data == "agent"
     builder = AgentPatternBuilder(tree)
 
-    agent = cls(id=0, type=builder.parsed_type, sites=builder.parsed_interface)
+    agent: AgentPattern = cls(
+        id=0, type=builder.parsed_type, sites=builder.parsed_interface
+    )
 
-    for site in agent.sites:
+    for site in agent.sites.values():
         site.agent = agent
 
     return agent
@@ -68,6 +70,14 @@ def agent_from_kappa(cls, kappa_str: str) -> AgentPattern:
 
     agent_tree = pattern_tree.children[0]
     return cls.from_parse_tree(agent_tree)
+
+
+def component_from_kappa(kappa_str: str) -> MoleculePattern:
+    pattern = Pattern.from_kappa(kappa_str)
+
+    assert len(pattern.components) == 1
+
+    return pattern.components[0]
 
 
 @classmethod
@@ -100,6 +110,7 @@ def pattern_from_kappa(cls, kappa_str: str) -> Pattern:
 SitePattern.from_parse_tree = site_from_parse_tree
 AgentPattern.from_parse_tree = agent_from_parse_tree
 AgentPattern.from_kappa = agent_from_kappa
+MoleculePattern.from_kappa = component_from_kappa
 Pattern.from_parse_tree = pattern_from_parse_tree
 Pattern.from_kappa = pattern_from_kappa
 
@@ -119,6 +130,6 @@ def test_pattern_from_kappa():
     )
     assert [0, 1, 2, 3, 4] == list(map(lambda agent: agent.id, pattern.agents))
     assert ["a", "b", "c", "d", "e"] == list(
-        map(lambda site: site.label, pattern.agents[0].sites)
+        map(lambda site: site.label, pattern.agents[0].sites.values())
     )
     assert len(pattern.components) == 2
