@@ -76,7 +76,7 @@ class AgentPattern:
         Tells you whether or not concrete `Agent` instances can be created
         from this pattern, i.e. whether there are any underspecified sites
         """
-        return all(site.underspecified for site in self.sites.values())
+        return any(site.underspecified for site in self.sites.values())
 
     @property
     def neighbors(self) -> list[Self]:
@@ -316,7 +316,7 @@ class Pattern:
 
     @cached_property
     def underspecified(self) -> bool:
-        return all(agent.underspecified for agent in self.agents)
+        return any(agent.underspecified for agent in self.agents)
 
     def create_instance(self) -> Site:
         assert (
