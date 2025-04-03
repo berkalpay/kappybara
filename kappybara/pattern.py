@@ -92,7 +92,7 @@ def depth_first_traversal(start: AgentPattern) -> list[AgentPattern]:
 
 
 @dataclass
-class MoleculePattern:
+class ComponentPattern:
     """
     A set of agents that are all in the same connected component (this is
     not guaranteed statically), you have to make sure it's enforced whenever
@@ -294,7 +294,7 @@ class Pattern:
 
     agents: List[AgentPattern]
     components: List[
-        MoleculePattern
+        ComponentPattern
     ]  # An index on the constituent connected components making up the pattern
 
     def __init__(self, agents: List[AgentPattern]):
@@ -340,7 +340,7 @@ class Pattern:
             for agent in agents_in_component:
                 not_seen.remove(agent)
 
-            self.components.append(MoleculePattern(agents_in_component))
+            self.components.append(ComponentPattern(agents_in_component))
 
     @cached_property
     def underspecified(self) -> bool:
