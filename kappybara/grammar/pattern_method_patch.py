@@ -9,7 +9,7 @@ us from cluttering up pattern.py with all this stuff.
 """
 
 from lark import ParseTree
-from kappybara.pattern import SitePattern, AgentPattern, MoleculePattern, Pattern
+from kappybara.pattern import SitePattern, AgentPattern, ComponentPattern, Pattern
 from kappybara.grammar import kappa_parser
 from kappybara.grammar.pattern_builder import (
     SitePatternBuilder,
@@ -72,7 +72,7 @@ def agent_from_kappa(cls, kappa_str: str) -> AgentPattern:
     return cls.from_parse_tree(agent_tree)
 
 
-def component_from_kappa(kappa_str: str) -> MoleculePattern:
+def component_from_kappa(kappa_str: str) -> ComponentPattern:
     pattern = Pattern.from_kappa(kappa_str)
 
     assert len(pattern.components) == 1
@@ -110,7 +110,7 @@ def pattern_from_kappa(cls, kappa_str: str) -> Pattern:
 SitePattern.from_parse_tree = site_from_parse_tree
 AgentPattern.from_parse_tree = agent_from_parse_tree
 AgentPattern.from_kappa = agent_from_kappa
-MoleculePattern.from_kappa = component_from_kappa
+ComponentPattern.from_kappa = component_from_kappa
 Pattern.from_parse_tree = pattern_from_parse_tree
 Pattern.from_kappa = pattern_from_kappa
 

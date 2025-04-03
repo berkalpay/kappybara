@@ -4,7 +4,7 @@ from collections import defaultdict
 from copy import deepcopy
 
 from kappybara.site_states import *
-from kappybara.pattern import SitePattern, AgentPattern, MoleculePattern, Pattern
+from kappybara.pattern import SitePattern, AgentPattern, ComponentPattern, Pattern
 
 def cantor(x: int, y: int) -> int:
     """
@@ -36,17 +36,17 @@ class Edge:
 @dataclass
 class Mixture:
     agents: set[AgentPattern]
-    components: set[MoleculePattern]
+    components: set[ComponentPattern]
     _nonce: int  # Used to assign id's to instantiated agents.
 
     # An index matching each agent in the mixture to the connected
     # component in the mixture it belongs to
-    component_index: dict[AgentPattern, MoleculePattern]
+    component_index: dict[AgentPattern, ComponentPattern]
 
     agents_by_type: dict[str, set[AgentPattern]]
 
     # An index of the matches for each component in any rule or observable pattern
-    pattern_match_cache: dict[MoleculePattern, list[list[AgentPattern]]]
+    match_cache: dict[ComponentPattern, list[list[AgentPattern]]]
 
     def __init__(self):
         self.agents = set()
@@ -64,7 +64,7 @@ class Mixture:
         for component in pattern.components:
             self._instantiate_component(component, n_copies)
 
-    def _instantiate_component(self, component: MoleculePattern, n_copies: int):
+    def _instantiate_component(self, component: ComponentPattern, n_copies: int):
         new_agents = [deepcopy(agent) for agent in component.agents]
 
         for i, agent in enumerate(component.agents):
@@ -80,7 +80,7 @@ class Mixture:
                         partner.label
                     ]
 
-        new_component = MoleculePattern(new_agents)
+        new_component = ComponentPattern(new_agents)
 
         # Update mixture contents
         self.agents.update(new_agents)
@@ -98,7 +98,7 @@ class Mixture:
         self._nonce += 1
         return self._nonce - 1
 
-    def find_embeddings(self, component: MoleculePattern) -> list[dict[AgentPattern, AgentPattern]]:
+    def find_embeddings(self, component: ComponentPattern) -> list[dict[AgentPattern, AgentPattern]]:
         # Variables labelled with "a" are associate with `component`, as with "b" and `self`
         a_root = component.agents[0]
 

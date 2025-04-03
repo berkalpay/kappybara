@@ -1,5 +1,5 @@
 import pytest
-from kappybara.pattern import MoleculePattern, Pattern
+from kappybara.pattern import ComponentPattern, Pattern
 
 
 def test_pattern_from_kappa():
@@ -70,8 +70,8 @@ def test_component_isomorphism(test_case):
     """
     a_str, b_str, expected_result = test_case
 
-    a = MoleculePattern.from_kappa(a_str)
-    b = MoleculePattern.from_kappa(b_str)
+    a = ComponentPattern.from_kappa(a_str)
+    b = ComponentPattern.from_kappa(b_str)
 
     assert a.isomorphic(b) == b.isomorphic(a)
     assert expected_result == a.isomorphic(b)
@@ -88,7 +88,7 @@ def test_component_isomorphism(test_case):
 def test_automorphism_counting(test_case):
     kappa_str, n_automorphisms_expected = test_case
 
-    component = MoleculePattern.from_kappa(kappa_str)
+    component = ComponentPattern.from_kappa(kappa_str)
 
     assert component.isomorphic(component)
     assert n_automorphisms_expected == len(component.find_isomorphisms(component))
