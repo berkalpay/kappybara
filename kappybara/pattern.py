@@ -4,7 +4,7 @@ from functools import cached_property
 from typing import Self, List, Dict, Set
 
 from kappybara.site_states import *
-from kappybara.physics import Site, Agent, Mixture
+# from kappybara.mixture import Mixture
 
 
 @dataclass
@@ -14,12 +14,8 @@ class SitePattern:
     link_state: "LinkStatePattern"
     agent: "AgentPattern" = None
 
-    def create_instance(self) -> Site:
-        assert (
-            not self.underspecified
-        ), f"Site pattern: {self} is not specific enough to be instantiated in a mixture"
-
-        raise NotImplementedError
+    def __hash__(self):
+        return id(self)
 
     def undetermined(self) -> bool:
         """
@@ -62,13 +58,6 @@ class AgentPattern:
 
     def __hash__(self):
         return self.id
-
-    def create_instance(self) -> Site:
-        assert (
-            not self.underspecified
-        ), "Agent pattern is not specific enough to be instantiated"
-
-        raise NotImplementedError
 
     @cached_property
     def underspecified(self) -> bool:
@@ -127,15 +116,28 @@ class MoleculePattern:
 
     agents: list[AgentPattern]
     agents_by_type: dict[str, set[AgentPattern]]
+    n_copies: int
 
-    def __init__(self, agents: list[AgentPattern]):
+    def __init__(self, agents: list[AgentPattern], n_copies: int = 1):
         assert len(agents) >= 1
+        assert n_copies >= 1
 
         self.agents = agents  # TODO: I want this to be ordered by graph traversal
         self.agents_by_type = defaultdict(set)  # Reverse index on agent type
 
         for agent in agents:
             self.agents_by_type[agent.type].add(agent)
+
+        self.n_copies = n_copies
+
+    def __hash__(self):
+        return id(self)
+
+    def duplicate(self) -> Self:
+        """
+        NOTE: This does not assign new agent id's! You have to
+        """
+
 
     def isomorphic(self, other: Self) -> bool:
         """
@@ -258,6 +260,32 @@ class MoleculePattern:
         return valid_maps
 
 
+    def __repr__(self):  # TODO: add detail
+        return f'Molecule(id={id(self)}, kappa_str="{self.kappa_str}")'
+
+    @property
+    def kappa_str(self) -> str:
+        # TODO: add arg to canonicalize?
+        bond_num_counter = 1
+        bond_nums: dict[Site, int] = dict()
+        agent_signatures = []
+        for agent in self.agents:
+            site_strs = []
+            for site in agent.sites.values():
+                if site.link_state is None:
+                    bond_num = None
+                elif site in bond_nums:
+                    bond_num = bond_nums[site]
+                else:
+                    bond_num = bond_num_counter
+                    bond_nums[site.link_state] = bond_num
+                    bond_num_counter += 1
+                site_strs.append(
+                    f"{site.label}[{"." if bond_num is None else bond_num}]"
+                )
+            agent_signatures.append(f"{agent.type}({' '.join(site_strs)})")
+        return ", ".join(agent_signatures)
+
 @dataclass
 class Pattern:
     """
@@ -317,15 +345,3 @@ class Pattern:
     @cached_property
     def underspecified(self) -> bool:
         return any(agent.underspecified for agent in self.agents)
-
-    def create_instance(self) -> Site:
-        assert (
-            not self.underspecified
-        ), "Pattern is not specific enough to be instantiated"
-
-        raise NotImplementedError
-
-    # NOTE: Might want to orchestrate this with all other rules after doing isomorphism/dependency checks
-    # If we want to avoid redundant caching, then have to rethink this pattern
-    def find_embeddings(self, mixture: Mixture):
-        raise NotImplementedError
