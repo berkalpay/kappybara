@@ -4,33 +4,16 @@ from collections import defaultdict
 from copy import deepcopy
 
 from kappybara.site_states import *
-from kappybara.pattern import SitePattern, AgentPattern, ComponentPattern, Pattern
-
-def cantor(x: int, y: int) -> int:
-    """
-    https://en.wikipedia.org/wiki/Pairing_function#Cantor_pairing_function
-
-    """
-    return ((x + y) * (x + y + 1)) // 2 + y
-
-
-class Edge:
-    site1: SitePattern
-    site2: SitePattern
-
-    def __eq__(self, other: Self):
-        return (self.site1 == other.site1 and self.site2 == other.site2) or (
-            self.site1 == other.site2 and self.site2 == other.site1
-        )
-
-    def __hash__(self):
-        """
-        TODO: this has some failure cases due to integer overflow.
-        """
-        return cantor(
-            cantor(hash(site1), hash(site1.agent)),
-            cantor(hash(site2), hash(site2.agent)),
-        )
+from kappybara.edge import Edge
+from kappybara.pattern import (
+    SitePattern,
+    AgentPattern,
+    ComponentPattern,
+    Pattern,
+    Site,
+    Agent,
+    Component,
+)
 
 
 @dataclass
