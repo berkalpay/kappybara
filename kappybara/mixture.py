@@ -201,7 +201,105 @@ class Mixture:
 
 
 class MixtureUpdate:
-    removed_edges: list[Edge]
-    removed_agents: list[AgentPattern]
-    added_edges: list[Edge]
-    added_agents: list[AgentPattern]
+    """
+    Rather than having a `Rule` modify a `Mixture` directly when we select it, we
+    instead ask it to indicate what changes *should* occur in the mixture using this object.
+    """
+
+    agents_to_add: list[Agent]
+    agents_to_remove: list[Agent]
+    edges_to_add: set[Edge]
+    edges_to_remove: set[Edge]
+
+    # Agents which have sites whose *internal* state should change
+    # If an agent's internal site states should all remain unchanged, but
+    # their link states have changed, you don't have to add it here, just
+    # use the `disconnect_site` and `connect_sites` to indicate the changed edges.
+    agents_changed: set[Agent]
+
+    def __init__(self):
+        self.agents_to_add = []
+        self.agents_to_remove = []
+        self.edges_to_add = set()
+        self.edges_to_remove = set()
+        self.agents_changed = set()
+
+    def remove_agent(self, agent: Agent):
+        """
+        This function call will not actually change anything in a mixture.
+        """
+        # Specify this agent should be deleted
+        self.agents_to_remove.append(agent)
+
+        # Also remove any edges the removed agent was associated with
+        for site in agent.sites.values():
+            if isinstance(site.link_state, Site):
+                self.edges_to_remove.append(Edge(site, site.link_state))
+
+    def create_agent(self, agent_pattern: AgentPattern, mixture: Mixture) -> Agent:
+        """
+        It is important to note again that this method does not actually add
+        the created agent to the mixture. `mixture` is an argument here only because
+        we need it to assign a new agent ID.
+
+        NOTE: Link state references in the created agent will be empty, even if `agent_pattern`
+        has bound sites. It's up to the user to make this call to every agent they want instantiated,
+        and then adding any desired bonds back in manually using `self.connect_sites`.
+
+        TODO: It's necessary to assign a fresh ID, whether here or when applying the `MixtureUpdate`?
+        I'll go with here for now, right when it's created. But more generally
+        ensuring that we don't mess up with id assignment for instantiated agents
+        right now is super ad-hoc and I'd like to think of a better design pattern for this.
+        Relatedly, there is a circular reference here with `Mixture` that we could maybe
+        factor out if we organized things better.
+        """
+        # TODO: Better design for instantiating agents from patterns.
+        # If we had something nicer we wouldn't have to manually reset link states as below
+        new_agent: Agent = deepcopy(agent_pattern)
+
+        # Reset any occupied link state to empty
+        for site in new_agent.sites.values():
+            if isinstance(site.link_state, Site):
+                site.link_state = EmptyState()
+
+        new_agent.id = mixture.new_id()
+
+        self.agents_to_add.append(new_agent)
+
+        return new_agent
+
+    def disconnect_site(self, site: Site):
+        """
+        If `site` is bound, indicate that it should be unbound.
+        Does nothing if `site` is already empty.
+
+        All removed bonds (indicated in `self.edges_to_remove`) will be
+        applied before any new bonds (`self.edges_to_add`) are created
+        when this `MixtureUpdate` is actually applied.
+        """
+        if isinstance(site.link_state, Site):
+            self.edges_to_remove.add(Edge(site, site.link_state))
+
+    def connect_sites(self, site1: Site, site2: Site):
+        """
+        Indicate that two `Site`s should be connected (i.e. an edge should exist between them).
+
+        NOTE: If either of the `Site`s are already bound to some
+        other agent, this method will also indicate those existing bonds
+        for removal.
+        """
+
+        # Indicate the removal of bonds to the wrong agents
+        if isinstance(site1.link_state, Site) and site1.link_state != site2:
+            self.disconnect_site(site1)
+
+        if isinstance(site2.link_state, Site) and site2.link_state != site1:
+            self.disconnect_site(site2)
+
+        # Indicate these sites should be bound if they aren't already
+        if not (
+            isinstance(site1.link_state, Site)
+            and isinstance(site2.link_state, Site)
+            and site1.link_state == site2
+        ):
+            self.edges_to_add.add(Edge(site1, site2))
