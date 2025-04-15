@@ -200,10 +200,6 @@ class Mixture:
         self.match_cache[component] = embeddings
 
         for embedding in embeddings:
-            # TODO: Remove these debug prints
-            # print("embedding", embedding)
-            # print("component_of_agent", self.component_of_agent(next(iter(embedding.values()))))
-            # print(component)
             self.match_cache_by_component[
                 self.component_of_agent(next(iter(embedding.values())))
             ][component].append(embedding)
@@ -255,7 +251,7 @@ class Mixture:
         # that incremental min-cut will help a lot
         # raise NotImplementedError
 
-        # 2. TODO: Update APSP. Don't worry about this until every other todo here is finished.
+        # 2. TODO: Update APSP. Don't worry about this until the other todo's here are finished, esp. (1) right above
         # raise NotImplementedError
 
         # 3. Update embeddings
@@ -313,7 +309,7 @@ class Mixture:
 
     # def update_shortest_paths(self, update: MixtureUpdate):
     #     """
-    #     TODO:
+    #     TODO: Maintain an all pairs shortest paths (APSP) index
     #     """
     #     raise NotImplementedError
 

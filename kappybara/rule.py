@@ -35,7 +35,8 @@ class Rule(ABC):
     def select(self, mixture: Mixture) -> MixtureUpdate:
         """
         DO NOT modify anything in `mixture` directly here except for changing
-        internal sites of agents. Anything else will cause undefined behavior.
+        internal sites of agents (which should be added to the `agents_changed` field
+        of the returned `MixtureUpdate`). Anything else will cause undefined behavior.
         Instead, create a `MixtureUpdate` and use its helper functions to indicate
         what connectivity changes or agent additions/removals *should* occur in the
         mixture by the application of your rule.
@@ -71,6 +72,15 @@ class KappaRule(Rule):
         )
 
     def select(self, mixture: Mixture) -> MixtureUpdate:
+        """
+        This function is not quite pure since internal states of agents in the
+        mixture can be changed by this method. Everything else however (edge/bond
+        insertions/removals, agent insertions/removals) is just recorded in the
+        returned `MixtureUpdate` without actually occurring in the mixture. I would
+        rather this function just not touch the actual mixture at all, but would have
+        to rework the `MixtureUpdate` class to be able to accomodate specific internal
+        state changes.
+        """
         # A map from the agents in the left hand side of a rule
         # to chosen instances of agents in the mixture.
         selection_map: dict[AgentPattern, Pattern] = {}
@@ -99,8 +109,13 @@ class KappaRule(Rule):
         Takes the agents that have been chosen to be transformed by this rule, and produces
         a `MixtureUpdate` which specifies what changes to the mixture should take place (without actually applying those changes).
 
-        TODO: This is another place where the code is just messy/hard to understand
+        TODO: This is another place where the code is maybe too messy
         """
+
+        # TODO: check for illegal collisions (i.e. different agents in the left-hand rule pattern
+        # map to the same agent in the mixture). This can only happen when there's more than one
+        # component in `self.left`.
+
         selection = self.convert_selection_map(selection_map)
 
         assert self.left.components[0].isomorphic(ComponentPattern(selection))
@@ -146,12 +161,6 @@ class KappaRule(Rule):
                 case _:
                     pass
 
-        # TODO: get rid of these debug prints
-        print("Left pattern: ", Component(self.left.agents))
-        print("Right pattern: ", Component(self.right.agents))
-        print("new_selection: ", Component(new_selection))
-        print()
-
         # Manage explicitly referenced edges
         # TODO: Maybe could have patterns collect a list of their explicitly mentioned
         # edges at initialization. Efficiency of this step is probably not important though.
@@ -174,8 +183,9 @@ class KappaRule(Rule):
                     case EmptyState():
                         update.disconnect_site(site)
                     case x:
-                        raise Exception
-                        # raise Exception, f"Link states of type {type(x)} are unsupported for right-hand rule patterns."
+                        raise TypeError(
+                            f"Link states of type {type(x)} are unsupported for right-hand rule patterns."
+                        )
 
         return update
 
