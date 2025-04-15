@@ -1,4 +1,5 @@
 import pytest
+from math import comb
 
 from kappybara.pattern import Pattern, ComponentPattern
 from kappybara.mixture import Mixture
@@ -137,12 +138,9 @@ def test_simple_rule_application():
     assert system.count_observable(observables[0]) == n_copies
     assert system.count_observable(observables[1]) == 0
 
-    update = rule.select(system.mixture)
-
-    assert len(update.edges_to_remove) == 1
-
     for i in range(1, n_copies + 1):
         update = rule.select(system.mixture)
+        assert len(update.edges_to_remove) == 1
         system.mixture.apply_update(update)
 
         assert system.count_observable(observables[0]) == n_copies - i
@@ -204,3 +202,88 @@ def test_rule_application():
         assert system.count_observable(observables[1]) == i
         assert system.count_observable(observables[2]) == n_copies - i
         assert system.count_observable(observables[3]) == i
+
+
+def test_simple_unimolecular_rule_application():
+    """
+    Test selection/application of a simple unimolecular KappaRule in a mixture.
+    """
+    rule_class = KappaRuleUnimolecular
+
+    mixture_pattern_str = "A(a[1]{u}), B(b[1]{u})"
+    n_copies = 100
+
+    rule1_left_str = "A(a{u}), B(b{u})"
+    rule1_right_str = "A(a{p}), B(b{p})"
+
+    rule2_left_str = "A(a[1]), B(b[1])"
+    rule2_right_str = "A(a[.]), B(b[.])"
+
+    observables_str = ["A(a[1]{u}), B(b[1]{u})"]
+
+    mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
+    rule1_left = Pattern.from_kappa(rule1_left_str)
+    rule1_right = Pattern.from_kappa(rule1_right_str)
+    rule2_left = Pattern.from_kappa(rule2_left_str)
+    rule2_right = Pattern.from_kappa(rule2_right_str)
+    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+
+    mixture = Mixture()
+    for _ in range(n_copies):
+        mixture.instantiate(mixture_pattern)
+    # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
+
+    rule1 = rule_class(rule1_left, rule1_right, 1.0)
+    rule2 = KappaRule(rule2_left, rule2_right, 1.0)
+
+    system = System()
+    system.mixture = mixture
+
+    system.add_rule(rule1)
+    system.add_rule(rule2)
+    system.add_observables(observables)
+
+    # assert rule1.n_embeddings(system.mixture) == n_copies
+    # assert system.count_observable(observables[0]) == n_copies
+
+    n_rule1_applications = n_copies // 2
+    n_rule2_applications = n_copies // 2
+
+    assert system.count_observable(observables[0]) == n_copies
+
+    for i in range(1, n_rule2_applications + 1):
+        update = rule2.select(system.mixture)
+        system.mixture.apply_update(update)
+
+        assert system.count_observable(observables[0]) == n_copies - i
+        assert len(system.mixture.components) == n_copies + i
+        assert rule1.n_embeddings(mixture) == n_copies - i
+
+    for i in range(1, n_rule1_applications + 1):
+        update = rule1.select(system.mixture)
+        system.mixture.apply_update(update)
+
+        # # Debug prints
+        # print("=====================================================================================")
+        # print("Update:")
+        # print(update)
+        # print("=====================================================================================")
+        # print("=====================================================================================")
+        # print("After update application:")
+        # print(system.mixture.agents, "\n")
+
+        # print("\n Mixture components: ", system.mixture.components, "\n")
+        # for component in system.mixture.match_cache_by_component:
+        #     cache = system.mixture.match_cache_by_component[component]
+        #     print("Mixture component: ", component)
+        #     for p in cache:
+        #         print("Pattern component: ", p, " with matches:")
+        #         print(cache[p])
+        #     print()
+        # print("=====================================================================================")
+
+        assert rule1.n_embeddings(mixture) == n_copies - n_rule2_applications - i
+        assert (
+            system.count_observable(observables[0])
+            == n_copies - n_rule2_applications - i
+        )

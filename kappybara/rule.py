@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from math import prod
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, Iterable
 import random
 
 from kappybara.site_states import *
@@ -118,8 +118,6 @@ class KappaRule(Rule):
 
         selection = self.convert_selection_map(selection_map)
 
-        assert self.left.components[0].isomorphic(ComponentPattern(selection))
-
         # References to the new or modified mixture agents which we
         # use to create the appropriate edges.
         new_selection = [None] * len(selection)
@@ -182,7 +180,7 @@ class KappaRule(Rule):
                         update.connect_sites(site, partner)
                     case EmptyState():
                         update.disconnect_site(site)
-                    case x:
+                    case x if not isinstance(x, UndeterminedState):
                         raise TypeError(
                             f"Link states of type {type(x)} are unsupported for right-hand rule patterns."
                         )
@@ -224,7 +222,19 @@ class KappaRuleUnimolecular(KappaRule):
         return self.n_embeddings_unimolecular(mixture)
 
     def n_embeddings_unimolecular(self, mixture: Mixture) -> int:
-        res = 0
+        """
+        TODO: if a component gets removed from the mixture, its entry
+        in `self.component_weights` will remain unless we remake it from
+        scratch like we do here. So for an incremental version the logic
+        would have to be more complicated or we'd have to rethink things a bit.
+        """
+        count = 0
+
+        # Reset the index from scratch. Removes some tricky considerations from now,
+        # but obviously not desirable performance wise. Doesn't matter as long as we're
+        # recomputing every weight anyways below, though.
+        self.component_weights = {}
+
         for component in mixture.components:
             weight = prod(
                 len(mixture.fetch_embeddings_in_component(match_component, component))
@@ -233,14 +243,40 @@ class KappaRuleUnimolecular(KappaRule):
 
             self.component_weights[component] = weight
 
-            res += weight
+            count += weight
 
-        return res
+        return count
 
     def select(self, mixture: Mixture) -> MixtureUpdate:
+        components_ordered = list(self.component_weights.keys())
+        weights = [self.component_weights[c] for c in components_ordered]
+
+        selected_component = random.choices(components_ordered, weights)[0]
+
         selection_map: dict[AgentPattern, Pattern] = {}
 
-        raise NotImplementedError
+        for component_pattern in self.left.components:
+            choices = mixture.fetch_embeddings_in_component(
+                component_pattern, selected_component
+            )
+            assert (
+                len(choices) > 0
+            ), f"A rule with no valid embeddings was selected: {self}"
+            component_selection = random.choice(choices)
+
+            for agent in component_selection:
+                if component_selection[agent] in selection_map.values():
+                    # This means two selected components have intersecting
+                    # sets of mixture agents, so this is an invalid match/null event.
+                    return None
+                else:
+                    selection_map[agent] = component_selection[agent]
+
+        # TODO: Remove this sanity check
+        # Assert that all agents are in the same mixture Component
+        component = mixture.component_index[next(iter(selection_map.values()))]
+        for agent in selection_map.values():
+            assert component == mixture.component_index[agent]
 
         return self._produce_update(selection_map, mixture)
 
@@ -257,6 +293,10 @@ class KappaRuleBimolecular(KappaRule):
 
     def n_embeddings(self, mixture: Mixture) -> int:
         res = 0
+        self.component_weights = (
+            {}
+        )  # Again, we're just doing this from scratch from now
+
         for component in mixture.components:
             match1: ComponentPattern = self.left.components[0]
             match2: ComponentPattern = self.left.components[1]
@@ -279,8 +319,48 @@ class KappaRuleBimolecular(KappaRule):
         return res
 
     def select(self, mixture: Mixture) -> MixtureUpdate:
-        selection_map: dict[AgentPattern, Pattern] = {}
+        components_ordered = list(self.component_weights.keys())
+        weights = [self.component_weights[c] for c in components_ordered]
 
-        raise NotImplementedError
+        selected_component = random.choices(components_ordered, weights)
+
+        match1 = mixture.fetch_embeddings_in_component(
+            selected_component, self.left.components[0]
+        )
+
+        # Sample from all embeddings of the second component in `self.left` in `mixture`,
+        # excluding the embeddings found in the same component as `match1`
+        match2 = rejection_sample(
+            mixture.fetch_embeddings(self.left.components[1]),
+            mixture.fetch_embeddings_in_component(
+                selected_component, self.left.components[1]
+            ),
+        )
+
+        # TODO: Assert that the two chosen components are not in the same
+        # connected component as a sanity check
+
+        selection_map: dict[AgentPattern, Pattern] = match1 | match2
 
         return self._produce_update(selection_map, mixture)
+
+
+def rejection_sample(population: Iterable, exclude: Iterable, max_attempts=100):
+    pop_ordered = list(population)
+    exclude_set = set(exclude)
+
+    n = len(pop_ordered)
+    if n == 0:
+        raise ValueError("Sequence is empty")
+
+    # Phase 1: Fast rejection sampling (O(1) average case for small exclusion sets)
+    for _ in range(max_attempts):
+        idx = random.randrange(n)
+        if pop_ordered[idx] not in exclude_set:
+            return pop_ordered[idx]
+
+    # Phase 2: Fallback to O(n) scan only if necessary (rare for small exclusion sets)
+    valid_indices = [i for i, elem in enumerate(pop_ordered) if elem not in exclude_set]
+    if not valid_indices:
+        raise ValueError("No valid elements to choose from")
+    return pop_ordered[random.choice(valid_indices)]
