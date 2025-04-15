@@ -4,6 +4,7 @@ from functools import cached_property
 from typing import Self, List, Dict, Set
 
 from kappybara.site_states import *
+
 # from kappybara.mixture import Mixture
 
 
@@ -16,6 +17,21 @@ class SitePattern:
 
     def __hash__(self):
         return id(self)
+
+    def __repr__(self):  # TODO: add detail
+        res = self.label
+
+        match self.link_state:
+            case EmptyState():
+                res += "[.]"
+            case SitePattern() as partner:
+                res += f"[id{partner.agent.id}]"
+
+        match self.internal_state:
+            case str() as s:
+                res += "{" + s + "}"
+
+        return res
 
     def undetermined(self) -> bool:
         """
@@ -95,8 +111,8 @@ def depth_first_traversal(start: AgentPattern) -> list[AgentPattern]:
 class ComponentPattern:
     """
     A set of agents that are all in the same connected component (this is
-    not guaranteed statically), you have to make sure it's enforced whenever
-    you create or manipulate it.
+    not guaranteed statically, you have to make sure it's enforced whenever
+    you create or manipulate it.)
 
     NOTE: I'm including this class as a demonstration that stylistically
     follows the ideas in physics.py, but I'm pretty hesitant about committing
@@ -132,12 +148,6 @@ class ComponentPattern:
 
     def __hash__(self):
         return id(self)
-
-    def duplicate(self) -> Self:
-        """
-        NOTE: This does not assign new agent id's! You have to
-        """
-
 
     def isomorphic(self, other: Self) -> bool:
         """
@@ -259,12 +269,11 @@ class ComponentPattern:
 
         return valid_maps
 
-
     def __repr__(self):  # TODO: add detail
         return f'Molecule(id={id(self)}, kappa_str="{self.kappa_str}")'
 
     @property
-    def kappa_str(self) -> str:
+    def kappa_str(self, show_agent_ids=False) -> str:
         # TODO: add arg to canonicalize?
         bond_num_counter = 1
         bond_nums: dict[Site, int] = dict()
@@ -280,11 +289,19 @@ class ComponentPattern:
                     bond_num = bond_num_counter
                     bond_nums[site.link_state] = bond_num
                     bond_num_counter += 1
-                site_strs.append(
-                    f"{site.label}[{"." if bond_num is None else bond_num}]"
+                internal_state_str = (
+                    "{" + site.internal_state + "}"
+                    if isinstance(site.internal_state, str)
+                    else ""
                 )
-            agent_signatures.append(f"{agent.type}({' '.join(site_strs)})")
+                site_strs.append(
+                    f"{site.label}[{"." if bond_num is None else bond_num}]{internal_state_str}"
+                )
+            agent_signatures.append(
+                f"{agent.type}({"id=" + str(agent.id) if show_agent_ids else ""}, {' '.join(site_strs)})"
+            )
         return ", ".join(agent_signatures)
+
 
 @dataclass
 class Pattern:
@@ -292,7 +309,7 @@ class Pattern:
     Class methods for constructing `Pattern`s from Kappa strings are defined in grammar/pattern_method_patch.py
     """
 
-    agents: List[AgentPattern]
+    agents: List[Optional[AgentPattern]]
     components: List[
         ComponentPattern
     ]  # An index on the constituent connected components making up the pattern
@@ -345,3 +362,15 @@ class Pattern:
     @cached_property
     def underspecified(self) -> bool:
         return any(agent.underspecified for agent in self.agents)
+
+
+# Types ending with "Pattern" are used to annotate entities involved with rule or observable definitions,
+# rather than concrete instances. On the other hand, `Site`, `Agent`, and `Component` are used to annotate
+# objects which are concrete instances in a mixture. The data types and functionality of the latter
+# can be thought of as just a subset of the former, hence why we can use the same class definition for both,
+# but I found using these aliases to make the above distinction to be useful for clarifying function signatures
+# documentation-wise. There are also some potential merits to just doing full separate class definitions for
+# the types below (at the cost of a lot of redundant code), but that's a consideration for later.
+Site = SitePattern
+Agent = AgentPattern
+Component = ComponentPattern
