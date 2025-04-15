@@ -18,18 +18,21 @@ from kappybara.pattern import (
 
 @dataclass
 class Mixture:
-    agents: set[AgentPattern]
-    components: set[ComponentPattern]
+    agents: set[Agent]
+    components: set[Component]
     _nonce: int  # Used to assign id's to instantiated agents.
 
     # An index matching each agent in the mixture to the connected
     # component in the mixture it belongs to
-    component_index: dict[AgentPattern, ComponentPattern]
+    component_index: dict[Agent, Component]
 
-    agents_by_type: dict[str, set[AgentPattern]]
+    agents_by_type: dict[str, set[Agent]]
 
     # An index of the matches for each component in any rule or observable pattern
-    match_cache: dict[ComponentPattern, list[list[AgentPattern]]]
+    match_cache: dict[ComponentPattern, list[dict[AgentPattern, Agent]]]
+    match_cache_by_component: dict[
+        Component, dict[ComponentPattern, list[dict[AgentPattern, Agent]]]
+    ]
 
     def __init__(self):
         self.agents = set()
@@ -37,9 +40,13 @@ class Mixture:
         self._nonce = 0
         self.component_index = {}
         self.agents_by_type = defaultdict(list)
-        self.component_match_cache = {}
+        self.match_cache = defaultdict(list)
+        self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1):
+        """
+        TODO: n_copies feature is not actually supported right now, don't try to use it until it's impl'd
+        """
         assert (
             not pattern.underspecified
         ), "Pattern is not specific enough to be instantiated"
@@ -47,7 +54,7 @@ class Mixture:
         for component in pattern.components:
             self._instantiate_component(component, n_copies)
 
-    def _instantiate_component(self, component: ComponentPattern, n_copies: int):
+    def _instantiate_component(self, component: Component, n_copies: int):
         new_agents = [deepcopy(agent) for agent in component.agents]
 
         for i, agent in enumerate(component.agents):
@@ -56,19 +63,19 @@ class Mixture:
 
             # Duplicate the proper link structure
             for site in agent.sites.values():
-                if isinstance(site.link_state, SitePattern):
-                    partner: SitePattern = site.link_state
+                if isinstance(site.link_state, Site):
+                    partner: Site = site.link_state
                     i_partner = component.agents.index(partner.agent)
-                    new_agents[i].sites[site.label].link_state = new_agents[i_partner].sites[
-                        partner.label
-                    ]
+                    new_agents[i].sites[site.label].link_state = new_agents[
+                        i_partner
+                    ].sites[partner.label]
 
-        new_component = ComponentPattern(new_agents)
+        new_component = Component(new_agents)
 
         # Update mixture contents
         self.agents.update(new_agents)
 
-        # Update indices
+        # Update component indices
         self.components.add(new_component)
 
         for agent in new_agents:
@@ -77,16 +84,21 @@ class Mixture:
 
         # TODO: Update APSP
 
+    def component_of_agent(self, agent):
+        return self.component_index[agent]
+
     def new_id(self) -> int:
         self._nonce += 1
         return self._nonce - 1
 
-    def find_embeddings(self, component: ComponentPattern) -> list[dict[AgentPattern, AgentPattern]]:
+    def find_embeddings(
+        self, component: ComponentPattern
+    ) -> list[dict[AgentPattern, Agent]]:
         # Variables labelled with "a" are associate with `component`, as with "b" and `self`
         a_root = component.agents[0]
 
         # The set of valid bijections
-        valid_maps: list[dict[AgentPattern, AgentPattern]] = []
+        valid_maps: list[dict[AgentPattern, Agent]] = []
 
         # Narrow down our search space by only attempting to map `a_root` with
         # agents in `self` with the same type.
@@ -164,22 +176,137 @@ class Mixture:
                                 agent_map[a_partner] = b_partner
 
             if not search_failed:
-                # We know we've constructed an acceptable isomorphism
+                # We know we've constructed an acceptable embedding
                 valid_maps.append(agent_map)
 
         return valid_maps
 
-    # def apply_rule(self, rule: Rule):
-    #     raise NotImplementedError
+    def update_embeddings(self):
+        pass
 
-    # def apply_update(self, update: MixtureUpdate):
-    #     # 1. Update `components`
-    #     #
-    #     # 2. TODO: Update APSP (?)
-    #     #
-    #     # 3. Update rule matches
-    #     #    TODO: Only update affected rule matches
-    #     raise NotImplementedError
+    def fetch_embeddings(self, component: ComponentPattern) -> list[list[Agent]]:
+        """
+        TODO: Take advantage of isomorphism redundancies
+        """
+        return self.match_cache[component]
+
+    def fetch_embeddings_in_component(
+        self, match_pattern: ComponentPattern, mixture_component: Component
+    ) -> list[list[Agent]]:
+        return self.match_cache_by_component[mixture_component][match_pattern]
+
+    def track_component_pattern(self, component: ComponentPattern):
+        embeddings = self.find_embeddings(component)
+        self.match_cache[component] = embeddings
+
+        for embedding in embeddings:
+            # TODO: Remove these debug prints
+            # print("embedding", embedding)
+            # print("component_of_agent", self.component_of_agent(next(iter(embedding.values()))))
+            # print(component)
+            self.match_cache_by_component[
+                self.component_of_agent(next(iter(embedding.values())))
+            ][component].append(embedding)
+
+    # TODO: Quoted type reference due to circular reference with `MixtureUpdate`,
+    # see the comments in `add_agent` there.
+    def apply_update(self, update: "MixtureUpdate"):
+        """
+        In this first implementation, we will just apply the update and then
+        naively recompute all of our indexes from scratch, without taking advantage
+        of any of the incremental properties of our computation. However, the reason
+        that we separate out the work of determining an update (i.e. the logic in the
+        `select` method of `Rule`), as opposed to actually applying it (the logic in
+        this method), is so that we can do something better here that actually recomputes
+        indexes based on `update` itself, rather than recomputing on the entire mixture.
+        """
+
+        # Order will be important later, i.e. doing all removals before any additions
+        # Also removing edges before agents, so that agents aren't removed until all their
+        # associated edges are removed already. Right now we are assuming that the
+        # `MixtureUpdate` is constructed with this in mind already so we don't have to check
+        # for dangling edges here.
+        for edge in update.edges_to_remove:
+            self._remove_edge(edge)
+
+        for agent in update.agents_to_remove:
+            self._remove_agent(agent)
+
+        for agent in update.agents_to_add:
+            self._add_agent(agent)
+
+        for edge in update.edges_to_add:
+            self._add_edge(edge)
+
+        for agent in update.agents_changed:
+            # For the naive approach we don't have to do anything here, but
+            # for incremental approaches it's important to know about any agents
+            # who haven't been removed/added but whose internal states have changed.
+            pass
+
+        # 1. TODO: update component indexes: `self.components` and `self.component_index`.
+        # Once that's done, also update `self.match_cache_by_component` in (3).
+        # `KappaRuleUnimolecular` and `KappaRuleBimolecular` `won't work correctly until we
+        # do this, since they depend on these indexes being correct/up to date when counting
+        # embeddings and selecting rewrites.
+        #
+        # We should start with the simple approach of BFSing from all disconnected agents
+        # like Berk was doing. If it ends up being a bottleneck, I'm pretty confident now
+        # that incremental min-cut will help a lot
+        # raise NotImplementedError
+
+        # 2. TODO: Update APSP. Don't worry about this until every other todo here is finished.
+        # raise NotImplementedError
+
+        # 3. Update embeddings
+        #    TODO: Only update embeddings of affected `ComponentPatterns`. This requires a pre-simulation step
+        #    where we build a dependency graph of rules at the level of either `Rule`s or `ComponentPattern`s
+        for component_pattern in self.match_cache.keys():
+            self.match_cache[component_pattern] = self.find_embeddings(
+                component_pattern
+            )
+
+            # TODO: Update `self.match_cache_by_component` here as well, after (1) is implemented,
+            # by doing the same thing as in `self.track_component`.
+            # Again, this is necessary for uni/bimolecular rules to work correctly.
+
+    def _add_agent(self, agent: Agent):
+        """
+        Calling any of these private functions which modify the mixture is *not*
+        guaranteed to keep any of our indexes up to date, which is why they should
+        not be used externally.
+        """
+        self.agents.add(agent)
+        self.agents_by_type[agent.type].add(agent)
+
+    def _delete_agent(self, agent: Agent):
+        self.agents.remove(agent)
+        self.agents_by_type[agent.type].remove(agent)
+
+    def _add_edge(self, edge: Edge):
+        # TODO: sanity checks, can remove if confident about correctness
+        assert edge.site1.agent in self.agents
+        assert edge.site2.agent in self.agents
+
+        # NOTE: this is another place where it might be nice to have
+        # semantics like what Berk was doing, e.g. define a `bind` method
+        # of `SitePattern`. I am holding off on this for now because I still
+        # am not certain about linked representations like these long term.
+        #
+        # However in other places I think it's just clearly better to clean things
+        # up by using e.g. what Berk was doing with the distinction between the `sites` of
+        # an Agent being just a simple list while `interface` allows us to access sites by
+        # their labels. Just haven't gotten around to it. (TODO)
+        edge.site1.link_state = edge.site2
+        edge.site2.link_state = edge.site1
+
+    def _remove_edge(self, edge: Edge):
+        # Sanity checking that the edge exists, can remove later
+        assert edge.site1.link_state == edge.site2
+        assert edge.site2.link_state == edge.site1
+
+        edge.site1.link_state = EmptyState()
+        edge.site2.link_state = EmptyState()
 
     # def update_components(self, update: MixtureUpdate):
     #     raise NotImplementedError
