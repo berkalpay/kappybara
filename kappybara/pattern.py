@@ -149,6 +149,16 @@ class ComponentPattern:
     def __hash__(self):
         return id(self)
 
+    def __eq__(self, other: Self):
+        return hash(self) == hash(other)
+
+    def add_agent(self, agent: AgentPattern):
+        """
+        Adds an agent along with maintaining the type index.
+        """
+        self.agents.append(agent)
+        self.agents_by_type[agent.type].add(agent)
+
     def isomorphic(self, other: Self) -> bool:
         """
         NOTE: concerns with ambiguity if we overloaded __eq__ with this method
@@ -273,7 +283,7 @@ class ComponentPattern:
         return f'Molecule(id={id(self)}, kappa_str="{self.kappa_str}")'
 
     @property
-    def kappa_str(self, show_agent_ids=False) -> str:
+    def kappa_str(self, show_agent_ids=True) -> str:
         # TODO: add arg to canonicalize?
         bond_num_counter = 1
         bond_nums: dict[Site, int] = dict()
@@ -285,10 +295,12 @@ class ComponentPattern:
                     bond_num = None
                 elif site in bond_nums:
                     bond_num = bond_nums[site]
-                else:
+                elif isinstance(site.link_state, SitePattern):
                     bond_num = bond_num_counter
                     bond_nums[site.link_state] = bond_num
                     bond_num_counter += 1
+                else:
+                    bond_num = str(site.link_state)
                 internal_state_str = (
                     "{" + site.internal_state + "}"
                     if isinstance(site.internal_state, str)
@@ -298,7 +310,7 @@ class ComponentPattern:
                     f"{site.label}[{"." if bond_num is None else bond_num}]{internal_state_str}"
                 )
             agent_signatures.append(
-                f"{agent.type}({"id=" + str(agent.id) if show_agent_ids else ""}, {' '.join(site_strs)})"
+                f"{agent.type}({"id" + str(agent.id) + ", " if show_agent_ids else ""}{' '.join(site_strs)})"
             )
         return ", ".join(agent_signatures)
 

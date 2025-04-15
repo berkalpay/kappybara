@@ -13,6 +13,7 @@ from kappybara.pattern import (
     Site,
     Agent,
     Component,
+    depth_first_traversal,
 )
 
 
@@ -240,44 +241,69 @@ class Mixture:
             # who haven't been removed/added but whose internal states have changed.
             pass
 
-        # 1. TODO: update component indexes: `self.components` and `self.component_index`.
-        # Once that's done, also update `self.match_cache_by_component` in (3).
-        # `KappaRuleUnimolecular` and `KappaRuleBimolecular` `won't work correctly until we
-        # do this, since they depend on these indexes being correct/up to date when counting
-        # embeddings and selecting rewrites.
-        #
-        # We should start with the simple approach of BFSing from all disconnected agents
-        # like Berk was doing. If it ends up being a bottleneck, I'm pretty confident now
-        # that incremental min-cut will help a lot
-        # raise NotImplementedError
-
-        # 2. TODO: Update APSP. Don't worry about this until the other todo's here are finished, esp. (1) right above
+        # TODO: Update APSP. This is imo the best thing to do to support horizon conditions. Don't worry
+        # about it until later though, I'm more concerned with getting essential functionality for now.
+        # In an incremental version the APSP should be updated at every agent/edge addition/removal above
+        # in the delegated calls above.
         # raise NotImplementedError
 
         # 3. Update embeddings
         #    TODO: Only update embeddings of affected `ComponentPatterns`. This requires a pre-simulation step
         #    where we build a dependency graph of rules at the level of either `Rule`s or `ComponentPattern`s
-        for component_pattern in self.match_cache.keys():
-            self.match_cache[component_pattern] = self.find_embeddings(
-                component_pattern
-            )
+        #
+        # Similarly to elsewhere, for the first draft implementation we just reconstruct our indexes from scratch.
+        # Eventually though, we might want to do this incrementally on every edge/agent removal/addition.
+        self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
-            # TODO: Update `self.match_cache_by_component` here as well, after (1) is implemented,
-            # by doing the same thing as in `self.track_component`.
-            # Again, this is necessary for uni/bimolecular rules to work correctly.
+        for component_pattern in self.match_cache.keys():
+            embeddings = self.find_embeddings(component_pattern)
+            self.match_cache[component_pattern] = embeddings
+
+            for embedding in embeddings:
+                self.match_cache_by_component[
+                    self.component_of_agent(next(iter(embedding.values())))
+                ][component_pattern].append(embedding)
 
     def _add_agent(self, agent: Agent):
         """
         Calling any of these private functions which modify the mixture is *not*
         guaranteed to keep any of our indexes up to date, which is why they should
         not be used externally.
+
+        NOTE: The provided `agent` should not have any bound sites. Add those
+        afterwards using `self._add_edge`
         """
+        # Assert all sites are unbound
+        assert all(
+            isinstance(site.link_state, EmptyState) for site in agent.sites.values()
+        )
+
         self.agents.add(agent)
         self.agents_by_type[agent.type].add(agent)
 
-    def _delete_agent(self, agent: Agent):
+        # if self.enable_component_tracking: # TODO: Add this kind of thing anywhere we manage component indexes
+        component = Component([agent])
+        self.components.add[component]
+        self.component_index[agent] = component
+
+    def _remove_agent(self, agent: Agent):
+        """
+        NOTE: Any bonds associated with `agent` must be removed as well
+        before trying to use this method call.
+        """
+        # Assert all sites are unbound
+        assert all(
+            isinstance(site.link_state, EmptyState) for site in agent.sites.values()
+        )
+
         self.agents.remove(agent)
         self.agents_by_type[agent.type].remove(agent)
+
+        # if self.enable_component_tracking:
+        component = self.component_index[agent]
+        assert len(component) == 1
+        self.components.remove[component]
+        del self.component_index[agent]
 
     def _add_edge(self, edge: Edge):
         # TODO: sanity checks, can remove if confident about correctness
@@ -287,7 +313,8 @@ class Mixture:
         # NOTE: this is another place where it might be nice to have
         # semantics like what Berk was doing, e.g. define a `bind` method
         # of `SitePattern`. I am holding off on this for now because I still
-        # am not certain about linked representations like these long term.
+        # am not certain about linked representations like these long term in
+        # the first place.
         #
         # However in other places I think it's just clearly better to clean things
         # up by using e.g. what Berk was doing with the distinction between the `sites` of
@@ -296,6 +323,23 @@ class Mixture:
         edge.site1.link_state = edge.site2
         edge.site2.link_state = edge.site1
 
+        # if self.enable_component_tra
+        agent1: Agent = edge.site1.agent
+        agent2: Agent = edge.site2.agent
+
+        component1 = self.component_index[agent1]
+        component2 = self.component_index[agent2]
+
+        if component1 == component2:
+            return
+
+        # Otherwise, merge the two components
+        for a in component2.agents:
+            component1.add_agent(a)
+            self.component_index[a] = component1
+
+        self.components.remove(component2)
+
     def _remove_edge(self, edge: Edge):
         # Sanity checking that the edge exists, can remove later
         assert edge.site1.link_state == edge.site2
@@ -303,6 +347,31 @@ class Mixture:
 
         edge.site1.link_state = EmptyState()
         edge.site2.link_state = EmptyState()
+
+        # Check if component became disconnected
+        agent1: Agent = edge.site1.agent
+        agent2: Agent = edge.site2.agent
+        old_component = self.component_index[agent1]
+        assert old_component == self.component_index[agent2]
+
+        # Update component indexes: `self.components` and `self.component_index`.
+        # Once that's done, also update `self.match_cache_by_component` (this is currently done
+        # globally in `apply_update`).
+        #
+        # This is required for `KappaRuleUnimolecular` and `KappaRuleBimolecular` to work correctly,
+        # but not for vanilla `KappaRule`s, so we should also switch off these code paths if
+        # the computation is not needed for a particular model.
+        #
+        # We start with the simple approach of BFSing from all disconnected agents
+        # like Berk was doing. If it ends up being a bottleneck, I'm pretty confident now
+        # that incremental min-cut will help a lot
+        maybe_new_component = Component(depth_first_traversal(agent1))
+        if agent2 not in maybe_new_component.agents:
+            self.components.add(maybe_new_component)
+
+            for a in maybe_new_component.agents:
+                old_component.agents.remove(a)
+                self.component_index[a] = maybe_new_component
 
     # def update_components(self, update: MixtureUpdate):
     #     raise NotImplementedError
@@ -318,11 +387,10 @@ class Mixture:
     #     #  - Matches invalidated by removal of edges or nodes
     #     #  - Matches invalidated by *addition* of edges. This is rather unique to Kappa.
     #     #    TODO: double-check that invalidation by edge addition can only happen when there's an EmptyPredicate in the pattern
-
-    #     # Add
     #     raise NotImplementedError
 
 
+@dataclass
 class MixtureUpdate:
     """
     Rather than having a `Rule` modify a `Mixture` directly when we select it, we
