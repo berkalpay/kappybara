@@ -153,7 +153,7 @@ class KappaRule(Rule):
                                 r_site.internal_state
                                 != l_agent.sites[r_site.label].internal_state
                             ):
-                                update.agents_changed.add(agent)
+                                update.register_changed_agent(agent)
 
                     new_selection[i] = agent
                 case _:
