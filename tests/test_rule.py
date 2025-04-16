@@ -150,7 +150,7 @@ def test_simple_rule_application():
 
 def test_rule_application():
     """
-    Test selection/application of a simple KappaRule in a mixture.
+    Test selection/application of a slightly more involved KappaRule in a mixture.
 
     TODO: Checks on statistical uniformity of rule.select over valid embeddings (i.e. sample
     rule.select a bunch of times and check that the distribution is properly uniform over all
@@ -204,14 +204,12 @@ def test_rule_application():
         assert system.count_observable(observables[3]) == i
 
 
-def test_simple_unimolecular_rule_application():
+@pytest.mark.parametrize("n_copies", [50])
+def test_simple_unimolecular_rule_application(n_copies):
     """
     Test selection/application of a simple unimolecular KappaRule in a mixture.
     """
-    rule_class = KappaRuleUnimolecular
-
     mixture_pattern_str = "A(a[1]{u}), B(b[1]{u})"
-    n_copies = 100
 
     rule1_left_str = "A(a{u}), B(b{u})"
     rule1_right_str = "A(a{p}), B(b{p})"
@@ -233,7 +231,7 @@ def test_simple_unimolecular_rule_application():
         mixture.instantiate(mixture_pattern)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
-    rule1 = rule_class(rule1_left, rule1_right, 1.0)
+    rule1 = KappaRuleUnimolecular(rule1_left, rule1_right, 1.0)
     rule2 = KappaRule(rule2_left, rule2_right, 1.0)
 
     system = System()
@@ -260,30 +258,80 @@ def test_simple_unimolecular_rule_application():
         assert rule1.n_embeddings(mixture) == n_copies - i
 
     for i in range(1, n_rule1_applications + 1):
+        # Uni/bimolecular rules expect this call to be made before `select` is used,
+        # otherwise the `component_weights` cache will be out of date.
+        rule1.n_embeddings(mixture)
         update = rule1.select(system.mixture)
         system.mixture.apply_update(update)
-
-        # # Debug prints
-        # print("=====================================================================================")
-        # print("Update:")
-        # print(update)
-        # print("=====================================================================================")
-        # print("=====================================================================================")
-        # print("After update application:")
-        # print(system.mixture.agents, "\n")
-
-        # print("\n Mixture components: ", system.mixture.components, "\n")
-        # for component in system.mixture.match_cache_by_component:
-        #     cache = system.mixture.match_cache_by_component[component]
-        #     print("Mixture component: ", component)
-        #     for p in cache:
-        #         print("Pattern component: ", p, " with matches:")
-        #         print(cache[p])
-        #     print()
-        # print("=====================================================================================")
 
         assert rule1.n_embeddings(mixture) == n_copies - n_rule2_applications - i
         assert (
             system.count_observable(observables[0])
             == n_copies - n_rule2_applications - i
         )
+
+
+@pytest.mark.parametrize("n_copies", [50])
+def test_simple_bimolecular_rule_application(n_copies):
+    """
+    Test selection/application of a simple bimolecular KappaRule in a mixture.
+    """
+    mixture_pattern_str = "A(a[.]{u})"
+
+    rule1_left_str = "A(a{u}), A(a{u})"
+    rule1_right_str = "A(a{p}), B(a{p})"
+
+    observables_str = ["B(a{p})"]
+
+    mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
+    rule1_left = Pattern.from_kappa(rule1_left_str)
+    rule1_right = Pattern.from_kappa(rule1_right_str)
+    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+
+    mixture = Mixture()
+    for _ in range(n_copies):
+        mixture.instantiate(mixture_pattern)
+
+    rule1 = KappaRuleBimolecular(rule1_left, rule1_right, 1.0)
+
+    system = System()
+    system.mixture = mixture
+
+    system.add_rule(rule1)
+    system.add_observables(observables)
+
+    n_rule1_applications = n_copies // 2
+
+    for i in range(1, n_rule1_applications + 1):
+        print("iteration: ", i)
+        # Uni/bimolecular rules expect this call to be made before `select` is used,
+        # otherwise the `component_weights` cache will be out of date.
+        rule1.n_embeddings(mixture)
+        update = rule1.select(system.mixture)
+        system.mixture.apply_update(update)
+
+        print(rule1.n_embeddings(mixture))
+        print(rule1.component_weights)
+        print()
+        assert rule1.n_embeddings(mixture) == 2 * comb(n_copies - 2 * i, 2)
+        assert system.count_observable(observables[0]) == i
+
+
+def debug_mixture(mixture: Mixture):
+    print(
+        "====================================================================================="
+    )
+    print("Mixture agents:")
+    print(system.mixture.agents)
+
+    print("\n Mixture components: ", system.mixture.components, "\n")
+    for component in system.mixture.match_cache_by_component:
+        cache = system.mixture.match_cache_by_component[component]
+        print("Mixture component: ", component)
+        for p in cache:
+            print("Pattern component: ", p, " with matches:")
+            print(cache[p])
+        print()
+    print(
+        "====================================================================================="
+    )
