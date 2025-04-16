@@ -140,7 +140,7 @@ class KappaRule(Rule):
                 case AgentPattern(), AgentPattern() if l_agent.type != r_agent.type:
                     update.remove_agent(agent)
 
-                    new_agent = update.create_agent(r_agent)
+                    new_agent = update.create_agent(r_agent, mixture)
                     new_selection[i] = new_agent
                 case AgentPattern(), AgentPattern() if l_agent.type == r_agent.type:
                     for r_site in r_agent.sites.values():
@@ -248,6 +248,10 @@ class KappaRuleUnimolecular(KappaRule):
         return count
 
     def select(self, mixture: Mixture) -> MixtureUpdate:
+        """
+        NOTE: `self.n_embeddings` must be called before this method so that the
+        `component_weights` cache is up-to-date.
+        """
         components_ordered = list(self.component_weights.keys())
         weights = [self.component_weights[c] for c in components_ordered]
 
@@ -319,13 +323,19 @@ class KappaRuleBimolecular(KappaRule):
         return res
 
     def select(self, mixture: Mixture) -> MixtureUpdate:
+        """
+        NOTE: `self.n_embeddings` must be called before this method so that the
+        `component_weights` cache is up-to-date.
+        """
         components_ordered = list(self.component_weights.keys())
         weights = [self.component_weights[c] for c in components_ordered]
 
-        selected_component = random.choices(components_ordered, weights)
+        selected_component = random.choices(components_ordered, weights)[0]
 
-        match1 = mixture.fetch_embeddings_in_component(
-            selected_component, self.left.components[0]
+        match1 = random.choice(
+            mixture.fetch_embeddings_in_component(
+                self.left.components[0], selected_component
+            )
         )
 
         # Sample from all embeddings of the second component in `self.left` in `mixture`,
@@ -333,13 +343,15 @@ class KappaRuleBimolecular(KappaRule):
         match2 = rejection_sample(
             mixture.fetch_embeddings(self.left.components[1]),
             mixture.fetch_embeddings_in_component(
-                selected_component, self.left.components[1]
+                self.left.components[1], selected_component
             ),
         )
 
         # TODO: Assert that the two chosen components are not in the same
         # connected component as a sanity check
 
+        print(match1)
+        print("match2: ", match2)
         selection_map: dict[AgentPattern, Pattern] = match1 | match2
 
         return self._produce_update(selection_map, mixture)
@@ -347,7 +359,7 @@ class KappaRuleBimolecular(KappaRule):
 
 def rejection_sample(population: Iterable, exclude: Iterable, max_attempts=100):
     pop_ordered = list(population)
-    exclude_set = set(exclude)
+    exclude_set = set(id(x) for x in exclude)
 
     n = len(pop_ordered)
     if n == 0:
@@ -356,7 +368,7 @@ def rejection_sample(population: Iterable, exclude: Iterable, max_attempts=100):
     # Phase 1: Fast rejection sampling (O(1) average case for small exclusion sets)
     for _ in range(max_attempts):
         idx = random.randrange(n)
-        if pop_ordered[idx] not in exclude_set:
+        if id(pop_ordered[idx]) not in exclude_set:
             return pop_ordered[idx]
 
     # Phase 2: Fallback to O(n) scan only if necessary (rare for small exclusion sets)
