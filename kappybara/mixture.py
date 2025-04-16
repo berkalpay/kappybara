@@ -2,6 +2,7 @@ from typing import Self
 from dataclasses import dataclass
 from collections import defaultdict
 from copy import deepcopy
+from warnings import warn
 
 from kappybara.site_states import *
 from kappybara.edge import Edge
@@ -44,24 +45,83 @@ class Mixture:
         self.match_cache = defaultdict(list)
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
+    def instantiate_agent(self, agent_p: AgentPattern, add_to_mixture=False) -> Agent:
+        """
+        NOTE: Any bound sites in the provided `AgentPattern` will be reset to `EmptyState`
+        in the instantiated agent. You're expected to properly create bonds between agents
+        yourself after using this method call when instantiating patterns.
+        """
+        agent = deepcopy(agent_p)
+        agent.id = self.new_id()
+
+        for site in agent.sites.values():
+            match site.internal_state:
+                case str():
+                    pass
+                case UndeterminedState():
+                    warn(
+                        f"Agent pattern: {agent_p} was instantiated with an undetermined internal site state with no known default. We probably don't want to allow this."
+                    )
+                    # TODO: Right now this code makes the assumption that if an internal state is undetermined in
+                    # a pattern which is instantiated, the rest of the model will not depend on that internal state.
+                    # Here we could alternatively force any internal states to be unambiguous by explicitly setting
+                    # them in patterns which are being instantiated, with something like this error:
+                    # raise NotImplementedError(
+                    #     f"Without an agent signature, we don't know how to instantiate the internal state of this site: {site}"
+                    # )
+                    #
+                    # However, once we have agent signatures we'll want to do something here like:
+                    # 1. Have the mixture maintain a set of agent signatures
+                    # 2. Check if there's a signature for agents of this type (or require it)
+                    # 3. Use the signature to determine what state we should default to here.
+                    #
+                    # You could also maybe think of a way of inferring what the default state of internal states
+                    # could/should be even without an explicit signature, by doing some logic with the other places
+                    # this agent type is mentioned, but I don't like this approach b/c of inherent ambiguity.
+                    #
+                    # I'd rather just require explicit agent signatures for everything, although Walter has noted that
+                    # this might make quickly prototyping models more difficult.
+                case _:
+                    raise AssertionError(
+                        "Pattern is not specific enough to be instantiated."
+                    )
+            match site.link_state:
+                case EmptyState():
+                    pass
+                case SitePattern() | UndeterminedState():
+                    # NOTE: This can cause unintended behavior if you're not aware of this
+                    # Be aware of this if you're writing internal methods for instantiating patterns.
+                    site.link_state = EmptyState()
+                case _:
+                    raise AssertionError(
+                        f"Agent pattern: {agent_p} is not specific enough to be instantiated."
+                    )
+
+        # TODO: Check against an agent signature to add in any sites that aren't
+        # explicitly named in the `AgentPattern` and fill in default internal states
+
+        if add_to_mixture:
+            raise NotImplementedError(
+                "Right now this call is only used to create agents that are added in manually later."
+            )
+
+        return agent
+
     def instantiate(self, pattern: Pattern, n_copies: int = 1):
         """
         TODO: n_copies feature is not actually supported right now, don't try to use it until it's impl'd
         """
         assert (
             not pattern.underspecified
-        ), "Pattern is not specific enough to be instantiated"
+        ), "Pattern is not specific enough to be instantiated."
 
         for component in pattern.components:
             self._instantiate_component(component, n_copies)
 
     def _instantiate_component(self, component: Component, n_copies: int):
-        new_agents = [deepcopy(agent) for agent in component.agents]
+        new_agents = [self.instantiate_agent(a) for a in component.agents]
 
         for i, agent in enumerate(component.agents):
-            # Reassign agent id
-            new_agents[i].id = self.new_id()
-
             # Duplicate the proper link structure
             for site in agent.sites.values():
                 if isinstance(site.link_state, Site):
@@ -273,17 +333,20 @@ class Mixture:
         NOTE: The provided `agent` should not have any bound sites. Add those
         afterwards using `self._add_edge`
         """
+        for site in agent.sites.values():
+            print(site.link_state)
+
         # Assert all sites are unbound
         assert all(
             isinstance(site.link_state, EmptyState) for site in agent.sites.values()
         )
 
         self.agents.add(agent)
-        self.agents_by_type[agent.type].add(agent)
+        self.agents_by_type[agent.type].append(agent)
 
         # if self.enable_component_tracking: # TODO: Add this kind of thing anywhere we manage component indexes
         component = Component([agent])
-        self.components.add[component]
+        self.components.add(component)
         self.component_index[agent] = component
 
     def _remove_agent(self, agent: Agent):
@@ -301,8 +364,8 @@ class Mixture:
 
         # if self.enable_component_tracking:
         component = self.component_index[agent]
-        assert len(component) == 1
-        self.components.remove[component]
+        assert len(component.agents) == 1
+        self.components.remove(component)
         del self.component_index[agent]
 
     def _add_edge(self, edge: Edge):
@@ -355,8 +418,8 @@ class Mixture:
         assert old_component == self.component_index[agent2]
 
         # Update component indexes: `self.components` and `self.component_index`.
-        # Once that's done, also update `self.match_cache_by_component` (this is currently done
-        # globally in `apply_update`).
+        # Once that's done, also need to update `self.match_cache_by_component`
+        # (this is currently done globally in `apply_update`).
         #
         # This is required for `KappaRuleUnimolecular` and `KappaRuleBimolecular` to work correctly,
         # but not for vanilla `KappaRule`s, so we should also switch off these code paths if
@@ -364,7 +427,7 @@ class Mixture:
         #
         # We start with the simple approach of BFSing from all disconnected agents
         # like Berk was doing. If it ends up being a bottleneck, I'm pretty confident now
-        # that incremental min-cut will help a lot
+        # that incremental min-cut could help a lot
         maybe_new_component = Component(depth_first_traversal(agent1))
         if agent2 not in maybe_new_component.agents:
             self.components.add(maybe_new_component)
@@ -433,27 +496,13 @@ class MixtureUpdate:
         the created agent to the mixture. `mixture` is an argument here only because
         we need it to assign a new agent ID.
 
-        NOTE: Link state references in the created agent will be empty, even if `agent_pattern`
-        has bound sites. It's up to the user to make this call to every agent they want instantiated,
-        and then adding any desired bonds back in manually using `self.connect_sites`.
-
-        TODO: It's necessary to assign a fresh ID, whether here or when applying the `MixtureUpdate`?
-        I'll go with here for now, right when it's created. But more generally
-        ensuring that we don't mess up with id assignment for instantiated agents
-        right now is super ad-hoc and I'd like to think of a better design pattern for this.
-        Relatedly, there is a circular reference here with `Mixture` that we could maybe
-        factor out if we organized things better.
+        NOTE: Link site states in the created agent will be `EmptyState`, even if `agent_pattern`
+        had bound sites originally, due to the implementation of `instantiate_agent` in `Mixture`.
+        It's up to you to add any desired bonds back in manually using `self.connect_sites`.
         """
-        # TODO: Better design for instantiating agents from patterns.
-        # If we had something nicer we wouldn't have to manually reset link states as below
-        new_agent: Agent = deepcopy(agent_pattern)
-
-        # Reset any occupied link state to empty
-        for site in new_agent.sites.values():
-            if isinstance(site.link_state, Site):
-                site.link_state = EmptyState()
-
-        new_agent.id = mixture.new_id()
+        new_agent: Agent = mixture.instantiate_agent(
+            agent_pattern, add_to_mixture=False
+        )
 
         self.agents_to_add.append(new_agent)
 
