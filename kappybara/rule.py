@@ -56,7 +56,9 @@ class KappaRule(Rule):
     right: Pattern
     stochastic_rate: Rate
 
-    def __init__(self, left: Pattern, right: Pattern, stochastic_rate: Rate, *args, **kwargs):
+    def __init__(
+        self, left: Pattern, right: Pattern, stochastic_rate: Rate, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
 
         l = len(left.agents)

@@ -18,6 +18,7 @@ from kappybara.system import System
 from kappybara.pattern import Pattern
 from kappybara.grammar import rule_from_kappa
 
+
 def test_basic_system():
     system = System()
 
@@ -26,7 +27,7 @@ def test_basic_system():
 
     rules = [
         "A(a[.]), A(a[.]) <-> A(a[1]), A(a[1]) @ 1.0 {2.0}, 1.0",
-        "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 1.5, 1.0"
+        "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 1.5, 1.0",
     ]
 
     for pair in init_patterns:

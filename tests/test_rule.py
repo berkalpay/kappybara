@@ -253,7 +253,7 @@ def test_simple_unimolecular_rule_application(n_copies):
     mixture_pattern_str = "A(a[1]{u}), B(b[1]{u})"
 
     rule1_str = "A(a{u}), B(b{u}) -> A(a{p}), B(b{p}) @ 0.0 {1.0}"
-    rule2_str =  "A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0"
+    rule2_str = "A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0"
 
     observables_str = ["A(a[1]{u}), B(b[1]{u})"]
 
