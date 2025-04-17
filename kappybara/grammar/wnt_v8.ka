@@ -155,7 +155,7 @@
 //----------------------------------------------------------------------------------------
 
 // >>>>> influx of bCat
-
+// NOTE: A bit confused about this
 . -> bCat() @ 'g_influx'
 
 // >>>>> degradation of bCat from APC only

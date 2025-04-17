@@ -25,6 +25,9 @@ class Rule(ABC):
 
     @abstractmethod
     def rate(self, system: "System") -> float:
+        """
+        The stochastic rate of the rule.
+        """
         pass
 
     @abstractmethod
@@ -32,7 +35,7 @@ class Rule(ABC):
         pass
 
     @abstractmethod
-    def select(self, mixture: Mixture) -> MixtureUpdate:
+    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
         DO NOT modify anything in `mixture` directly here except for changing
         internal sites of agents (which should be added to the `agents_changed` field
@@ -40,6 +43,9 @@ class Rule(ABC):
         Instead, create a `MixtureUpdate` and use its helper functions to indicate
         what connectivity changes or agent additions/removals *should* occur in the
         mixture by the application of your rule.
+
+        The return type is an `Optional` because we want to allow the rule to return
+        a null event, which we represent with `None`
         """
         pass
 
@@ -48,9 +54,9 @@ class Rule(ABC):
 class KappaRule(Rule):
     left: Pattern
     right: Pattern
-    rate: RateValue
+    stochastic_rate: Rate
 
-    def __init__(self, left: Pattern, right: Pattern, rate: RateValue, *args, **kwargs):
+    def __init__(self, left: Pattern, right: Pattern, stochastic_rate: Rate, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         l = len(left.agents)
@@ -62,6 +68,15 @@ class KappaRule(Rule):
         self.left = left
         self.right = right
 
+        self.stochastic_rate = stochastic_rate
+
+    def rate(self, system: "System") -> float:
+        match self.stochastic_rate:
+            case float():
+                return self.stochastic_rate
+            case RateFunction():
+                raise NotImplementedError
+
     def n_embeddings(self, mixture: Mixture) -> int:
         return self.n_embeddings_default(mixture)
 
@@ -71,7 +86,7 @@ class KappaRule(Rule):
             for component in self.left.components
         )
 
-    def select(self, mixture: Mixture) -> MixtureUpdate:
+    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
         This function is not quite pure since internal states of agents in the
         mixture can be changed by this method. Everything else however (edge/bond
@@ -204,7 +219,7 @@ class KappaRule(Rule):
 
         return selection
 
-    def rate(self, system) -> float:
+    def stochastic_rate(self, system) -> float:
         match rate_value:
             case float() as x:
                 return x
@@ -247,7 +262,7 @@ class KappaRuleUnimolecular(KappaRule):
 
         return count
 
-    def select(self, mixture: Mixture) -> MixtureUpdate:
+    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
         NOTE: `self.n_embeddings` must be called before this method so that the
         `component_weights` cache is up-to-date.
@@ -322,7 +337,7 @@ class KappaRuleBimolecular(KappaRule):
 
         return res
 
-    def select(self, mixture: Mixture) -> MixtureUpdate:
+    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
         NOTE: `self.n_embeddings` must be called before this method so that the
         `component_weights` cache is up-to-date.
@@ -350,8 +365,6 @@ class KappaRuleBimolecular(KappaRule):
         # TODO: Assert that the two chosen components are not in the same
         # connected component as a sanity check
 
-        print(match1)
-        print("match2: ", match2)
         selection_map: dict[AgentPattern, Pattern] = match1 | match2
 
         return self._produce_update(selection_map, mixture)
