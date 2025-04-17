@@ -18,6 +18,9 @@ class SitePattern:
     def __hash__(self):
         return id(self)
 
+    def __eq__(self, other: Self):
+        return hash(self) == hash(other)
+
     def __repr__(self):  # TODO: add detail
         res = self.label
 
@@ -86,6 +89,9 @@ class AgentPattern:
         # gets assigned an `id` that's guaranteed to be unique and deterministic.
         # return self.id
         return id(self)
+
+    def __eq__(self, other: Self):
+        return id(self) == id(other)
 
     @cached_property
     def underspecified(self) -> bool:
