@@ -60,7 +60,7 @@ class Mixture:
                     pass
                 case UndeterminedState():
                     warn(
-                        f"Agent pattern: {agent_p} was instantiated with an undetermined internal site state with no known default. We probably don't want to allow this."
+                        f"Agent pattern: {agent_p} was instantiated with an undetermined internal site state with no known default. We might want to require an agent signature for cases like these."
                     )
                     # TODO: Right now this code makes the assumption that if an internal state is undetermined in
                     # a pattern which is instantiated, the rest of the model will not depend on that internal state.
@@ -131,7 +131,7 @@ class Mixture:
                         i_partner
                     ].sites[partner.label]
 
-        new_component = Component(new_agents)
+        new_component = Component(new_agents, n_copies)
 
         # Update mixture contents
         self.agents.update(new_agents)
@@ -333,9 +333,6 @@ class Mixture:
         NOTE: The provided `agent` should not have any bound sites. Add those
         afterwards using `self._add_edge`
         """
-        for site in agent.sites.values():
-            print(site.link_state)
-
         # Assert all sites are unbound
         assert all(
             isinstance(site.link_state, EmptyState) for site in agent.sites.values()
@@ -386,7 +383,7 @@ class Mixture:
         edge.site1.link_state = edge.site2
         edge.site2.link_state = edge.site1
 
-        # if self.enable_component_tra
+        # if self.enable_component_tracking
         agent1: Agent = edge.site1.agent
         agent2: Agent = edge.site2.agent
 
