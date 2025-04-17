@@ -5,8 +5,6 @@ from typing import Self, List, Dict, Set
 
 from kappybara.site_states import *
 
-# from kappybara.mixture import Mixture
-
 
 @dataclass
 class SitePattern:
@@ -155,6 +153,9 @@ class ComponentPattern:
     def __init__(self, agents: list[AgentPattern], n_copies: int = 1):
         assert len(agents) >= 1
         assert n_copies >= 1
+
+        if n_copies != 1:
+            raise NotImplementedError("Simulation code currently will not handle the n_copies field correctly when counting embeddings.")
 
         self.agents = agents  # TODO: I want this to be ordered by graph traversal
         self.agents_by_type = defaultdict(set)  # Reverse index on agent type
@@ -344,18 +345,24 @@ class Pattern:
         ComponentPattern
     ]  # An index on the constituent connected components making up the pattern
 
-    def __init__(self, agents: List[AgentPattern]):
+    def __init__(self, agents: List[Optional[AgentPattern]]):
         """
         Compile a pattern from a list of `AgentPatterns` whose edges are implied by integer
         link states. Replaces integer link states with references to actual partners, and
         constructs a helper object which tracks connected components in the pattern.
+
+        # NOTE: `agents` is a list of `Optional` types to support the possibility of
+        empty slots (represented by ".") in rule expression patterns.
         """
         self.agents = agents
+
+        # Only work with actual agents from now on
+        agents = [a for a in self.agents if a is not None]
 
         # Parse out site connections implied by integer LinkStates
         integer_links: defaultdict[int, list[SitePattern]] = defaultdict(list)
 
-        for agent in self.agents:
+        for agent in agents:
             for site in agent.sites.values():
                 if isinstance(site.link_state, int):
                     integer_links[site.link_state].append(site)

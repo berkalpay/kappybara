@@ -7,7 +7,7 @@ from kappybara.mixture import Mixture
 
 RateFunction = Callable[Mixture, float]
 
-RateValue = RateFunction | float
+Rate = RateFunction | float
 
 """
 Some old stuff below, might want to come back to this stuff later

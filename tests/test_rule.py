@@ -5,6 +5,7 @@ from kappybara.pattern import Pattern, ComponentPattern
 from kappybara.mixture import Mixture
 from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.system import System
+from kappybara.grammar import rule_from_kappa
 
 
 @pytest.mark.parametrize(
@@ -113,7 +114,6 @@ def test_simple_rule_application():
     rule_left_str = "A(a[1]), B(b[1])"
     rule_right_str = "A(a[.]), B(b[.])"
 
-    # observables_str = [rule_left_str, "A(a[.])", "B(b[#])"]
     observables_str = [rule_left_str, "A(a[.])", "B(b[#])"]
 
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
@@ -146,6 +146,47 @@ def test_simple_rule_application():
         assert system.count_observable(observables[0]) == n_copies - i
         assert system.count_observable(observables[1]) == i
         assert system.count_observable(observables[2]) == n_copies
+
+
+def test_edge_creating_rule_application():
+    """
+    Test selection/application of a KappaRule which creates a new edge in a mixture.
+    """
+    mixture_pattern_str = "A(a[.]), B(b[.])"
+    n_copies = 4
+
+    rule_left_str = "A(a[.]), B(b[.])"
+    rule_right_str = "A(a[1]), B(b[1])"
+
+    observables_str = [rule_right_str]
+
+    mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
+    rule_left = Pattern.from_kappa(rule_left_str)
+    rule_right = Pattern.from_kappa(rule_right_str)
+    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+
+    mixture = Mixture()
+    for _ in range(n_copies):
+        mixture.instantiate(mixture_pattern)
+    # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
+
+    rule = KappaRule(rule_left, rule_right, 1.0)
+
+    system = System()
+    system.mixture = mixture
+
+    system.add_rule(rule)
+    system.add_observables(observables)
+
+    assert rule.n_embeddings(system.mixture) == n_copies * n_copies
+    assert system.count_observable(observables[0]) == 0
+
+    for i in range(1, n_copies + 1):
+        update = rule.select(system.mixture)
+        assert len(update.edges_to_add) == 1
+        system.mixture.apply_update(update)
+
+    assert system.count_observable(observables[0]) == n_copies
 
 
 def test_rule_application():
@@ -211,19 +252,12 @@ def test_simple_unimolecular_rule_application(n_copies):
     """
     mixture_pattern_str = "A(a[1]{u}), B(b[1]{u})"
 
-    rule1_left_str = "A(a{u}), B(b{u})"
-    rule1_right_str = "A(a{p}), B(b{p})"
-
-    rule2_left_str = "A(a[1]), B(b[1])"
-    rule2_right_str = "A(a[.]), B(b[.])"
+    rule1_str = "A(a{u}), B(b{u}) -> A(a{p}), B(b{p}) @ 0.0 {1.0}"
+    rule2_str =  "A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0"
 
     observables_str = ["A(a[1]{u}), B(b[1]{u})"]
 
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
-    rule1_left = Pattern.from_kappa(rule1_left_str)
-    rule1_right = Pattern.from_kappa(rule1_right_str)
-    rule2_left = Pattern.from_kappa(rule2_left_str)
-    rule2_right = Pattern.from_kappa(rule2_right_str)
     observables = [ComponentPattern.from_kappa(s) for s in observables_str]
 
     mixture = Mixture()
@@ -231,8 +265,11 @@ def test_simple_unimolecular_rule_application(n_copies):
         mixture.instantiate(mixture_pattern)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
-    rule1 = KappaRuleUnimolecular(rule1_left, rule1_right, 1.0)
-    rule2 = KappaRule(rule2_left, rule2_right, 1.0)
+    rule1 = rule_from_kappa(rule1_str)
+    rule2 = rule_from_kappa(rule2_str)
+
+    assert isinstance(rule1, KappaRuleUnimolecular)
+    assert isinstance(rule2, KappaRule)
 
     system = System()
     system.mixture = mixture
@@ -240,9 +277,6 @@ def test_simple_unimolecular_rule_application(n_copies):
     system.add_rule(rule1)
     system.add_rule(rule2)
     system.add_observables(observables)
-
-    # assert rule1.n_embeddings(system.mixture) == n_copies
-    # assert system.count_observable(observables[0]) == n_copies
 
     n_rule1_applications = n_copies // 2
     n_rule2_applications = n_copies // 2
@@ -278,21 +312,19 @@ def test_simple_bimolecular_rule_application(n_copies):
     """
     mixture_pattern_str = "A(a[.]{u})"
 
-    rule1_left_str = "A(a{u}), A(a{u})"
-    rule1_right_str = "A(a{p}), B(a{p})"
+    rule1_str = "A(a{u}), A(a{u}) -> A(a{p}), B(a{p}) @ 1.0 {0.0}"
 
     observables_str = ["B(a{p})"]
 
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
-    rule1_left = Pattern.from_kappa(rule1_left_str)
-    rule1_right = Pattern.from_kappa(rule1_right_str)
     observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+
+    rule1 = rule_from_kappa(rule1_str)
+    assert isinstance(rule1, KappaRuleBimolecular)
 
     mixture = Mixture()
     for _ in range(n_copies):
         mixture.instantiate(mixture_pattern)
-
-    rule1 = KappaRuleBimolecular(rule1_left, rule1_right, 1.0)
 
     system = System()
     system.mixture = mixture
@@ -303,16 +335,12 @@ def test_simple_bimolecular_rule_application(n_copies):
     n_rule1_applications = n_copies // 2
 
     for i in range(1, n_rule1_applications + 1):
-        print("iteration: ", i)
         # Uni/bimolecular rules expect this call to be made before `select` is used,
         # otherwise the `component_weights` cache will be out of date.
         rule1.n_embeddings(mixture)
         update = rule1.select(system.mixture)
         system.mixture.apply_update(update)
 
-        print(rule1.n_embeddings(mixture))
-        print(rule1.component_weights)
-        print()
         assert rule1.n_embeddings(mixture) == 2 * comb(n_copies - 2 * i, 2)
         assert system.count_observable(observables[0]) == i
 

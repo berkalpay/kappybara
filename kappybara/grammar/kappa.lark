@@ -80,7 +80,7 @@ site : site_name internal_state link_state
 internal_state : "{" NAME "}"
                | "{" HASH "}" // NOTE: It seems like this kind of stuff is allowed in initial condition declarations
                // You just tell user that it's underspecified for initialized
-               // | "{" INT  "}"
+               | "{" INT  "}" // TODO: This is still unsupported as of Apr. 17 2025
                | undetermined
 link_state : "[" INT "]"
            | "[" site_name "." agent_name "]" // NOTE: What about agent_name with unspecified site_name? Not allowed
