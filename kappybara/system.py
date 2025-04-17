@@ -22,7 +22,7 @@ class System:
 
     @property
     def reactivity(self) -> float:
-        for (i, rule) in enumerate(self.rules):
+        for i, rule in enumerate(self.rules):
             self.rule_reactivities[i] = rule.reactivity(self)
 
         return sum(self.rule_reactivities)

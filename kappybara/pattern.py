@@ -155,7 +155,9 @@ class ComponentPattern:
         assert n_copies >= 1
 
         if n_copies != 1:
-            raise NotImplementedError("Simulation code currently will not handle the n_copies field correctly when counting embeddings.")
+            raise NotImplementedError(
+                "Simulation code currently will not handle the n_copies field correctly when counting embeddings."
+            )
 
         self.agents = agents  # TODO: I want this to be ordered by graph traversal
         self.agents_by_type = defaultdict(set)  # Reverse index on agent type
