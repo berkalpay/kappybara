@@ -73,7 +73,19 @@ class AgentPattern:
         self.sites = {site.label: site for site in sites}
 
     def __hash__(self):
-        return self.id
+        # TODO: come back to assigning deterministic id's to Agents (as well as
+        # other indexed objects like ComponentPatterns). The way this happens right now
+        # is very ad-hoc and I'm not happy with it, so I'm falling back on just using
+        # the object memory address for now just for convenience, but eventually I want
+        # every important mixture object to hav . I'm pretty sure what we should do is just
+        # have a global nonce variable (rather than have the nonce be owned by `Mixture`)
+        # so we can access it from anywhere and assign an id wherever it's needed in the
+        # `__init__` functions of `AgentPattern`, `ComponentPattern`, etc. So basically
+        # when creating an `AgentPattern`, for example, I want to be able to call it without
+        # having `id` be an argument as it is now, but under the hood the Agent just automatically
+        # gets assigned an `id` that's guaranteed to be unique and deterministic.
+        # return self.id
+        return id(self)
 
     @cached_property
     def underspecified(self) -> bool:
