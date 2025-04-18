@@ -52,6 +52,13 @@ class System:
             self.add_observable(obs)
 
     def add_observable(self, obs: ComponentPattern):
+        """
+        NOTE: Currently, to retrieve the counts of an observable registered
+        through this method, you must provide `count_observable` with the exact
+        same object you gave to this method call. An isomorphic but non-identical
+        (i.e. different memory address) `ComponentPattern` currently will not work
+        unless it also got registered through this call.
+        """
         assert isinstance(
             obs, ComponentPattern
         ), "An observable must be a single ComponentPattern"
