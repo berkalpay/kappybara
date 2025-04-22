@@ -2,7 +2,6 @@ from lark import ParseTree, Tree, Visitor, Token
 from typing import List
 
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
-from kappybara.rate import Rate
 from kappybara.grammar import kappa_parser
 from kappybara.pattern import SitePattern, AgentPattern, Pattern
 from kappybara.site_states import *
@@ -34,7 +33,7 @@ def rules_from_parse_tree(tree: ParseTree) -> list[Rule]:
     builder = RuleBuilder(tree)
     left: Pattern = Pattern(builder.left_agents)
     right: Pattern = Pattern(builder.right_agents)
-    rates: List[Rate] = builder.parsed_rates
+    rates: List[float] = builder.parsed_rates
 
     match tree.data:
         case "f_rule":
@@ -75,7 +74,7 @@ class RuleBuilder(Visitor):
     left_agents: List[Optional[AgentPattern]]
     right_agents: List[Optional[AgentPattern]]
 
-    parsed_rates: List[Rate]
+    parsed_rates: List[float]
 
     def __init__(self, tree: ParseTree):
         super().__init__()
