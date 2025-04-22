@@ -56,21 +56,12 @@ class KappaRule(Rule):
     right: Pattern
     stochastic_rate: Rate
 
-    def __init__(
-        self, left: Pattern, right: Pattern, stochastic_rate: Rate, *args, **kwargs
-    ):
-        super().__init__(*args, **kwargs)
-
-        l = len(left.agents)
-        r = len(right.agents)
+    def __post_init__(self):
+        l = len(self.left.agents)
+        r = len(self.right.agents)
         assert (
             l == r
         ), f"The left-hand side of this rule has {l} slots, but the right-hand side has {r}."
-
-        self.left = left
-        self.right = right
-
-        self.stochastic_rate = stochastic_rate
 
     def rate(self, system: "System") -> float:
         match self.stochastic_rate:
