@@ -16,7 +16,6 @@ from kappybara.pattern import (
     Site,
 )
 from kappybara.mixture import Mixture, MixtureUpdate
-from kappybara.rate import *
 
 
 class Rule(ABC):
@@ -54,7 +53,7 @@ class Rule(ABC):
 class KappaRule(Rule):
     left: Pattern
     right: Pattern
-    stochastic_rate: Rate
+    stochastic_rate: float
 
     def __post_init__(self):
         l = len(self.left.agents)
@@ -64,11 +63,7 @@ class KappaRule(Rule):
         ), f"The left-hand side of this rule has {l} slots, but the right-hand side has {r}."
 
     def rate(self, system: "System") -> float:
-        match self.stochastic_rate:
-            case float():
-                return self.stochastic_rate
-            case RateFunction():
-                raise NotImplementedError
+        return self.stochastic_rate
 
     def n_embeddings(self, mixture: Mixture) -> int:
         return self.n_embeddings_default(mixture)
@@ -211,13 +206,6 @@ class KappaRule(Rule):
                 selection.append(selection_map[agent])
 
         return selection
-
-    def stochastic_rate(self, system) -> float:
-        match rate_value:
-            case float() as x:
-                return x
-            case RateFunction() as rate_function:
-                raise NotImplementedError
 
 
 @dataclass
