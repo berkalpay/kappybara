@@ -5,7 +5,6 @@ from typing import Optional, Iterable
 import random
 
 from kappybara.site_states import *
-from kappybara.chemistry import Rule
 from kappybara.pattern import (
     Pattern,
     ComponentPattern,
