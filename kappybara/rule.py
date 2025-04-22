@@ -66,9 +66,6 @@ class KappaRule(Rule):
         return self.stochastic_rate
 
     def n_embeddings(self, mixture: Mixture) -> int:
-        return self.n_embeddings_default(mixture)
-
-    def n_embeddings_default(self, mixture: Mixture) -> int:
         return prod(
             len(mixture.fetch_embeddings(component))
             for component in self.left.components
@@ -215,9 +212,6 @@ class KappaRuleUnimolecular(KappaRule):
         self.component_weights: dict[Component, int] = {}
 
     def n_embeddings(self, mixture: Mixture) -> int:
-        return self.n_embeddings_unimolecular(mixture)
-
-    def n_embeddings_unimolecular(self, mixture: Mixture) -> int:
         """
         TODO: if a component gets removed from the mixture, its entry
         in `self.component_weights` will remain unless we remake it from
