@@ -15,6 +15,7 @@ from kappybara.pattern import (
     Site,
 )
 from kappybara.mixture import Mixture, MixtureUpdate
+from kappybara.utils import rejection_sample
 
 
 class Rule(ABC):
@@ -342,22 +343,3 @@ class KappaRuleBimolecular(KappaRule):
         selection_map: dict[AgentPattern, Pattern] = match1 | match2
 
         return self._produce_update(selection_map, mixture)
-
-
-def rejection_sample(population: Iterable, excluded: Iterable, max_attempts: int = 100):
-    population = list(population)
-    if not population:
-        raise ValueError("Sequence is empty")
-    excluded_ids = set(id(x) for x in excluded)
-
-    # Fast rejection sampling (O(1) average case for small exclusion sets)
-    for _ in range(max_attempts):
-        choice = random.choice(population)
-        if id(choice) not in excluded_ids:
-            return choice
-
-    # Fallback to O(n) scan only if necessary (rare for small exclusion sets)
-    valid_choices = [item for item in population if id(item) not in excluded_ids]
-    if not valid_choices:
-        raise ValueError("No valid elements to choose from")
-    return random.choice(valid_choices)
