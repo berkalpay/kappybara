@@ -62,6 +62,12 @@ class KappaRule(Rule):
             l == r
         ), f"The left-hand side of this rule has {l} slots, but the right-hand side has {r}."
 
+    def __len__(self):
+        return len(self.left.agents)
+
+    def __iter__(self):
+        yield from zip(self.left.agents, self.right.agents)
+
     def rate(self, system: "System") -> float:
         return self.stochastic_rate
 
@@ -106,59 +112,47 @@ class KappaRule(Rule):
         self, selection_map: dict[AgentPattern, Pattern], mixture: Mixture
     ) -> MixtureUpdate:
         """
-        Takes the agents that have been chosen to be transformed by this rule, and produces
-        a `MixtureUpdate` which specifies what changes to the mixture should take place (without actually applying those changes).
+        Takes the agents that have been chosen to be transformed by this rule,
+        and specifies an update to the mixture without actually applying it.
 
-        TODO: This is another place where the code is maybe too messy
+        TODO: check for different agents in the left-hand rule pattern mapping
+        to the same agent in the mixture (illegal).
         """
 
-        # TODO: check for illegal collisions (i.e. different agents in the left-hand rule pattern
-        # map to the same agent in the mixture). This can only happen when there's more than one
-        # component in `self.left`.
-
-        # Get a list of agents in the mixture in order of the rule
         selection = [
             None if agent is None else selection_map[agent]
             for agent in self.left.agents
-        ]
-
-        # References to the new or modified mixture agents which we
-        # use to create the appropriate edges.
-        new_selection = [None] * len(selection)
-
+        ]  # Select agents in the mixture matching the rule, in order
+        new_selection: list[Optional[AgentPattern]] = [None] * len(
+            selection
+        )  # The new/modified agents used to make the appropriate edges.
         update = MixtureUpdate()
 
         # Manage agents
-        for i, l_agent in enumerate(self.left.agents):
+        for i in range(len(self)):
+            l_agent = self.left.agents[i]
             r_agent = self.right.agents[i]
             agent: Optional[Agent] = selection[i]
 
             match l_agent, r_agent:
                 case None, AgentPattern():
-                    # Create the new Agent
-                    new_agent = update.create_agent(r_agent)
-                    new_selection[i] = new_agent
+                    new_selection[i] = update.create_agent(r_agent, mixture)
                 case AgentPattern(), None:
                     update.remove_agent(agent)
-                    new_selection[i] = None  # Redundant but just for clarity
                 case AgentPattern(), AgentPattern() if l_agent.type != r_agent.type:
                     update.remove_agent(agent)
-
-                    new_agent = update.create_agent(r_agent, mixture)
-                    new_selection[i] = new_agent
+                    new_selection[i] = update.create_agent(r_agent, mixture)
                 case AgentPattern(), AgentPattern() if l_agent.type == r_agent.type:
                     for r_site in r_agent.sites.values():
                         if isinstance(r_site.internal_state, InternalState):
                             agent.sites[r_site.label].internal_state = (
                                 r_site.internal_state
                             )
-
                             if (
                                 r_site.internal_state
                                 != l_agent.sites[r_site.label].internal_state
                             ):
                                 update.register_changed_agent(agent)
-
                     new_selection[i] = agent
                 case _:
                     pass
@@ -167,14 +161,12 @@ class KappaRule(Rule):
         # TODO: Maybe could have patterns collect a list of their explicitly mentioned
         # edges at initialization. Efficiency of this step is probably not important though.
         for i, r_agent in enumerate(self.right.agents):
-            agent: Optional[Agent] = new_selection[i]
-
             if r_agent is None:
                 continue
 
+            agent = new_selection[i]
             for r_site in r_agent.sites.values():
                 site: Site = agent.sites[r_site.label]
-
                 match r_site.link_state:
                     case SitePattern() as r_partner:
                         partner_idx = self.right.agents.index(r_partner.agent)
