@@ -344,22 +344,20 @@ class KappaRuleBimolecular(KappaRule):
         return self._produce_update(selection_map, mixture)
 
 
-def rejection_sample(population: Iterable, exclude: Iterable, max_attempts=100):
-    pop_ordered = list(population)
-    exclude_set = set(id(x) for x in exclude)
-
-    n = len(pop_ordered)
-    if n == 0:
+def rejection_sample(population: Iterable, excluded: Iterable, max_attempts: int = 100):
+    population = list(population)
+    if not population:
         raise ValueError("Sequence is empty")
+    excluded_ids = set(id(x) for x in excluded)
 
-    # Phase 1: Fast rejection sampling (O(1) average case for small exclusion sets)
+    # Fast rejection sampling (O(1) average case for small exclusion sets)
     for _ in range(max_attempts):
-        idx = random.randrange(n)
-        if id(pop_ordered[idx]) not in exclude_set:
-            return pop_ordered[idx]
+        choice = random.choice(population)
+        if id(choice) not in excluded_ids:
+            return choice
 
-    # Phase 2: Fallback to O(n) scan only if necessary (rare for small exclusion sets)
-    valid_indices = [i for i, elem in enumerate(pop_ordered) if elem not in exclude_set]
-    if not valid_indices:
+    # Fallback to O(n) scan only if necessary (rare for small exclusion sets)
+    valid_choices = [item for item in population if id(item) not in excluded_ids]
+    if not valid_choices:
         raise ValueError("No valid elements to choose from")
-    return pop_ordered[random.choice(valid_indices)]
+    return random.choice(valid_choices)
