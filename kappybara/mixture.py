@@ -47,9 +47,7 @@ class Mixture:
 
     def instantiate_agent(self, agent_p: AgentPattern, add_to_mixture=False) -> Agent:
         """
-        NOTE: Any bound sites in the provided `AgentPattern` will be reset to `EmptyState`
-        in the instantiated agent. You're expected to properly create bonds between agents
-        yourself after using this method call when instantiating patterns.
+        NOTE: Bound sites in the given agent pattern are reset to empty on instantiation.
         """
         agent = deepcopy(agent_p)
         agent.id = self.new_id()
@@ -497,12 +495,8 @@ class MixtureUpdate:
         had bound sites originally, due to the implementation of `instantiate_agent` in `Mixture`.
         It's up to you to add any desired bonds back in manually using `self.connect_sites`.
         """
-        new_agent: Agent = mixture.instantiate_agent(
-            agent_pattern, add_to_mixture=False
-        )
-
+        new_agent = mixture.instantiate_agent(agent_pattern, add_to_mixture=False)
         self.agents_to_add.append(new_agent)
-
         return new_agent
 
     def register_changed_agent(self, agent: Agent):
@@ -522,17 +516,14 @@ class MixtureUpdate:
 
     def connect_sites(self, site1: Site, site2: Site):
         """
-        Indicate that two `Site`s should be connected (i.e. an edge should exist between them).
-
-        NOTE: If either of the `Site`s are already bound to some
-        other agent, this method will also indicate those existing bonds
-        for removal.
+        Indicate there should be an edge between two sites. If either of the
+        sites are already bound to some other agent, this will indicate those
+        bonds for removal.
         """
 
         # Indicate the removal of bonds to the wrong agents
         if isinstance(site1.link_state, Site) and site1.link_state != site2:
             self.disconnect_site(site1)
-
         if isinstance(site2.link_state, Site) and site2.link_state != site1:
             self.disconnect_site(site2)
 
