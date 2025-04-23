@@ -116,7 +116,11 @@ class KappaRule(Rule):
         # map to the same agent in the mixture). This can only happen when there's more than one
         # component in `self.left`.
 
-        selection = self.convert_selection_map(selection_map)
+        # Get a list of agents in the mixture in order of the rule
+        selection = [
+            None if agent is None else selection_map[agent]
+            for agent in self.left.agents
+        ]
 
         # References to the new or modified mixture agents which we
         # use to create the appropriate edges.
@@ -186,23 +190,6 @@ class KappaRule(Rule):
                         )
 
         return update
-
-    def convert_selection_map(
-        self, selection_map: dict[AgentPattern, Pattern]
-    ) -> list[Optional[Agent]]:
-        # Convert from a dictionary representation of a selection, to an
-        # array of just the selected agents, where the i'th `AgentPattern` in
-        # self.left.agents corresponds to the i'th `Agent` (which exists in the mixture)
-        # in the returned array.
-        selection = []
-
-        for agent in self.left.agents:
-            if agent is None:
-                selection.append(None)
-            else:
-                selection.append(selection_map[agent])
-
-        return selection
 
 
 @dataclass
