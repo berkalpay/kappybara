@@ -7,11 +7,11 @@ from kappybara.site_states import *
 
 
 @dataclass
-class SitePattern:
+class Site:
     label: str
     internal_state: "InternalStatePattern"
     link_state: "LinkStatePattern"
-    agent: "AgentPattern" = None
+    agent: "Agent" = None
 
     def __hash__(self):
         return id(self)
@@ -25,7 +25,7 @@ class SitePattern:
         match self.link_state:
             case EmptyState():
                 res += "[.]"
-            case SitePattern() as partner:
+            case Site() as partner:
                 res += f"[id{partner.agent.id}]"
 
         match self.internal_state:
@@ -64,12 +64,12 @@ class SitePattern:
 
 
 @dataclass
-class AgentPattern:
+class Agent:
     id: int  # You must ensure this is unique in its context
     type: str
-    sites: dict[str, SitePattern]
+    sites: dict[str, Site]
 
-    def __init__(self, id: int, type: str, sites: list[SitePattern]):
+    def __init__(self, id: int, type: str, sites: list[Site]):
         self.id = id
         self.type = type
         self.sites = {site.label: site for site in sites}
@@ -94,7 +94,7 @@ class AgentPattern:
         return [
             site.link_state.agent
             for site in self.sites.values()
-            if (isinstance(site.link_state, SitePattern))
+            if (isinstance(site.link_state, Site))
         ]
 
     @property
@@ -112,7 +112,7 @@ class AgentPattern:
 
 
 @dataclass
-class ComponentPattern:
+class Component:
     """
     A set of agents that are all in the same connected component (this is
     not guaranteed statically, you have to make sure it's enforced whenever
@@ -134,11 +134,11 @@ class ComponentPattern:
     - Cost of detailed structs when it comes to FFI conversions
     """
 
-    agents: list[AgentPattern]
-    agents_by_type: dict[str, set[AgentPattern]]
+    agents: list[Agent]
+    agents_by_type: dict[str, set[Agent]]
     n_copies: int
 
-    def __init__(self, agents: list[AgentPattern], n_copies: int = 1):
+    def __init__(self, agents: list[Agent], n_copies: int = 1):
         assert len(agents) >= 1
         assert n_copies >= 1
 
@@ -161,7 +161,7 @@ class ComponentPattern:
     def __eq__(self, other):
         return hash(self) == hash(other)
 
-    def add_agent(self, agent: AgentPattern):
+    def add_agent(self, agent: Agent):
         """
         Adds an agent along with maintaining the type index.
         """
@@ -176,7 +176,7 @@ class ComponentPattern:
 
     def find_isomorphisms(
         self, other: Self, stop_on_first: bool = False
-    ) -> list[dict[AgentPattern, AgentPattern]]:
+    ) -> list[dict[Agent, Agent]]:
         """
         NOTE: There is some potential ambiguity to 'isomorphism' in the context of what
         we're trying to accomplish in this codebase. Consider two patterns, p1="A(site1[a])" and
@@ -210,22 +210,22 @@ class ComponentPattern:
         a_root = self.agents[0]
 
         # The set of valid bijections
-        valid_maps: list[dict[AgentPattern, AgentPattern]] = []
+        valid_maps: list[dict[Agent, Agent]] = []
 
         # Narrow down our search space by only attempting to map `a_root` with
         # agents in `other` with the same type.
         for b_root in other.agents_by_type[a_root.type]:
             # The bijection between agents of `self` and `other` that we're trying to construct
-            agent_map: dict[AgentPattern, AgentPattern] = {a_root: b_root}
+            agent_map: dict[Agent, Agent] = {a_root: b_root}
 
-            frontier: set[AgentPattern] = {a_root}
+            frontier: set[Agent] = {a_root}
             search_failed: bool = False
 
             while frontier and not search_failed:
-                a: AgentPattern = frontier.pop()
+                a: Agent = frontier.pop()
                 # TODO: sanity check, can remove if confident about correctness
                 assert a in agent_map
-                b: AgentPattern = agent_map[a]
+                b: Agent = agent_map[a]
 
                 if a.type != b.type:
                     search_failed = True
@@ -235,14 +235,14 @@ class ComponentPattern:
                 b_sites_leftover = set(b.sites.keys())
 
                 for site_name in a.sites:
-                    a_site: SitePattern = a.sites[site_name]
+                    a_site: Site = a.sites[site_name]
 
                     # Check that `b` has a site with the same name
                     if site_name not in b.sites and not a_site.undetermined:
                         search_failed = True
                         break
 
-                    b_site: SitePattern = b.sites[site_name]
+                    b_site: Site = b.sites[site_name]
                     b_sites_leftover.remove(
                         site_name
                     )  # In this way we are left with any unexamined sites in b at the end
@@ -254,8 +254,8 @@ class ComponentPattern:
 
                     match (a_site.link_state, b_site.link_state):
                         case (
-                            SitePattern(agent=a_partner),
-                            SitePattern(agent=b_partner),
+                            Site(agent=a_partner),
+                            Site(agent=b_partner),
                         ):
                             if (
                                 a_partner in agent_map
@@ -273,7 +273,7 @@ class ComponentPattern:
 
                 # Check leftovers not mentioned in a_sites
                 for site_name in b_sites_leftover:
-                    leftover_site: SitePattern = b.sites[site_name]
+                    leftover_site: Site = b.sites[site_name]
 
                     if not leftover_site.undetermined:
                         search_failed = True
@@ -304,7 +304,7 @@ class ComponentPattern:
                     bond_num = None
                 elif site in bond_nums:
                     bond_num = bond_nums[site]
-                elif isinstance(site.link_state, SitePattern):
+                elif isinstance(site.link_state, Site):
                     bond_num = bond_num_counter
                     bond_nums[site.link_state] = bond_num
                     bond_num_counter += 1
@@ -330,14 +330,14 @@ class Pattern:
     Class methods for constructing `Pattern`s from Kappa strings are defined in grammar/pattern_method_patch.py
     """
 
-    agents: list[Optional[AgentPattern]]
+    agents: list[Optional[Agent]]
     components: list[
-        ComponentPattern
+        Component
     ]  # An index on the constituent connected components making up the pattern
 
-    def __init__(self, agents: list[Optional[AgentPattern]]):
+    def __init__(self, agents: list[Optional[Agent]]):
         """
-        Compile a pattern from a list of `AgentPatterns` whose edges are implied by integer
+        Compile a pattern from a list of `Agent`s whose edges are implied by integer
         link states. Replaces integer link states with references to actual partners, and
         constructs a helper object which tracks connected components in the pattern.
 
@@ -350,14 +350,14 @@ class Pattern:
         agents = [a for a in self.agents if a is not None]
 
         # Parse out site connections implied by integer LinkStates
-        integer_links: defaultdict[int, list[SitePattern]] = defaultdict(list)
+        integer_links: defaultdict[int, list[Site]] = defaultdict(list)
 
         for agent in agents:
             for site in agent.sites.values():
                 if isinstance(site.link_state, int):
                     integer_links[site.link_state].append(site)
 
-        # Replace integer LinkStates with AgentPattern references
+        # Replace integer LinkStates with Agent references
         for i in integer_links:
             linked_sites = integer_links[i]
             match len(linked_sites):
@@ -377,22 +377,15 @@ class Pattern:
         # NOTE: some redundant loops but prioritized code simplicity;
         # worst this can do is slow down initialization.
         self.components = []
-        not_seen: set[AgentPattern] = set(agents)
+        not_seen: set[Agent] = set(agents)
 
         while not_seen:
             agents_in_component = next(iter(not_seen)).depth_first_traversal
             for agent in agents_in_component:
                 not_seen.remove(agent)
 
-            self.components.append(ComponentPattern(agents_in_component))
+            self.components.append(Component(agents_in_component))
 
     @cached_property
     def underspecified(self) -> bool:
         return any(agent.underspecified for agent in self.agents)
-
-
-# These can be thought of as subsets of patterns but the aliases are useful for documentation
-# TODO: separate class definitions?
-Site = SitePattern
-Agent = AgentPattern
-Component = ComponentPattern

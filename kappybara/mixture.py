@@ -4,15 +4,7 @@ from copy import deepcopy
 from warnings import warn
 
 from kappybara.site_states import *
-from kappybara.pattern import (
-    SitePattern,
-    AgentPattern,
-    ComponentPattern,
-    Pattern,
-    Site,
-    Agent,
-    Component,
-)
+from kappybara.pattern import Site, Agent, Component, Pattern
 
 
 @dataclass
@@ -24,8 +16,8 @@ class Edge:
     TODO: make this a frozen dataclass? Could simply cache hashes then.
     """
 
-    site1: SitePattern
-    site2: SitePattern
+    site1: Site
+    site2: Site
 
     def __eq__(self, other):
         return (self.site1 == other.site1 and self.site2 == other.site2) or (
@@ -49,10 +41,8 @@ class Mixture:
     agents_by_type: dict[str, set[Agent]]
 
     # An index of the matches for each component in any rule or observable pattern
-    match_cache: dict[ComponentPattern, list[dict[AgentPattern, Agent]]]
-    match_cache_by_component: dict[
-        Component, dict[ComponentPattern, list[dict[AgentPattern, Agent]]]
-    ]
+    match_cache: dict[Component, list[dict[Agent, Agent]]]
+    match_cache_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
 
     def __init__(self):
         self.agents = set()
@@ -63,7 +53,7 @@ class Mixture:
         self.match_cache = defaultdict(list)
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
-    def instantiate_agent(self, agent_p: AgentPattern, add_to_mixture=False) -> Agent:
+    def instantiate_agent(self, agent_p: Agent, add_to_mixture=False) -> Agent:
         """
         NOTE: Bound sites in the given agent pattern are reset to empty on instantiation.
         """
@@ -104,7 +94,7 @@ class Mixture:
             match site.link_state:
                 case EmptyState():
                     pass
-                case SitePattern() | UndeterminedState():
+                case Site() | UndeterminedState():
                     # NOTE: This can cause unintended behavior if you're not aware of this
                     # Be aware of this if you're writing internal methods for instantiating patterns.
                     site.link_state = EmptyState()
@@ -114,7 +104,7 @@ class Mixture:
                     )
 
         # TODO: Check against an agent signature to add in any sites that aren't
-        # explicitly named in the `AgentPattern` and fill in default internal states
+        # explicitly named in the `Agent` and fill in default internal states
 
         if add_to_mixture:
             raise NotImplementedError(
@@ -168,41 +158,39 @@ class Mixture:
         self._nonce += 1
         return self._nonce - 1
 
-    def find_embeddings(
-        self, component: ComponentPattern
-    ) -> list[dict[AgentPattern, Agent]]:
+    def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         # Variables labelled with "a" are associate with `component`, as with "b" and `self`
         a_root = component.agents[0]
 
         # The set of valid bijections
-        valid_maps: list[dict[AgentPattern, Agent]] = []
+        valid_maps: list[dict[Agent, Agent]] = []
 
         # Narrow down our search space by only attempting to map `a_root` with
         # agents in `self` with the same type.
         for b_root in self.agents_by_type[a_root.type]:
             # The bijection between agents of `pattern` and `self` that we're trying to construct
-            agent_map: dict[AgentPattern, AgentPattern] = {a_root: b_root}
+            agent_map: dict[Agent, Agent] = {a_root: b_root}
 
-            frontier: set[AgentPattern] = {a_root}
+            frontier: set[Agent] = {a_root}
             search_failed: bool = False
 
             while frontier and not search_failed:
-                a: AgentPattern = frontier.pop()
-                b: AgentPattern = agent_map[a]
+                a: Agent = frontier.pop()
+                b: Agent = agent_map[a]
 
                 if a.type != b.type:
                     search_failed = True
                     break
 
                 for site_name in a.sites:
-                    a_site: SitePattern = a.sites[site_name]
+                    a_site: Site = a.sites[site_name]
 
                     # Check that `b` has a site with the same name
                     if site_name not in b.sites and not a_site.undetermined:
                         search_failed = True
                         break
 
-                    b_site: SitePattern = b.sites[site_name]
+                    b_site: Site = b.sites[site_name]
 
                     # Check internal state
                     match a_site.internal_state:
@@ -222,22 +210,22 @@ class Mixture:
                                 search_failed = True
                                 break
                         case BoundPredicate():
-                            if not isinstance(b_site.link_state, SitePattern):
+                            if not isinstance(b_site.link_state, Site):
                                 search_failed = True
                                 break
                         case SiteTypePredicate():
-                            if not isinstance(b_site.link_state, SitePattern):
+                            if not isinstance(b_site.link_state, Site):
                                 search_failed = True
                                 break
-                            b_partner: SitePattern = b_site.link_state
+                            b_partner: Site = b_site.link_state
                             if (
                                 a_site.link_state.site_name != b_partner.label
                                 and a_site.link_state.agent_name != b_partner.agent.type
                             ):
                                 search_failed = True
                                 break
-                        case SitePattern(agent=a_partner):
-                            if not isinstance(b_site.link_state, SitePattern):
+                        case Site(agent=a_partner):
+                            if not isinstance(b_site.link_state, Site):
                                 search_failed = True
                                 break
                             b_partner = b_site.link_state.agent
@@ -261,18 +249,18 @@ class Mixture:
     def update_embeddings(self):
         pass
 
-    def fetch_embeddings(self, component: ComponentPattern) -> list[list[Agent]]:
+    def fetch_embeddings(self, component: Component) -> list[list[Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
         """
         return self.match_cache[component]
 
     def fetch_embeddings_in_component(
-        self, match_pattern: ComponentPattern, mixture_component: Component
+        self, match_pattern: Component, mixture_component: Component
     ) -> list[list[Agent]]:
         return self.match_cache_by_component[mixture_component][match_pattern]
 
-    def track_component_pattern(self, component: ComponentPattern):
+    def track_component(self, component: Component):
         embeddings = self.find_embeddings(component)
         self.match_cache[component] = embeddings
 
@@ -324,21 +312,21 @@ class Mixture:
         # raise NotImplementedError
 
         # 3. Update embeddings
-        #    TODO: Only update embeddings of affected `ComponentPatterns`. This requires a pre-simulation step
-        #    where we build a dependency graph of rules at the level of either `Rule`s or `ComponentPattern`s
+        #    TODO: Only update embeddings of affected `Component`s. This requires a pre-simulation step
+        #    where we build a dependency graph of rules at the level of either `Rule`s or `Component`s
         #
         # Similarly to elsewhere, for the first draft implementation we just reconstruct our indexes from scratch.
         # Eventually though, we might want to do this incrementally on every edge/agent removal/addition.
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
-        for component_pattern in self.match_cache.keys():
-            embeddings = self.find_embeddings(component_pattern)
-            self.match_cache[component_pattern] = embeddings
+        for component in self.match_cache.keys():
+            embeddings = self.find_embeddings(component)
+            self.match_cache[component] = embeddings
 
             for embedding in embeddings:
                 self.match_cache_by_component[
                     self.component_of_agent(next(iter(embedding.values())))
-                ][component_pattern].append(embedding)
+                ][component].append(embedding)
 
     def _add_agent(self, agent: Agent):
         """
@@ -388,7 +376,7 @@ class Mixture:
 
         # NOTE: this is another place where it might be nice to have
         # semantics like what Berk was doing, e.g. define a `bind` method
-        # of `SitePattern`. I am holding off on this for now because I still
+        # of `Site`. I am holding off on this for now because I still
         # am not certain about linked representations like these long term in
         # the first place.
         #
@@ -503,17 +491,17 @@ class MixtureUpdate:
             if isinstance(site.link_state, Site):
                 self.edges_to_remove.append(Edge(site, site.link_state))
 
-    def create_agent(self, agent_pattern: AgentPattern, mixture: Mixture) -> Agent:
+    def create_agent(self, agent: Agent, mixture: Mixture) -> Agent:
         """
         It is important to note again that this method does not actually add
         the created agent to the mixture. `mixture` is an argument here only because
         we need it to assign a new agent ID.
 
-        NOTE: Link site states in the created agent will be `EmptyState`, even if `agent_pattern`
+        NOTE: Link site states in the created agent will be `EmptyState`, even if `agent`
         had bound sites originally, due to the implementation of `instantiate_agent` in `Mixture`.
         It's up to you to add any desired bonds back in manually using `self.connect_sites`.
         """
-        new_agent = mixture.instantiate_agent(agent_pattern, add_to_mixture=False)
+        new_agent = mixture.instantiate_agent(agent, add_to_mixture=False)
         self.agents_to_add.append(new_agent)
         return new_agent
 

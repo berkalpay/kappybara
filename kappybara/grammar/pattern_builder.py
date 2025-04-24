@@ -6,12 +6,12 @@ of Kappa objects parsed from .ka files
 from lark import ParseTree, Tree, Visitor, Token
 from typing import List
 
-from kappybara.pattern import SitePattern, AgentPattern, Pattern
+from kappybara.pattern import Site, Agent, Pattern
 from kappybara.site_states import *
 
 
 @dataclass
-class SitePatternBuilder(Visitor):
+class SiteBuilder(Visitor):
     parsed_site_name: str
     parsed_internal_state: "InternalStatePattern"
     parsed_link_state: "LinkStatePattern"
@@ -19,7 +19,7 @@ class SitePatternBuilder(Visitor):
     def __init__(self, tree: ParseTree):
         super().__init__()
 
-        self.parsed_agents: List[AgentPattern] = []
+        self.parsed_agents: List[Agent] = []
 
         assert tree.data == "site"
         self.visit(tree)
@@ -71,15 +71,15 @@ class SitePatternBuilder(Visitor):
 
 
 @dataclass
-class AgentPatternBuilder(Visitor):
+class AgentBuilder(Visitor):
     parsed_type: str
-    parsed_interface: List[SitePattern]
+    parsed_interface: List[Site]
 
     def __init__(self, tree: ParseTree):
         super().__init__()
 
         self.parsed_type = None
-        self.parsed_interface: List[SitePattern] = []
+        self.parsed_interface: List[Site] = []
 
         assert tree.data == "agent"
         self.visit(tree)
@@ -90,17 +90,17 @@ class AgentPatternBuilder(Visitor):
 
     # Visitor method for Lark
     def site(self, tree: ParseTree):
-        self.parsed_interface.append(SitePattern.from_parse_tree(tree))
+        self.parsed_interface.append(Site.from_parse_tree(tree))
 
 
 @dataclass
 class PatternBuilder(Visitor):
-    parsed_agents: List[AgentPattern]
+    parsed_agents: List[Agent]
 
     def __init__(self, tree: ParseTree):
         super().__init__()
 
-        self.parsed_agents: List[AgentPattern] = []
+        self.parsed_agents: List[Agent] = []
 
         assert tree.data == "pattern"
         self.visit(tree)
@@ -110,4 +110,4 @@ class PatternBuilder(Visitor):
 
     # Visitor method for Lark
     def agent(self, tree: ParseTree):
-        self.parsed_agents.append(AgentPattern.from_parse_tree(tree))
+        self.parsed_agents.append(Agent.from_parse_tree(tree))

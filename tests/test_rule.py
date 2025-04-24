@@ -1,7 +1,7 @@
 import pytest
 from math import comb
 
-from kappybara.pattern import Pattern, ComponentPattern
+from kappybara.pattern import Pattern, Component
 from kappybara.mixture import Mixture
 from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.system import System
@@ -119,7 +119,7 @@ def test_simple_rule_application():
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
     rule_left = Pattern.from_kappa(rule_left_str)
     rule_right = Pattern.from_kappa(rule_right_str)
-    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+    observables = [Component.from_kappa(s) for s in observables_str]
 
     mixture = Mixture()
     for _ in range(n_copies):
@@ -163,7 +163,7 @@ def test_edge_creating_rule_application():
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
     rule_left = Pattern.from_kappa(rule_left_str)
     rule_right = Pattern.from_kappa(rule_right_str)
-    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+    observables = [Component.from_kappa(s) for s in observables_str]
 
     mixture = Mixture()
     for _ in range(n_copies):
@@ -211,7 +211,7 @@ def test_rule_application():
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
     rule_left = Pattern.from_kappa(rule_left_str)
     rule_right = Pattern.from_kappa(rule_right_str)
-    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+    observables = [Component.from_kappa(s) for s in observables_str]
 
     mixture = Mixture()
     for _ in range(n_copies):
@@ -258,7 +258,7 @@ def test_simple_unimolecular_rule_application(n_copies):
     observables_str = ["A(a[1]{u}), B(b[1]{u})"]
 
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
-    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+    observables = [Component.from_kappa(s) for s in observables_str]
 
     mixture = Mixture()
     for _ in range(n_copies):
@@ -317,7 +317,7 @@ def test_simple_bimolecular_rule_application(n_copies):
     observables_str = ["B(a{p})"]
 
     mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
-    observables = [ComponentPattern.from_kappa(s) for s in observables_str]
+    observables = [Component.from_kappa(s) for s in observables_str]
 
     rule1 = rule_from_kappa(rule1_str)
     assert isinstance(rule1, KappaRuleBimolecular)
