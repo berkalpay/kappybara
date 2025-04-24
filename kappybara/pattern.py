@@ -107,20 +107,18 @@ class AgentPattern:
             if (isinstance(site.link_state, SitePattern))
         ]
 
-
-# TODO: think of a more sensible place to put this.
-# I don't think it makes sense as a class method for Molecule, since it
-# doesn't actually depend on anything there.
-def depth_first_traversal(start: AgentPattern) -> list[AgentPattern]:
-    visited = set()
-    traversal = []
-    stack = [start]
-    while stack:
-        if (agent := stack.pop()) not in visited:
-            visited.add(agent)
-            traversal.append(agent)
-            stack.extend(agent.neighbors)
-    return traversal
+    @property
+    def depth_first_traversal(self) -> list[Self]:
+        """Depth first traversal starting here."""
+        visited = set()
+        traversal = []
+        stack = [self]
+        while stack:
+            if (agent := stack.pop()) not in visited:
+                visited.add(agent)
+                traversal.append(agent)
+                stack.extend(agent.neighbors)
+        return traversal
 
 
 @dataclass
@@ -392,7 +390,7 @@ class Pattern:
         not_seen: Set[AgentPattern] = set(agents)
 
         while not_seen:
-            agents_in_component = depth_first_traversal(next(iter(not_seen)))
+            agents_in_component = next(iter(not_seen)).depth_first_traversal
             for agent in agents_in_component:
                 not_seen.remove(agent)
 
