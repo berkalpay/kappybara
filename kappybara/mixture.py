@@ -179,7 +179,7 @@ class Mixture:
                     a_site: SitePattern = a.sites[site_name]
 
                     # Check that `b` has a site with the same name
-                    if site_name not in b.sites and not a_site.undetermined():
+                    if site_name not in b.sites and not a_site.undetermined:
                         search_failed = True
                         break
 

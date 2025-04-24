@@ -34,6 +34,7 @@ class SitePattern:
 
         return res
 
+    @property
     def undetermined(self) -> bool:
         """
         Returns true if this site is in a state that would be equivalent to leaving it
@@ -237,7 +238,7 @@ class ComponentPattern:
                     a_site: SitePattern = a.sites[site_name]
 
                     # Check that `b` has a site with the same name
-                    if site_name not in b.sites and not a_site.undetermined():
+                    if site_name not in b.sites and not a_site.undetermined:
                         search_failed = True
                         break
 
@@ -274,7 +275,7 @@ class ComponentPattern:
                 for site_name in b_sites_leftover:
                     leftover_site: SitePattern = b.sites[site_name]
 
-                    if not leftover_site.undetermined():
+                    if not leftover_site.undetermined:
                         search_failed = True
                         break
 
