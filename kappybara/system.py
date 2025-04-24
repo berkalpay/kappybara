@@ -1,5 +1,6 @@
-from typing import Iterable
 import random
+from functools import cached_property
+from typing import Iterable
 
 from kappybara.mixture import Mixture
 from kappybara.rule import Rule, KappaRule
@@ -10,30 +11,31 @@ from kappybara.grammar import rules_from_kappa
 class System:
     mixture: Mixture
     rules: list[Rule]
-    rule_reactivities: list[float]
     time: float
 
     def __init__(self):
         self.mixture = Mixture()
         self.rules = []
-        self.rule_reactivities = []
         self.time = 0
+
+    @cached_property
+    def rule_reactivities(self) -> list[float]:
+        return [rule.reactivity(self) for rule in self.rules]
 
     @property
     def reactivity(self) -> float:
-        for i, rule in enumerate(self.rules):
-            self.rule_reactivities[i] = rule.reactivity(self)
         return sum(self.rule_reactivities)
 
     def wait(self) -> None:
         self.time += random.expovariate(self.reactivity)
 
     def act(self) -> None:
+        # TODO: warn after many consecutive null events?
         rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
         update = rule.select(self.mixture)
         if update is not None:
             self.mixture.apply_update(update)
-            # TODO: warn if many consecutive null events occur?
+            del self.__dict__["rule_reactivities"]
 
     def update(self) -> None:
         self.wait()
@@ -68,7 +70,6 @@ class System:
         require us to rethink things a bit.
         """
         self.rules.append(rule)
-        self.rule_reactivities.append(None)
         if isinstance(rule, KappaRule):
             for component in rule.left.components:
                 # TODO: Efficiency thing: check for isomorphism with existing components
