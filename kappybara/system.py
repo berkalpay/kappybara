@@ -1,5 +1,4 @@
 from typing import Iterable
-from dataclasses import dataclass
 import random
 
 from kappybara.mixture import Mixture
@@ -24,34 +23,30 @@ class System:
     def reactivity(self) -> float:
         for i, rule in enumerate(self.rules):
             self.rule_reactivities[i] = rule.reactivity(self)
-
         return sum(self.rule_reactivities)
 
-    def wait(self):
+    def wait(self) -> None:
         self.time += random.expovariate(self.reactivity)
 
-    def act(self):
-        rule: Rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
-        update: Optional[MixtureUpdate] = rule.select(self.mixture)
-
-        if update:
+    def act(self) -> None:
+        rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
+        update = rule.select(self.mixture)
+        if update is not None:
             self.mixture.apply_update(update)
-        else:
-            # TODO: should error if too many consecutive null events occur
-            print("Null event")
+            # TODO: warn if many consecutive null events occur?
 
-    def update(self):
+    def update(self) -> None:
         self.wait()
         self.act()
 
-    def instantiate_pattern(self, pattern: Pattern, n_copies=1):
+    def instantiate_pattern(self, pattern: Pattern, n_copies=1) -> None:
         self.mixture.instantiate(pattern, n_copies)
 
-    def add_observables(self, observables: Iterable[Component]):
+    def add_observables(self, observables: Iterable[Component]) -> None:
         for obs in observables:
             self.add_observable(obs)
 
-    def add_observable(self, obs: Component):
+    def add_observable(self, obs: Component) -> None:
         """
         NOTE: Currently, to retrieve the counts of an observable registered
         through this method, you must provide `count_observable` with the exact
@@ -60,13 +55,12 @@ class System:
         unless it also got registered through this call.
         """
         assert isinstance(obs, Component), "An observable must be a single Component"
-
         self.mixture.track_component(obs)
 
-    def count_observable(self, obs: Component):
+    def count_observable(self, obs: Component) -> int:
         return len(self.mixture.fetch_embeddings(obs))
 
-    def add_rule(self, rule: Rule):
+    def add_rule(self, rule: Rule) -> None:
         """
         NOTE: Right now an overarching assumption is that the mixture will be fully initialized
         before any rules or observables are added. But stuff like interventions which instantiate
@@ -75,15 +69,12 @@ class System:
         """
         self.rules.append(rule)
         self.rule_reactivities.append(None)
-
         if isinstance(rule, KappaRule):
             for component in rule.left.components:
                 # TODO: Efficiency thing: check for isomorphism with existing components
                 #       Create a surjective map from *all* components to set of unique components
                 self.mixture.track_component(component)
 
-    def add_rule_from_kappa(self, rule_str: str):
-        rules = rules_from_kappa(rule_str)
-
-        for rule in rules:
+    def add_rule_from_kappa(self, rule_str: str) -> None:
+        for rule in rules_from_kappa(rule_str):
             self.add_rule(rule)
