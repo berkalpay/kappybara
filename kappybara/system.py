@@ -4,7 +4,7 @@ import random
 
 from kappybara.mixture import Mixture
 from kappybara.rule import Rule, KappaRule
-from kappybara.pattern import SitePattern, AgentPattern, ComponentPattern, Pattern
+from kappybara.pattern import Component, Pattern
 from kappybara.grammar import rules_from_kappa
 
 
@@ -47,25 +47,23 @@ class System:
     def instantiate_pattern(self, pattern: Pattern, n_copies=1):
         self.mixture.instantiate(pattern, n_copies)
 
-    def add_observables(self, observables: Iterable[ComponentPattern]):
+    def add_observables(self, observables: Iterable[Component]):
         for obs in observables:
             self.add_observable(obs)
 
-    def add_observable(self, obs: ComponentPattern):
+    def add_observable(self, obs: Component):
         """
         NOTE: Currently, to retrieve the counts of an observable registered
         through this method, you must provide `count_observable` with the exact
         same object you gave to this method call. An isomorphic but non-identical
-        (i.e. different memory address) `ComponentPattern` currently will not work
+        (i.e. different memory address) `Component` currently will not work
         unless it also got registered through this call.
         """
-        assert isinstance(
-            obs, ComponentPattern
-        ), "An observable must be a single ComponentPattern"
+        assert isinstance(obs, Component), "An observable must be a single Component"
 
-        self.mixture.track_component_pattern(obs)
+        self.mixture.track_component(obs)
 
-    def count_observable(self, obs: ComponentPattern):
+    def count_observable(self, obs: Component):
         return len(self.mixture.fetch_embeddings(obs))
 
     def add_rule(self, rule: Rule):
@@ -82,7 +80,7 @@ class System:
             for component in rule.left.components:
                 # TODO: Efficiency thing: check for isomorphism with existing components
                 #       Create a surjective map from *all* components to set of unique components
-                self.mixture.track_component_pattern(component)
+                self.mixture.track_component(component)
 
     def add_rule_from_kappa(self, rule_str: str):
         rules = rules_from_kappa(rule_str)

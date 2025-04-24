@@ -15,7 +15,7 @@
 # - Algebraic expressions (for example to be used in rate constants, see rule.py and rate.py)
 # - Agent signatures (see comments in Mixture.instantiate_agent in mixture.py)
 from kappybara.system import System
-from kappybara.pattern import Pattern, ComponentPattern
+from kappybara.pattern import Pattern, Component
 
 
 def test_basic_system():
@@ -30,7 +30,7 @@ def test_basic_system():
     ]
 
     observables = [
-        ComponentPattern.from_kappa(o)
+        Component.from_kappa(o)
         for o in [
             "A(a[.])",
             "A(b[1]), A(b[1])",

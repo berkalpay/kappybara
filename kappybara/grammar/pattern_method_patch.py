@@ -9,20 +9,20 @@ us from cluttering up pattern.py with all this stuff.
 """
 
 from lark import ParseTree
-from kappybara.pattern import SitePattern, AgentPattern, ComponentPattern, Pattern
+from kappybara.pattern import Site, Agent, Component, Pattern
 from kappybara.grammar import kappa_parser
 from kappybara.grammar.pattern_builder import (
-    SitePatternBuilder,
-    AgentPatternBuilder,
+    SiteBuilder,
+    AgentBuilder,
     PatternBuilder,
 )
 
 
 @classmethod
-def site_from_parse_tree(cls, tree: ParseTree) -> SitePattern:
+def site_from_parse_tree(cls, tree: ParseTree) -> Site:
     assert tree.data == "site"
 
-    builder = SitePatternBuilder(tree)
+    builder = SiteBuilder(tree)
     return cls(
         label=builder.parsed_site_name,
         internal_state=builder.parsed_internal_state,
@@ -31,7 +31,7 @@ def site_from_parse_tree(cls, tree: ParseTree) -> SitePattern:
 
 
 @classmethod
-def agent_from_parse_tree(cls, tree: ParseTree) -> AgentPattern:
+def agent_from_parse_tree(cls, tree: ParseTree) -> Agent:
     """
     Parse an agent from a Kappa expression, whose `id` defaults to 0.
 
@@ -44,11 +44,9 @@ def agent_from_parse_tree(cls, tree: ParseTree) -> AgentPattern:
     to determine the id.
     """
     assert tree.data == "agent"
-    builder = AgentPatternBuilder(tree)
+    builder = AgentBuilder(tree)
 
-    agent: AgentPattern = cls(
-        id=0, type=builder.parsed_type, sites=builder.parsed_interface
-    )
+    agent: Agent = cls(id=0, type=builder.parsed_type, sites=builder.parsed_interface)
 
     for site in agent.sites.values():
         site.agent = agent
@@ -57,7 +55,7 @@ def agent_from_parse_tree(cls, tree: ParseTree) -> AgentPattern:
 
 
 @classmethod
-def agent_from_kappa(cls, kappa_str: str) -> AgentPattern:
+def agent_from_kappa(cls, kappa_str: str) -> Agent:
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"
     assert len(input_tree.children) == 1
@@ -72,7 +70,7 @@ def agent_from_kappa(cls, kappa_str: str) -> AgentPattern:
     return cls.from_parse_tree(agent_tree)
 
 
-def component_from_kappa(kappa_str: str) -> ComponentPattern:
+def component_from_kappa(kappa_str: str) -> Component:
     pattern = Pattern.from_kappa(kappa_str)
 
     assert len(pattern.components) == 1
@@ -107,10 +105,10 @@ def pattern_from_kappa(cls, kappa_str: str) -> Pattern:
     return cls.from_parse_tree(pattern_tree)
 
 
-SitePattern.from_parse_tree = site_from_parse_tree
-AgentPattern.from_parse_tree = agent_from_parse_tree
-AgentPattern.from_kappa = agent_from_kappa
-ComponentPattern.from_kappa = component_from_kappa
+Site.from_parse_tree = site_from_parse_tree
+Agent.from_parse_tree = agent_from_parse_tree
+Agent.from_kappa = agent_from_kappa
+Component.from_kappa = component_from_kappa
 Pattern.from_parse_tree = pattern_from_parse_tree
 Pattern.from_kappa = pattern_from_kappa
 

@@ -3,7 +3,7 @@ from typing import List
 
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.grammar import kappa_parser
-from kappybara.pattern import SitePattern, AgentPattern, Pattern
+from kappybara.pattern import Agent, Pattern
 from kappybara.site_states import *
 
 
@@ -71,8 +71,8 @@ def rules_from_parse_tree(tree: ParseTree) -> list[Rule]:
 @dataclass
 class RuleBuilder(Visitor):
     parsed_label: Optional[str]
-    left_agents: List[Optional[AgentPattern]]
-    right_agents: List[Optional[AgentPattern]]
+    left_agents: List[Optional[Agent]]
+    right_agents: List[Optional[Agent]]
 
     parsed_rates: List[float]
 
@@ -80,8 +80,8 @@ class RuleBuilder(Visitor):
         super().__init__()
 
         self.parsed_label = None
-        self.left_agents: List[AgentPattern] = []
-        self.right_agents: List[AgentPattern] = []
+        self.left_agents: List[Agent] = []
+        self.right_agents: List[Agent] = []
 
         self.parsed_rates = []
 
@@ -122,7 +122,7 @@ class RuleBuilder(Visitor):
             if child == ".":
                 agent = None
             elif child.data == "agent":
-                agent: Optional[Agent] = AgentPattern.from_parse_tree(child)
+                agent: Optional[Agent] = Agent.from_parse_tree(child)
 
             if i < mid_idx:
                 self.left_agents.append(agent)

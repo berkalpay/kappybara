@@ -5,15 +5,7 @@ from typing import Optional, Iterable
 import random
 
 from kappybara.site_states import *
-from kappybara.pattern import (
-    Pattern,
-    ComponentPattern,
-    Component,
-    AgentPattern,
-    Agent,
-    SitePattern,
-    Site,
-)
+from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, MixtureUpdate
 from kappybara.utils import rejection_sample
 
@@ -89,7 +81,7 @@ class KappaRule(Rule):
         """
         # A map from the agents in the left hand side of a rule
         # to chosen instances of agents in the mixture.
-        selection_map: dict[AgentPattern, Pattern] = {}
+        selection_map: dict[Agent, Pattern] = {}
 
         for component in self.left.components:
             choices = mixture.fetch_embeddings(component)
@@ -109,7 +101,7 @@ class KappaRule(Rule):
         return self._produce_update(selection_map, mixture)
 
     def _produce_update(
-        self, selection_map: dict[AgentPattern, Pattern], mixture: Mixture
+        self, selection_map: dict[Agent, Pattern], mixture: Mixture
     ) -> MixtureUpdate:
         """
         Takes the agents that have been chosen to be transformed by this rule,
@@ -123,7 +115,7 @@ class KappaRule(Rule):
             None if agent is None else selection_map[agent]
             for agent in self.left.agents
         ]  # Select agents in the mixture matching the rule, in order
-        new_selection: list[Optional[AgentPattern]] = [None] * len(
+        new_selection: list[Optional[Agent]] = [None] * len(
             selection
         )  # The new/modified agents used to make the appropriate edges.
         update = MixtureUpdate()
@@ -135,14 +127,14 @@ class KappaRule(Rule):
             agent: Optional[Agent] = selection[i]
 
             match l_agent, r_agent:
-                case None, AgentPattern():
+                case None, Agent():
                     new_selection[i] = update.create_agent(r_agent, mixture)
-                case AgentPattern(), None:
+                case Agent(), None:
                     update.remove_agent(agent)
-                case AgentPattern(), AgentPattern() if l_agent.type != r_agent.type:
+                case Agent(), Agent() if l_agent.type != r_agent.type:
                     update.remove_agent(agent)
                     new_selection[i] = update.create_agent(r_agent, mixture)
-                case AgentPattern(), AgentPattern() if l_agent.type == r_agent.type:
+                case Agent(), Agent() if l_agent.type == r_agent.type:
                     for r_site in r_agent.sites.values():
                         if isinstance(r_site.internal_state, InternalState):
                             agent.sites[r_site.label].internal_state = (
@@ -168,7 +160,7 @@ class KappaRule(Rule):
             for r_site in r_agent.sites.values():
                 site: Site = agent.sites[r_site.label]
                 match r_site.link_state:
-                    case SitePattern() as r_partner:
+                    case Site() as r_partner:
                         partner_idx = self.right.agents.index(r_partner.agent)
                         partner: Site = new_selection[partner_idx].sites[
                             r_partner.label
@@ -226,11 +218,11 @@ class KappaRuleUnimolecular(KappaRule):
 
         selected_component = random.choices(components_ordered, weights)[0]
 
-        selection_map: dict[AgentPattern, Pattern] = {}
+        selection_map: dict[Agent, Pattern] = {}
 
-        for component_pattern in self.left.components:
+        for component in self.left.components:
             choices = mixture.fetch_embeddings_in_component(
-                component_pattern, selected_component
+                component, selected_component
             )
             assert (
                 len(choices) > 0
@@ -271,8 +263,8 @@ class KappaRuleBimolecular(KappaRule):
         )  # Again, we're just doing this from scratch from now
 
         for component in mixture.components:
-            match1: ComponentPattern = self.left.components[0]
-            match2: ComponentPattern = self.left.components[1]
+            match1: Component = self.left.components[0]
+            match2: Component = self.left.components[1]
 
             # Number of times the first component in the left Pattern of this rule
             # embeds into `component`
@@ -319,6 +311,6 @@ class KappaRuleBimolecular(KappaRule):
         # TODO: Assert that the two chosen components are not in the same
         # connected component as a sanity check
 
-        selection_map: dict[AgentPattern, Pattern] = match1 | match2
+        selection_map: dict[Agent, Pattern] = match1 | match2
 
         return self._produce_update(selection_map, mixture)

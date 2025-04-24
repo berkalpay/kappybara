@@ -6,9 +6,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Union
 
-# from kappybara.physics import Site
-# from kappybara.pattern import SitePattern
-
 # Specified as '.' in the Kappa language
 EmptyState = type(None)
 
@@ -69,7 +66,7 @@ LinkStatePattern = (
     | EmptyState
     | UndeterminedState
     | Union[
-        "SitePattern"
+        "Site"
     ]  # Hack to make this a forward ref to avoid cyclic dependencies, same as Site in LinkState. TODO something better
 )
 
