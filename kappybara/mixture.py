@@ -14,7 +14,6 @@ from kappybara.pattern import (
     Site,
     Agent,
     Component,
-    depth_first_traversal,
 )
 
 
@@ -423,7 +422,7 @@ class Mixture:
         # We start with the simple approach of BFSing from all disconnected agents
         # like Berk was doing. If it ends up being a bottleneck, I'm pretty confident now
         # that incremental min-cut could help a lot
-        maybe_new_component = Component(depth_first_traversal(agent1))
+        maybe_new_component = Component(agent1.depth_first_traversal)
         if agent2 not in maybe_new_component.agents:
             self.components.add(maybe_new_component)
 
