@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, List, Dict, Set
+from typing import Self
 
 from kappybara.site_states import *
 
@@ -16,7 +16,7 @@ class SitePattern:
     def __hash__(self):
         return id(self)
 
-    def __eq__(self, other: Self):
+    def __eq__(self, other):
         return hash(self) == hash(other)
 
     def __repr__(self):  # TODO: add detail
@@ -74,21 +74,10 @@ class AgentPattern:
         self.sites = {site.label: site for site in sites}
 
     def __hash__(self):
-        # TODO: come back to assigning deterministic id's to Agents (as well as
-        # other indexed objects like ComponentPatterns). The way this happens right now
-        # is very ad-hoc and I'm not happy with it, so I'm falling back on just using
-        # the object memory address for now just for convenience, but eventually I want
-        # every important mixture object to hav . I'm pretty sure what we should do is just
-        # have a global nonce variable (rather than have the nonce be owned by `Mixture`)
-        # so we can access it from anywhere and assign an id wherever it's needed in the
-        # `__init__` functions of `AgentPattern`, `ComponentPattern`, etc. So basically
-        # when creating an `AgentPattern`, for example, I want to be able to call it without
-        # having `id` be an argument as it is now, but under the hood the Agent just automatically
-        # gets assigned an `id` that's guaranteed to be unique and deterministic.
-        # return self.id
+        # TODO: a global variable to assign deterministic IDs to important mixture objects
         return id(self)
 
-    def __eq__(self, other: Self):
+    def __eq__(self, other):
         return id(self) == id(other)
 
     @cached_property
@@ -168,7 +157,7 @@ class ComponentPattern:
     def __hash__(self):
         return id(self)
 
-    def __eq__(self, other: Self):
+    def __eq__(self, other):
         return hash(self) == hash(other)
 
     def add_agent(self, agent: AgentPattern):
@@ -340,12 +329,12 @@ class Pattern:
     Class methods for constructing `Pattern`s from Kappa strings are defined in grammar/pattern_method_patch.py
     """
 
-    agents: List[Optional[AgentPattern]]
-    components: List[
+    agents: list[Optional[AgentPattern]]
+    components: list[
         ComponentPattern
     ]  # An index on the constituent connected components making up the pattern
 
-    def __init__(self, agents: List[Optional[AgentPattern]]):
+    def __init__(self, agents: list[Optional[AgentPattern]]):
         """
         Compile a pattern from a list of `AgentPatterns` whose edges are implied by integer
         link states. Replaces integer link states with references to actual partners, and
@@ -387,7 +376,7 @@ class Pattern:
         # NOTE: some redundant loops but prioritized code simplicity;
         # worst this can do is slow down initialization.
         self.components = []
-        not_seen: Set[AgentPattern] = set(agents)
+        not_seen: set[AgentPattern] = set(agents)
 
         while not_seen:
             agents_in_component = next(iter(not_seen)).depth_first_traversal
@@ -401,13 +390,8 @@ class Pattern:
         return any(agent.underspecified for agent in self.agents)
 
 
-# Types ending with "Pattern" are used to annotate entities involved with rule or observable definitions,
-# rather than concrete instances. On the other hand, `Site`, `Agent`, and `Component` are used to annotate
-# objects which are concrete instances in a mixture. The data types and functionality of the latter
-# can be thought of as just a subset of the former, hence why we can use the same class definition for both,
-# but I found using these aliases to make the above distinction to be useful for clarifying function signatures
-# documentation-wise. There are also some potential merits to just doing full separate class definitions for
-# the types below (at the cost of a lot of redundant code), but that's a consideration for later.
+# These can be thought of as subsets of patterns but the aliases are useful for documentation
+# TODO: separate class definitions?
 Site = SitePattern
 Agent = AgentPattern
 Component = ComponentPattern
