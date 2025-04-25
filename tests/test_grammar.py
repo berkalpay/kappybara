@@ -5,6 +5,7 @@ from kappybara.pattern import Pattern
 from kappybara.grammar.kaparse import kappa_parser
 from kappybara.rule import KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.grammar.rule_builder import rules_from_kappa
+import kappybara.kappa as kappa
 
 
 # Parser
@@ -42,7 +43,7 @@ def test_pattern_from_kappa():
         D(w[3]),
         E()
     """
-    pattern = Pattern.from_kappa(test_kappa)
+    pattern = kappa.pattern(test_kappa)
 
     assert ["A", "B", "C", "D", "E"] == list(
         map(lambda agent: agent.type, pattern.agents)

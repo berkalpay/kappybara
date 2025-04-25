@@ -1,5 +1,6 @@
 import pytest
 from kappybara.pattern import Component, Pattern
+import kappybara.kappa as kappa
 
 
 def test_pattern_from_kappa():
@@ -10,7 +11,7 @@ def test_pattern_from_kappa():
         D(w[3]),
         E()
     """
-    pattern = Pattern.from_kappa(test_kappa)
+    pattern = kappa.pattern(test_kappa)
 
     assert ["A", "B", "C", "D", "E"] == list(
         map(lambda agent: agent.type, pattern.agents)
@@ -70,8 +71,8 @@ def test_component_isomorphism(test_case):
     """
     a_str, b_str, expected_result = test_case
 
-    a = Component.from_kappa(a_str)
-    b = Component.from_kappa(b_str)
+    a = kappa.component(a_str)
+    b = kappa.component(b_str)
 
     assert a.isomorphic(b) == b.isomorphic(a)
     assert expected_result == a.isomorphic(b)
@@ -88,7 +89,7 @@ def test_component_isomorphism(test_case):
 def test_automorphism_counting(test_case):
     kappa_str, n_automorphisms_expected = test_case
 
-    component = Component.from_kappa(kappa_str)
+    component = kappa.component(kappa_str)
 
     assert component.isomorphic(component)
     assert n_automorphisms_expected == len(component.find_isomorphisms(component))
@@ -103,4 +104,4 @@ if __name__ == "__main__":
         E()
     """
 
-    p = Pattern.from_kappa(test_kappa)
+    p = kappa.pattern(test_kappa)

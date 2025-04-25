@@ -326,10 +326,6 @@ class Component:
 
 @dataclass
 class Pattern:
-    """
-    Class methods for constructing `Pattern`s from Kappa strings are defined in grammar/pattern_method_patch.py
-    """
-
     agents: list[Optional[Agent]]
     components: list[
         Component
