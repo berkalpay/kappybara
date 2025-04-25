@@ -21,7 +21,6 @@ from kappybara.grammar.pattern_builder import (
 @classmethod
 def site_from_parse_tree(cls, tree: ParseTree) -> Site:
     assert tree.data == "site"
-
     builder = SiteBuilder(tree)
     return cls(
         label=builder.parsed_site_name,
@@ -32,25 +31,12 @@ def site_from_parse_tree(cls, tree: ParseTree) -> Site:
 
 @classmethod
 def agent_from_parse_tree(cls, tree: ParseTree) -> Agent:
-    """
-    Parse an agent from a Kappa expression, whose `id` defaults to 0.
-
-    Wherever you use this method, you *must* manually reassign
-    the id of the created agent to ensure uniqueness in its context.
-
-    TODO: Think about refactoring this to explicitly require an id assignment.
-    One way would be to require a `Mixture` as an argument just to be able
-    to call this method in the first place, and using the `Mixture`'s nonce
-    to determine the id.
-    """
+    """NOTE: `id` defaults to 0 and should be reassigned."""
     assert tree.data == "agent"
     builder = AgentBuilder(tree)
-
     agent: Agent = cls(id=0, type=builder.parsed_type, sites=builder.parsed_interface)
-
     for site in agent.sites.values():
         site.agent = agent
-
     return agent
 
 
@@ -72,20 +58,16 @@ def agent_from_kappa(cls, kappa_str: str) -> Agent:
 
 def component_from_kappa(kappa_str: str) -> Component:
     pattern = Pattern.from_kappa(kappa_str)
-
     assert len(pattern.components) == 1
-
     return pattern.components[0]
 
 
 @classmethod
 def pattern_from_parse_tree(cls, tree: ParseTree) -> Pattern:
     assert tree.data == "pattern"
-
     builder = PatternBuilder(tree)
 
-    # Reassign agent id's so they are unique (in the
-    # context of this individual Pattern)
+    # Reassign agent id's so they're unique in this Pattern
     for i in range(len(builder.parsed_agents)):
         builder.parsed_agents[i].id = i
 
