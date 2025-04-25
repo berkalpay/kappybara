@@ -69,6 +69,14 @@ class SiteBuilder(Visitor):
             case _:
                 raise ValueError(f"Unexpected link state in site parse tree: {tree}")
 
+    @property
+    def object(self) -> Site:
+        return Site(
+            label=self.parsed_site_name,
+            internal_state=self.parsed_internal_state,
+            link_state=self.parsed_link_state,
+        )
+
 
 @dataclass
 class AgentBuilder(Visitor):
@@ -90,7 +98,15 @@ class AgentBuilder(Visitor):
 
     # Visitor method for Lark
     def site(self, tree: ParseTree):
-        self.parsed_interface.append(Site.from_parse_tree(tree))
+        self.parsed_interface.append(SiteBuilder(tree).object)
+
+    @property
+    def object(self) -> Agent:
+        """NOTE: `id` defaults to 0 and should be reassigned."""
+        agent = Agent(id=0, type=self.parsed_type, sites=self.parsed_interface)
+        for site in agent.sites.values():
+            site.agent = agent
+        return agent
 
 
 @dataclass
@@ -110,4 +126,11 @@ class PatternBuilder(Visitor):
 
     # Visitor method for Lark
     def agent(self, tree: ParseTree):
-        self.parsed_agents.append(Agent.from_parse_tree(tree))
+        self.parsed_agents.append(AgentBuilder(tree).object)
+
+    @property
+    def object(self) -> Pattern:
+        # Reassign agent id's so they're unique in this Pattern
+        for i in range(len(self.parsed_agents)):
+            self.parsed_agents[i].id = i
+        return Pattern(agents=self.parsed_agents)
