@@ -34,26 +34,3 @@ class KappaParser:
 
 
 kappa_parser = KappaParser()
-
-
-# TODO: get pytest to pick up on inline test functions like this and run them
-# Need to create a .pytest file in the root dir and add some setting there
-def test_parse_file():
-    kappa_file_path = str(Path(__file__).parent / "wnt_v8.ka")
-
-    kappa_parser.parse_file(kappa_file_path)
-    n_rules_expected = 121
-    n_agents_expected = 10
-
-
-def test_parse():
-    test_kappa = """
-    A(s[.]), S(a[.]) -> A(s[1]), S(a[1])    @	1
-    """
-
-    test_kappa = """
-    A(s[.])
-    """
-
-    ka = kappa_parser.parse(test_kappa)
-    print(ka)
