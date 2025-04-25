@@ -8,44 +8,17 @@ simulation logic in pattern.py. So patching in those constructors here saves
 us from cluttering up pattern.py with all this stuff.
 """
 
-from lark import ParseTree
-from kappybara.pattern import Site, Agent, Component, Pattern
+from kappybara.pattern import Agent, Component, Pattern
 from kappybara.grammar import kappa_parser
-from kappybara.grammar.pattern_builder import (
-    SiteBuilder,
-    AgentBuilder,
-    PatternBuilder,
-)
-
-
-@classmethod
-def site_from_parse_tree(cls, tree: ParseTree) -> Site:
-    assert tree.data == "site"
-    builder = SiteBuilder(tree)
-    return cls(
-        label=builder.parsed_site_name,
-        internal_state=builder.parsed_internal_state,
-        link_state=builder.parsed_link_state,
-    )
-
-
-@classmethod
-def agent_from_parse_tree(cls, tree: ParseTree) -> Agent:
-    """NOTE: `id` defaults to 0 and should be reassigned."""
-    assert tree.data == "agent"
-    builder = AgentBuilder(tree)
-    agent: Agent = cls(id=0, type=builder.parsed_type, sites=builder.parsed_interface)
-    for site in agent.sites.values():
-        site.agent = agent
-    return agent
+from kappybara.grammar.pattern_builder import AgentBuilder, PatternBuilder
 
 
 @classmethod
 def agent_from_kappa(cls, kappa_str: str) -> Agent:
+    # Check pattern describes only a single agent
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"
     assert len(input_tree.children) == 1
-
     pattern_tree = input_tree.children[0]
     assert pattern_tree.data == "pattern"
     assert (
@@ -53,25 +26,13 @@ def agent_from_kappa(cls, kappa_str: str) -> Agent:
     ), "Zero or more than one agent patterns were specified."
 
     agent_tree = pattern_tree.children[0]
-    return cls.from_parse_tree(agent_tree)
+    return AgentBuilder(agent_tree).object
 
 
 def component_from_kappa(kappa_str: str) -> Component:
     pattern = Pattern.from_kappa(kappa_str)
     assert len(pattern.components) == 1
     return pattern.components[0]
-
-
-@classmethod
-def pattern_from_parse_tree(cls, tree: ParseTree) -> Pattern:
-    assert tree.data == "pattern"
-    builder = PatternBuilder(tree)
-
-    # Reassign agent id's so they're unique in this Pattern
-    for i in range(len(builder.parsed_agents)):
-        builder.parsed_agents[i].id = i
-
-    return cls(agents=builder.parsed_agents)
 
 
 @classmethod
@@ -84,12 +45,9 @@ def pattern_from_kappa(cls, kappa_str: str) -> Pattern:
     assert len(input_tree.children) == 1
 
     pattern_tree = input_tree.children[0]
-    return cls.from_parse_tree(pattern_tree)
+    return PatternBuilder(pattern_tree).object
 
 
-Site.from_parse_tree = site_from_parse_tree
-Agent.from_parse_tree = agent_from_parse_tree
 Agent.from_kappa = agent_from_kappa
 Component.from_kappa = component_from_kappa
-Pattern.from_parse_tree = pattern_from_parse_tree
 Pattern.from_kappa = pattern_from_kappa

@@ -3,6 +3,7 @@ from typing import List
 
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.grammar import kappa_parser
+from kappybara.grammar.pattern_builder import AgentBuilder
 from kappybara.pattern import Agent, Pattern
 from kappybara.site_states import *
 
@@ -122,7 +123,7 @@ class RuleBuilder(Visitor):
             if child == ".":
                 agent = None
             elif child.data == "agent":
-                agent: Optional[Agent] = Agent.from_parse_tree(child)
+                agent: Optional[Agent] = AgentBuilder(child).object
 
             if i < mid_idx:
                 self.left_agents.append(agent)
