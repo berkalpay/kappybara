@@ -16,6 +16,7 @@
 # - Agent signatures (see comments in Mixture.instantiate_agent in mixture.py)
 from kappybara.system import System
 from kappybara.pattern import Pattern, Component
+import kappybara.kappa as kappa
 
 
 def test_basic_system():
@@ -30,7 +31,7 @@ def test_basic_system():
     ]
 
     observables = [
-        Component.from_kappa(o)
+        kappa.component(o)
         for o in [
             "A(a[.])",
             "A(b[1]), A(b[1])",
@@ -40,7 +41,7 @@ def test_basic_system():
 
     for pair in init_patterns:
         pattern_str, count = pair
-        pattern = Pattern.from_kappa(pattern_str)
+        pattern = kappa.pattern(pattern_str)
 
         for i in range(count):
             system.instantiate_pattern(pattern)
