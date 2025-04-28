@@ -92,7 +92,7 @@ def test_automorphism_counting(test_case):
     component = kappa.component(kappa_str)
 
     assert component.isomorphic(component)
-    assert n_automorphisms_expected == len(component.find_isomorphisms(component))
+    assert n_automorphisms_expected == len(component.isomorphisms(component))
 
 
 if __name__ == "__main__":
