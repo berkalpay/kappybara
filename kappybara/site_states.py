@@ -4,53 +4,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional, Union, NamedTuple
 
-# Specified as '.' in the Kappa language
-EmptyState = type(None)
-
-
-@dataclass
-class UndeterminedState:
-    """
-    When used in a pattern for instantiation, the relevant state should be set
-    to a default (empty for link state, some default for internal state).
-    When used in a rule or observation pattern, this is the same as a wild card.
-    """
-
-    pass
-
-
-@dataclass
-class WildCardPredicate:
-    """
-    A predicate which will match anything
-    Specified as the hash symbol ('#') in the Kappa language
-    """
-
-    pass
-
-
-@dataclass
-class BoundPredicate:
-    """
-    A link state predicate which matches if the site is bound.
-    Specified as an underscore ('_') in the Kappa language
-    """
-
-    pass
-
-
-@dataclass
-class SiteTypePredicate:
-    """
-    A link state predicate which matches if the site is bound,
-    but only to a specific site type.
-    """
-
-    site_name: str
-    agent_name: str
-
+EmptyState = type(None)  # '.' in the Kappa language
+UndeterminedState = NamedTuple("UndeterminedState", [])
+WildCardPredicate = NamedTuple("WildCardPredicate", [])
+BoundPredicate = NamedTuple("BoundPredicate", [])
+SiteTypePredicate = NamedTuple(
+    "SiteTypePredicate", [("site_name", str), ("agent_name", str)]
+)
 
 # TODO: implementing other internal state types should start by extending this to a union type e.g. str | int
 InternalState = str
