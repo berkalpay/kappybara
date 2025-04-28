@@ -5,7 +5,7 @@ from typing import Iterable
 from kappybara.mixture import Mixture
 from kappybara.rule import Rule, KappaRule
 from kappybara.pattern import Component, Pattern
-from kappybara.grammar import rules_from_kappa
+import kappybara.kappa as kappa
 
 
 class System:
@@ -77,5 +77,5 @@ class System:
                 self.mixture.track_component(component)
 
     def add_rule_from_kappa(self, rule_str: str) -> None:
-        for rule in rules_from_kappa(rule_str):
+        for rule in kappa.rules(rule_str):
             self.add_rule(rule)

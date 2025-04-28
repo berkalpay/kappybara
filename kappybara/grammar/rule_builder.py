@@ -1,27 +1,9 @@
 from lark import ParseTree, Visitor, Token
 
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
-from kappybara.grammar import kappa_parser
 from kappybara.grammar.pattern_builder import AgentBuilder
 from kappybara.pattern import Agent, Pattern
 from kappybara.site_states import *
-
-
-def rule_from_kappa(kappa_str: str) -> Rule:
-    rules = rules_from_kappa(kappa_str)
-    assert len(rules) == 1, "The given rule expression represents more than one rule."
-    return rules[0]
-
-
-def rules_from_kappa(kappa_str: str) -> list[Rule]:
-    """
-    Forward-reverse rules (with a "<->") really represent two separate rules,
-    which is why this doesn't quite work as a class method for `Rule`.
-    """
-    input_tree = kappa_parser.parse(kappa_str)
-    assert input_tree.data == "kappa_input"
-    rule_tree = input_tree.children[0]
-    return RuleBuilder(rule_tree).objects
 
 
 @dataclass

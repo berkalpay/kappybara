@@ -1,6 +1,8 @@
 from kappybara.pattern import Agent, Component, Pattern
+from kappybara.rule import Rule
 from kappybara.grammar import kappa_parser
 from kappybara.grammar.pattern_builder import AgentBuilder, PatternBuilder
+from kappybara.grammar.rule_builder import RuleBuilder
 
 
 def agent(kappa_str: str) -> Agent:
@@ -34,3 +36,21 @@ def pattern(kappa_str: str) -> Pattern:
 
     pattern_tree = input_tree.children[0]
     return PatternBuilder(pattern_tree).object
+
+
+def rules(kappa_str: str) -> list[Rule]:
+    """
+    Forward-reverse rules (with a "<->") really represent two separate rules,
+    which is why this doesn't quite work as a class method for `Rule`.
+    """
+    input_tree = kappa_parser.parse(kappa_str)
+    assert input_tree.data == "kappa_input"
+    rule_tree = input_tree.children[0]
+    return RuleBuilder(rule_tree).objects
+
+
+def rule(kappa_str: str) -> Rule:
+    # TODO: namespace these fncs so variable names aren't as sensitive?
+    r = rules(kappa_str)
+    assert len(r) == 1, "The given rule expression represents more than one rule."
+    return r[0]

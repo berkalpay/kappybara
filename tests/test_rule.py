@@ -1,11 +1,9 @@
 import pytest
 from math import comb
 
-from kappybara.pattern import Pattern, Component
 from kappybara.mixture import Mixture
 from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.system import System
-from kappybara.grammar import rule_from_kappa
 import kappybara.kappa as kappa
 
 
@@ -266,8 +264,8 @@ def test_simple_unimolecular_rule_application(n_copies):
         mixture.instantiate(mixture_pattern)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
-    rule1 = rule_from_kappa(rule1_str)
-    rule2 = rule_from_kappa(rule2_str)
+    rule1 = kappa.rule(rule1_str)
+    rule2 = kappa.rule(rule2_str)
 
     assert isinstance(rule1, KappaRuleUnimolecular)
     assert isinstance(rule2, KappaRule)
@@ -320,7 +318,7 @@ def test_simple_bimolecular_rule_application(n_copies):
     mixture_pattern = kappa.pattern(mixture_pattern_str)
     observables = [kappa.component(s) for s in observables_str]
 
-    rule1 = rule_from_kappa(rule1_str)
+    rule1 = kappa.rule(rule1_str)
     assert isinstance(rule1, KappaRuleBimolecular)
 
     mixture = Mixture()
