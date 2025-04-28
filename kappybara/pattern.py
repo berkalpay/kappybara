@@ -9,7 +9,7 @@ import kappybara.site_states as states
 @dataclass
 class Site:
     label: str
-    internal_state: "states.states.InternalPattern"
+    internal_state: "states.InternalPattern"
     link_state: "states.LinkPattern"
     agent: "Agent" = None
 

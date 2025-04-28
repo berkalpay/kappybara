@@ -38,7 +38,7 @@ kappa_parser = KappaParser()
 @dataclass
 class SiteBuilder(Visitor):
     parsed_site_name: str
-    parsed_internal_state: "states.states.InternalPattern"
+    parsed_internal_state: "states.InternalPattern"
     parsed_link_state: "states.LinkPattern"
 
     def __init__(self, tree: ParseTree):
