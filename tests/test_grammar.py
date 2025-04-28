@@ -1,10 +1,8 @@
 import pytest
 from pathlib import Path
 
-from kappybara.pattern import Pattern
 from kappybara.grammar.kaparse import kappa_parser
 from kappybara.rule import KappaRuleUnimolecular, KappaRuleBimolecular
-from kappybara.grammar.rule_builder import rules_from_kappa
 import kappybara.kappa as kappa
 
 
@@ -61,7 +59,7 @@ def test_pattern_from_kappa():
 def test_rule_from_kappa():
     rule_str = "A(a{p}), B(), . -> A(a{u}), B(), C() @ 1.0"
 
-    rules = rules_from_kappa(rule_str)
+    rules = kappa.rules(rule_str)
     assert len(rules) == 1
 
 
@@ -73,14 +71,14 @@ def test_rule_from_kappa():
     ],
 )
 def test_fr_rule_from_kappa(rule_str):
-    rules = rules_from_kappa(rule_str)
+    rules = kappa.rules(rule_str)
     assert len(rules) == 2
 
 
 def test_ambi_rule_from_kappa():
     rule_str = "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}"
 
-    rules = rules_from_kappa(rule_str)
+    rules = kappa.rules(rule_str)
     assert len(rules) == 2
     assert isinstance(rules[0], KappaRuleBimolecular)
     assert isinstance(rules[1], KappaRuleUnimolecular)
@@ -91,7 +89,7 @@ def test_ambi_rule_from_kappa():
 def test_uni_rule_from_kappa():
     rule_str = "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 0.0 {2.0}"
 
-    rules = rules_from_kappa(rule_str)
+    rules = kappa.rules(rule_str)
     assert len(rules) == 1
     assert isinstance(rules[0], KappaRuleUnimolecular)
     assert rules[0].stochastic_rate == 2.0
@@ -100,7 +98,7 @@ def test_uni_rule_from_kappa():
 def test_bi_rule_from_kappa():
     rule_str = "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {0.0}"
 
-    rules = rules_from_kappa(rule_str)
+    rules = kappa.rules(rule_str)
     assert len(rules) == 1
     assert isinstance(rules[0], KappaRuleBimolecular)
     assert rules[0].stochastic_rate == 1.0
@@ -111,7 +109,7 @@ def test_ambi_fr_rule_from_kappa():
         "A(a{p}), B(b[1]), C(c[1]) <-> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}, 3.0"
     )
 
-    rules = rules_from_kappa(rule_str)
+    rules = kappa.rules(rule_str)
     assert len(rules) == 3
     assert isinstance(rules[0], KappaRuleBimolecular)
     assert isinstance(rules[1], KappaRuleUnimolecular)
