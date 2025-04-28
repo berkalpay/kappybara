@@ -75,7 +75,6 @@ class Agent:
         self.sites = {site.label: site for site in sites}
 
     def __hash__(self):
-        # TODO: a global variable to assign deterministic IDs to important mixture objects
         return id(self)
 
     def __eq__(self, other):
