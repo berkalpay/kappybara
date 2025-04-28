@@ -3,7 +3,7 @@ from collections import defaultdict
 from copy import deepcopy
 from warnings import warn
 
-from kappybara.site_states import *
+import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Component, Pattern
 
 
@@ -64,7 +64,7 @@ class Mixture:
             match site.internal_state:
                 case str():
                     pass
-                case UndeterminedState():
+                case states.Undetermined():
                     warn(
                         f"Agent pattern: {agent_p} was instantiated with an undetermined internal site state with no known default. We might want to require an agent signature for cases like these."
                     )
@@ -92,12 +92,12 @@ class Mixture:
                         "Pattern is not specific enough to be instantiated."
                     )
             match site.link_state:
-                case EmptyState():
+                case states.Empty():
                     pass
-                case Site() | UndeterminedState():
+                case Site() | states.Undetermined():
                     # NOTE: This can cause unintended behavior if you're not aware of this
                     # Be aware of this if you're writing internal methods for instantiating patterns.
-                    site.link_state = EmptyState()
+                    site.link_state = states.Empty()
                 case _:
                     raise AssertionError(
                         f"Agent pattern: {agent_p} is not specific enough to be instantiated."
@@ -194,26 +194,26 @@ class Mixture:
 
                     # Check internal state
                     match a_site.internal_state:
-                        case WildCardPredicate() | UndeterminedState():
+                        case states.Wildcard() | states.Undetermined():
                             pass
-                        case InternalState():
+                        case states.Internal():
                             if a_site.internal_state != b_site.internal_state:
                                 search_failed = True
                                 break
 
                     # Check link state
                     match a_site.link_state:
-                        case WildCardPredicate() | UndeterminedState():
+                        case states.Wildcard() | states.Undetermined():
                             pass
-                        case EmptyState():
-                            if not isinstance(b_site.link_state, EmptyState):
+                        case states.Empty():
+                            if not isinstance(b_site.link_state, states.Empty):
                                 search_failed = True
                                 break
-                        case BoundPredicate():
+                        case states.Bound():
                             if not isinstance(b_site.link_state, Site):
                                 search_failed = True
                                 break
-                        case SiteTypePredicate():
+                        case states.SiteType():
                             if not isinstance(b_site.link_state, Site):
                                 search_failed = True
                                 break
@@ -339,7 +339,7 @@ class Mixture:
         """
         # Assert all sites are unbound
         assert all(
-            isinstance(site.link_state, EmptyState) for site in agent.sites.values()
+            isinstance(site.link_state, states.Empty) for site in agent.sites.values()
         )
 
         self.agents.add(agent)
@@ -357,7 +357,7 @@ class Mixture:
         """
         # Assert all sites are unbound
         assert all(
-            isinstance(site.link_state, EmptyState) for site in agent.sites.values()
+            isinstance(site.link_state, states.Empty) for site in agent.sites.values()
         )
 
         self.agents.remove(agent)
@@ -409,8 +409,8 @@ class Mixture:
         assert edge.site1.link_state == edge.site2
         assert edge.site2.link_state == edge.site1
 
-        edge.site1.link_state = EmptyState()
-        edge.site2.link_state = EmptyState()
+        edge.site1.link_state = states.Empty()
+        edge.site2.link_state = states.Empty()
 
         # Check if component became disconnected
         agent1: Agent = edge.site1.agent
@@ -450,7 +450,7 @@ class Mixture:
     #     # Account for invalidated matches
     #     #  - Matches invalidated by removal of edges or nodes
     #     #  - Matches invalidated by *addition* of edges. This is rather unique to Kappa.
-    #     #    TODO: double-check that invalidation by edge addition can only happen when there's an EmptyPredicate in the pattern
+    #     #    TODO: double-check that invalidation by edge addition can only happen when there's an Empty predicate in the pattern
     #     raise NotImplementedError
 
 
@@ -497,7 +497,7 @@ class MixtureUpdate:
         the created agent to the mixture. `mixture` is an argument here only because
         we need it to assign a new agent ID.
 
-        NOTE: Link site states in the created agent will be `EmptyState`, even if `agent`
+        NOTE: Link site states in the created agent will be `Empty`, even if `agent`
         had bound sites originally, due to the implementation of `instantiate_agent` in `Mixture`.
         It's up to you to add any desired bonds back in manually using `self.connect_sites`.
         """

@@ -1,16 +1,16 @@
 import pytest
 
-from kappybara.site_states import *
+import kappybara.site_states as states
 
 
 @pytest.mark.parametrize(
     "test_pair",
     [
-        (EmptyState(), EmptyState()),
-        (UndeterminedState(), UndeterminedState()),
-        (WildCardPredicate(), WildCardPredicate()),
-        (BoundPredicate(), BoundPredicate()),
-        (SiteTypePredicate("a", "A"), SiteTypePredicate("a", "A")),
+        (states.Empty(), states.Empty()),
+        (states.Undetermined(), states.Undetermined()),
+        (states.Wildcard(), states.Wildcard()),
+        (states.Bound(), states.Bound()),
+        (states.SiteType("a", "A"), states.SiteType("a", "A")),
     ],
 )
 def test_state_comparison_eq(test_pair):

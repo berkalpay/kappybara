@@ -2,40 +2,35 @@
 # I want to remove the quotes around types in
 # `LinkState` and `LinkStatePattern`
 from __future__ import annotations
+from typing import Union, NamedTuple
 
-from dataclasses import dataclass
-from typing import Optional, Union, NamedTuple
-
-EmptyState = type(None)  # '.' in Kappa
-
+Empty = type(None)  # '.' in Kappa
 
 # Default state in pattern instantiation. Same as a wildcard in rules and observations.
-UndeterminedState = NamedTuple("UndeterminedState", [])
+Undetermined = NamedTuple("Undetermined", [])
 
 # Matches anything ('#' in Kappa)
-WildCardPredicate = NamedTuple("WildCardPredicate", [])
+Wildcard = NamedTuple("Wildcard", [])
 
 # Matches if the sites is bound ('_' in Kappa)
-BoundPredicate = NamedTuple("BoundPredicate", [])
+Bound = NamedTuple("Bound", [])
 
 # Matches if the site is bound to a specific type of site
-SiteTypePredicate = NamedTuple(
-    "SiteTypePredicate", [("site_name", str), ("agent_name", str)]
-)
+SiteType = NamedTuple("SiteType", [("site_name", str), ("agent_name", str)])
 
 # TODO: implementing other internal state types should start by extending this to a union type e.g. str | int
-InternalState = str
-InternalStatePattern = InternalState | WildCardPredicate | UndeterminedState
+Internal = str
+InternalPattern = Internal | Wildcard | Undetermined
 
 # This is the same as Optional[Site], just makes what the None type actually means in context a bit clearer
-LinkState = Union["Site"] | EmptyState
-LinkStatePattern = (
-    WildCardPredicate
-    | BoundPredicate
-    | SiteTypePredicate
+Link = Union["Site"] | Empty
+LinkPattern = (
+    Wildcard
+    | Bound
+    | SiteType
     | int
-    | EmptyState
-    | UndeterminedState
+    | Empty
+    | Undetermined
     | Union[
         "Site"
     ]  # Hack to make this a forward ref to avoid cyclic dependencies, same as Site in LinkState. TODO something better
