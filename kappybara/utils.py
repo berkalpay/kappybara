@@ -36,3 +36,12 @@ def rejection_sample(population: Iterable, excluded: Iterable, max_attempts: int
     if not valid_choices:
         raise ValueError("No valid elements to choose from")
     return random.choice(valid_choices)
+
+
+chemical_constants = {
+    "avogadro": 6.02214e23,
+    "diffusion_rate": 1e9,
+    "kds": {"weak": 1e-6, "moderate": 1e-7, "strong": 1e-8},
+    "volumes": {"fibro": 2.25e-12, "yeast": 4.2e-14},
+    "room_temperature": 273.15 + 25,
+}
