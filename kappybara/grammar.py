@@ -1,6 +1,5 @@
 from pathlib import Path
 from lark import Lark, ParseTree, Tree, Visitor, Token
-from typing import List
 
 from kappybara.site_states import *
 from kappybara.pattern import Site, Agent, Pattern
@@ -10,7 +9,7 @@ from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimo
 class KappaParser:
     """Don't instantiate: use `kappa_parser`"""
 
-    def __init__(self) -> None:
+    def __init__(self):
         self._parser = Lark.open(
             str(Path(__file__).parent / "kappa.lark"),
             rel_to=__file__,
@@ -43,17 +42,17 @@ class SiteBuilder(Visitor):
     def __init__(self, tree: ParseTree):
         super().__init__()
 
-        self.parsed_agents: List[Agent] = []
+        self.parsed_agents: list[Agent] = []
 
         assert tree.data == "site"
         self.visit(tree)
 
     # Visitor method for Lark
-    def site_name(self, tree: ParseTree):
+    def site_name(self, tree: ParseTree) -> None:
         self.parsed_site_name = str(tree.children[0])
 
     # Visitor method for Lark
-    def internal_state(self, tree: ParseTree):
+    def internal_state(self, tree: ParseTree) -> None:
         match tree.children[0]:
             case "#":
                 self.parsed_internal_state = WildCardPredicate()
@@ -71,7 +70,7 @@ class SiteBuilder(Visitor):
                 )
 
     # Visitor method for Lark
-    def link_state(self, tree: ParseTree):
+    def link_state(self, tree: ParseTree) -> None:
         match tree.children:
             case ["#"]:
                 self.parsed_link_state = WildCardPredicate()
@@ -105,23 +104,23 @@ class SiteBuilder(Visitor):
 @dataclass
 class AgentBuilder(Visitor):
     parsed_type: str
-    parsed_interface: List[Site]
+    parsed_interface: list[Site]
 
     def __init__(self, tree: ParseTree):
         super().__init__()
 
         self.parsed_type = None
-        self.parsed_interface: List[Site] = []
+        self.parsed_interface: list[Site] = []
 
         assert tree.data == "agent"
         self.visit(tree)
 
     # Visitor method for Lark
-    def agent_name(self, tree: ParseTree):
+    def agent_name(self, tree: ParseTree) -> None:
         self.parsed_type = str(tree.children[0])
 
     # Visitor method for Lark
-    def site(self, tree: ParseTree):
+    def site(self, tree: ParseTree) -> None:
         self.parsed_interface.append(SiteBuilder(tree).object)
 
     @property
@@ -135,12 +134,12 @@ class AgentBuilder(Visitor):
 
 @dataclass
 class PatternBuilder(Visitor):
-    parsed_agents: List[Agent]
+    parsed_agents: list[Agent]
 
     def __init__(self, tree: ParseTree):
         super().__init__()
 
-        self.parsed_agents: List[Agent] = []
+        self.parsed_agents: list[Agent] = []
 
         assert tree.data == "pattern"
         self.visit(tree)
@@ -149,7 +148,7 @@ class PatternBuilder(Visitor):
         self.parsed_agents.reverse()
 
     # Visitor method for Lark
-    def agent(self, tree: ParseTree):
+    def agent(self, tree: ParseTree) -> None:
         self.parsed_agents.append(AgentBuilder(tree).object)
 
     @property
