@@ -1,16 +1,16 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Iterator
+from typing import Self, Optional, Iterator
 
-from kappybara.site_states import *
+import kappybara.site_states as states
 
 
 @dataclass
 class Site:
     label: str
-    internal_state: "InternalStatePattern"
-    link_state: "LinkStatePattern"
+    internal_state: "states.states.InternalPattern"
+    link_state: "states.LinkPattern"
     agent: "Agent" = None
 
     def __hash__(self):
@@ -23,7 +23,7 @@ class Site:
         res = self.label
 
         match self.link_state:
-            case EmptyState():
+            case states.Empty():
                 res += "[.]"
             case Site() as partner:
                 res += f"[id{partner.agent.id}]"
@@ -40,9 +40,9 @@ class Site:
         Returns true if this site is in a state that would be equivalent to leaving it
         unnamed in an agent pattern.
         """
-        return isinstance(self.internal_state, UndeterminedState) and (
-            isinstance(self.link_state, UndeterminedState)
-            or isinstance(self.link_state, EmptyState)
+        return isinstance(self.internal_state, states.Undetermined) and (
+            isinstance(self.link_state, states.Undetermined)
+            or isinstance(self.link_state, states.Empty)
         )
 
     @cached_property
@@ -53,10 +53,10 @@ class Site:
         """
         match (self.internal_state, self.link_state):
             case (
-                (WildCardPredicate(), _)
-                | (_, WildCardPredicate())
-                | (_, BoundPredicate())
-                | (_, SiteTypePredicate())
+                (states.Wildcard(), _)
+                | (_, states.Wildcard())
+                | (_, states.Bound())
+                | (_, states.SiteType())
             ):
                 return True
             case _:

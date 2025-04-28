@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from math import prod
 from abc import ABC, abstractmethod
-from typing import Optional, Iterable
+from typing import Optional
 import random
 
-from kappybara.site_states import *
+import kappybara.site_states as states
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, MixtureUpdate
 from kappybara.utils import rejection_sample
@@ -136,7 +136,7 @@ class KappaRule(Rule):
                     new_selection[i] = update.create_agent(r_agent, mixture)
                 case Agent(), Agent() if l_agent.type == r_agent.type:
                     for r_site in r_agent.sites.values():
-                        if isinstance(r_site.internal_state, InternalState):
+                        if isinstance(r_site.internal_state, states.Internal):
                             agent.sites[r_site.label].internal_state = (
                                 r_site.internal_state
                             )
@@ -166,9 +166,9 @@ class KappaRule(Rule):
                             r_partner.label
                         ]
                         update.connect_sites(site, partner)
-                    case EmptyState():
+                    case states.Empty():
                         update.disconnect_site(site)
-                    case x if not isinstance(x, UndeterminedState):
+                    case x if not isinstance(x, states.Undetermined):
                         raise TypeError(
                             f"Link states of type {type(x)} are unsupported for right-hand rule patterns."
                         )

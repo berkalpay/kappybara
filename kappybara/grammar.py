@@ -1,7 +1,9 @@
 from pathlib import Path
+from dataclasses import dataclass
+from typing import Optional
 from lark import Lark, ParseTree, Tree, Visitor, Token
 
-from kappybara.site_states import *
+import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Pattern
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 
@@ -36,8 +38,8 @@ kappa_parser = KappaParser()
 @dataclass
 class SiteBuilder(Visitor):
     parsed_site_name: str
-    parsed_internal_state: "InternalStatePattern"
-    parsed_link_state: "LinkStatePattern"
+    parsed_internal_state: "states.states.InternalPattern"
+    parsed_link_state: "states.LinkPattern"
 
     def __init__(self, tree: ParseTree):
         super().__init__()
@@ -55,7 +57,7 @@ class SiteBuilder(Visitor):
     def internal_state(self, tree: ParseTree) -> None:
         match tree.children[0]:
             case "#":
-                self.parsed_internal_state = WildCardPredicate()
+                self.parsed_internal_state = states.Wildcard()
             case str(internal_state):
                 # TODO: check if this is a legal option as specified by the agent signature
                 # this object would need to hold the agent type this site is being built for and do some checks against that
@@ -63,7 +65,7 @@ class SiteBuilder(Visitor):
                 # declared agent signatures in the first place.
                 self.parsed_internal_state = str(internal_state)
             case Tree(data="unspecified"):
-                self.parsed_internal_state = UndeterminedState()
+                self.parsed_internal_state = states.Undetermined()
             case _:
                 raise ValueError(
                     f"Unexpected internal state in site parse tree: {tree}"
@@ -73,22 +75,22 @@ class SiteBuilder(Visitor):
     def link_state(self, tree: ParseTree) -> None:
         match tree.children:
             case ["#"]:
-                self.parsed_link_state = WildCardPredicate()
+                self.parsed_link_state = states.Wildcard()
             case ["_"]:
-                self.parsed_link_state = BoundPredicate()
+                self.parsed_link_state = states.Bound()
             case ["."]:
-                self.parsed_link_state = EmptyState()
+                self.parsed_link_state = states.Empty()
             case [Token("INT", x)]:
                 self.parsed_link_state = int(x)
             case [
                 Tree(data="site_name", children=[site_name]),
                 Tree(data="agent_name", children=[agent_name]),
             ]:
-                self.parsed_link_state = SiteTypePredicate(
+                self.parsed_link_state = states.SiteType(
                     str(site_name), str(agent_name)
                 )
             case [Tree(data="unspecified")]:
-                self.parsed_link_state = UndeterminedState()
+                self.parsed_link_state = states.Undetermined()
             case _:
                 raise ValueError(f"Unexpected link state in site parse tree: {tree}")
 
