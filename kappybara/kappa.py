@@ -1,8 +1,6 @@
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
-from kappybara.grammar import kappa_parser
-from kappybara.grammar.pattern_builder import AgentBuilder, PatternBuilder
-from kappybara.grammar.rule_builder import RuleBuilder
+from kappybara.grammar import kappa_parser, AgentBuilder, PatternBuilder, RuleBuilder
 
 
 def agent(kappa_str: str) -> Agent:
