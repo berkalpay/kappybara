@@ -6,10 +6,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Union, NamedTuple
 
-EmptyState = type(None)  # '.' in the Kappa language
+EmptyState = type(None)  # '.' in Kappa
+
+
+# Default state in pattern instantiation. Same as a wildcard in rules and observations.
 UndeterminedState = NamedTuple("UndeterminedState", [])
+
+# Matches anything ('#' in Kappa)
 WildCardPredicate = NamedTuple("WildCardPredicate", [])
+
+# Matches if the sites is bound ('_' in Kappa)
 BoundPredicate = NamedTuple("BoundPredicate", [])
+
+# Matches if the site is bound to a specific type of site
 SiteTypePredicate = NamedTuple(
     "SiteTypePredicate", [("site_name", str), ("agent_name", str)]
 )
