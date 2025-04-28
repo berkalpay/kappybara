@@ -24,49 +24,7 @@ def rules_from_kappa(kappa_str: str) -> list[Rule]:
     assert input_tree.data == "kappa_input"
 
     rule_tree = input_tree.children[0]
-    return rules_from_parse_tree(rule_tree)
-
-
-def rules_from_parse_tree(tree: ParseTree) -> list[Rule]:
-    rules = []
-    assert tree.data in ["f_rule", "fr_rule", "ambi_rule", "ambi_fr_rule"]
-
-    builder = RuleBuilder(tree)
-    left: Pattern = Pattern(builder.left_agents)
-    right: Pattern = Pattern(builder.right_agents)
-    rates: List[float] = builder.parsed_rates
-
-    match tree.data:
-        case "f_rule":
-            assert len(rates) == 1
-            rule = KappaRule(left, right, rates[0])
-            rules.append(rule)
-        case "fr_rule":
-            assert len(rates) == 2
-            rule_f = KappaRule(left, right, rates[0])
-            rule_r = KappaRule(right, left, rates[1])
-            rules.extend([rule_f, rule_r])
-        case "ambi_rule":
-            # TODO: check that the order of the rates is right
-            assert len(rates) == 2
-            if rates[0] != 0:
-                rule_bi = KappaRuleBimolecular(left, right, rates[0])
-                rules.append(rule_bi)
-            if rates[1] != 0:
-                rule_uni = KappaRuleUnimolecular(left, right, rates[1])
-                rules.append(rule_uni)
-        case "ambi_fr_rule":
-            assert len(rates) == 3
-            if rates[0] != 0:
-                rule_bi = KappaRuleBimolecular(left, right, rates[0])
-                rules.append(rule_bi)
-            if rates[1] != 0:
-                rule_uni = KappaRuleUnimolecular(left, right, rates[1])
-                rules.append(rule_uni)
-            rule_r = KappaRule(right, left, rates[2])
-            rules.append(rule_r)
-
-    return [r for r in rules if r is not None]
+    return RuleBuilder(rule_tree).objects
 
 
 @dataclass
@@ -74,8 +32,8 @@ class RuleBuilder(Visitor):
     parsed_label: Optional[str]
     left_agents: List[Optional[Agent]]
     right_agents: List[Optional[Agent]]
-
     parsed_rates: List[float]
+    tree_data: str
 
     def __init__(self, tree: ParseTree):
         super().__init__()
@@ -83,10 +41,10 @@ class RuleBuilder(Visitor):
         self.parsed_label = None
         self.left_agents: List[Agent] = []
         self.right_agents: List[Agent] = []
-
         self.parsed_rates = []
 
         assert tree.data in ["f_rule", "fr_rule", "ambi_rule", "ambi_fr_rule"]
+        self.tree_data = tree.data
         self.visit(tree)
 
     # Visitor method for Lark
@@ -133,3 +91,42 @@ class RuleBuilder(Visitor):
     # Visitor method for Lark
     def rev_rule_expression(self, tree: ParseTree):
         self.rule_expression(tree)
+
+    @property
+    def objects(self) -> list[Rule]:
+        rules = []
+        left: Pattern = Pattern(self.left_agents)
+        right: Pattern = Pattern(self.right_agents)
+        rates: List[float] = self.parsed_rates
+
+        match self.tree_data:
+            case "f_rule":
+                assert len(rates) == 1
+                rule = KappaRule(left, right, rates[0])
+                rules.append(rule)
+            case "fr_rule":
+                assert len(rates) == 2
+                rule_f = KappaRule(left, right, rates[0])
+                rule_r = KappaRule(right, left, rates[1])
+                rules.extend([rule_f, rule_r])
+            case "ambi_rule":
+                # TODO: check that the order of the rates is right
+                assert len(rates) == 2
+                if rates[0] != 0:
+                    rule_bi = KappaRuleBimolecular(left, right, rates[0])
+                    rules.append(rule_bi)
+                if rates[1] != 0:
+                    rule_uni = KappaRuleUnimolecular(left, right, rates[1])
+                    rules.append(rule_uni)
+            case "ambi_fr_rule":
+                assert len(rates) == 3
+                if rates[0] != 0:
+                    rule_bi = KappaRuleBimolecular(left, right, rates[0])
+                    rules.append(rule_bi)
+                if rates[1] != 0:
+                    rule_uni = KappaRuleUnimolecular(left, right, rates[1])
+                    rules.append(rule_uni)
+                rule_r = KappaRule(right, left, rates[2])
+                rules.append(rule_r)
+
+        return [r for r in rules if r is not None]
