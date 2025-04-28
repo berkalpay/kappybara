@@ -1,5 +1,4 @@
 import pytest
-from kappybara.pattern import Component, Pattern
 import kappybara.kappa as kappa
 
 

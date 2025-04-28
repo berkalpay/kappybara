@@ -15,7 +15,6 @@
 # - Algebraic expressions (for example to be used in rate constants, see rule.py and rate.py)
 # - Agent signatures (see comments in Mixture.instantiate_agent in mixture.py)
 from kappybara.system import System
-from kappybara.pattern import Pattern, Component
 import kappybara.kappa as kappa
 
 
