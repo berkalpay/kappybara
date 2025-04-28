@@ -172,9 +172,9 @@ class Component:
         """
         NOTE: concerns with ambiguity if we overloaded __eq__ with this method
         """
-        return len(self.find_isomorphisms(other, stop_on_first=True)) > 0
+        return len(self.isomorphisms(other, stop_on_first=True)) > 0
 
-    def find_isomorphisms(
+    def isomorphisms(
         self, other: Self, stop_on_first: bool = False
     ) -> list[dict[Agent, Agent]]:
         """
