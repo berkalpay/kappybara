@@ -1,6 +1,5 @@
 import pytest
 
-from kappybara.pattern import Pattern
 from kappybara.mixture import Mixture
 import kappybara.kappa as kappa
 
