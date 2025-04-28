@@ -202,7 +202,7 @@ class Component:
         every possible
         """
         if len(self.agents) != len(other.agents):
-            return []
+            return
 
         # Variables labelled with "a" are associate with `self`, as with "b" and `other`
         a_root = self.agents[0]
