@@ -1,5 +1,4 @@
-from lark import ParseTree, Tree, Visitor, Token
-from typing import List
+from lark import ParseTree, Visitor, Token
 
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.grammar import kappa_parser
@@ -30,25 +29,26 @@ def rules_from_kappa(kappa_str: str) -> list[Rule]:
 @dataclass
 class RuleBuilder(Visitor):
     parsed_label: Optional[str]
-    left_agents: List[Optional[Agent]]
-    right_agents: List[Optional[Agent]]
-    parsed_rates: List[float]
+    left_agents: list[Optional[Agent]]
+    right_agents: list[Optional[Agent]]
+    parsed_rates: list[float]
     tree_data: str
 
     def __init__(self, tree: ParseTree):
         super().__init__()
 
         self.parsed_label = None
-        self.left_agents: List[Agent] = []
-        self.right_agents: List[Agent] = []
+        self.left_agents = []
+        self.right_agents = []
         self.parsed_rates = []
 
         assert tree.data in ["f_rule", "fr_rule", "ambi_rule", "ambi_fr_rule"]
         self.tree_data = tree.data
+
         self.visit(tree)
 
     # Visitor method for Lark
-    def rate(self, tree: ParseTree):
+    def rate(self, tree: ParseTree) -> None:
         assert tree.data == "rate"
 
         alg_exp = tree.children[0]
@@ -67,7 +67,7 @@ class RuleBuilder(Visitor):
             self.parsed_rates.append(rate)
 
     # Visitor method for Lark
-    def rule_expression(self, tree: ParseTree):
+    def rule_expression(self, tree: ParseTree) -> None:
         assert tree.data in ["rule_expression", "rev_rule_expression"]
         # Find the location of the arrow in the expression
         mid_idx = next(
@@ -81,7 +81,7 @@ class RuleBuilder(Visitor):
             if child == ".":
                 agent = None
             elif child.data == "agent":
-                agent: Optional[Agent] = AgentBuilder(child).object
+                agent = AgentBuilder(child).object
 
             if i < mid_idx:
                 self.left_agents.append(agent)
@@ -89,15 +89,15 @@ class RuleBuilder(Visitor):
                 self.right_agents.append(agent)
 
     # Visitor method for Lark
-    def rev_rule_expression(self, tree: ParseTree):
+    def rev_rule_expression(self, tree: ParseTree) -> None:
         self.rule_expression(tree)
 
     @property
     def objects(self) -> list[Rule]:
         rules = []
-        left: Pattern = Pattern(self.left_agents)
-        right: Pattern = Pattern(self.right_agents)
-        rates: List[float] = self.parsed_rates
+        left = Pattern(self.left_agents)
+        right = Pattern(self.right_agents)
+        rates = self.parsed_rates
 
         match self.tree_data:
             case "f_rule":
