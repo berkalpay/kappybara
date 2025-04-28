@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import cached_property
-from typing import Self
+from typing import Self, Iterator
 
 from kappybara.site_states import *
 
@@ -172,11 +172,9 @@ class Component:
         """
         NOTE: concerns with ambiguity if we overloaded __eq__ with this method
         """
-        return len(self.isomorphisms(other, stop_on_first=True)) > 0
+        return next(self.isomorphisms(other), None) is not None
 
-    def isomorphisms(
-        self, other: Self, stop_on_first: bool = False
-    ) -> list[dict[Agent, Agent]]:
+    def isomorphisms(self, other: Self) -> Iterator[dict[Agent, Agent]]:
         """
         NOTE: There is some potential ambiguity to 'isomorphism' in the context of what
         we're trying to accomplish in this codebase. Consider two patterns, p1="A(site1[a])" and
@@ -208,9 +206,6 @@ class Component:
 
         # Variables labelled with "a" are associate with `self`, as with "b" and `other`
         a_root = self.agents[0]
-
-        # The set of valid bijections
-        valid_maps: list[dict[Agent, Agent]] = []
 
         # Narrow down our search space by only attempting to map `a_root` with
         # agents in `other` with the same type.
@@ -280,13 +275,7 @@ class Component:
                         break
 
             if not search_failed:
-                # We know we've constructed an acceptable isomorphism
-                valid_maps.append(agent_map)
-
-                if stop_on_first:
-                    return valid_maps
-
-        return valid_maps
+                yield agent_map  # A valid bijection
 
     def __repr__(self):  # TODO: add detail
         return f'Molecule(id={id(self)}, kappa_str="{self.kappa_str}")'
