@@ -4,20 +4,22 @@ from functools import cached_property
 from typing import Self, Optional, Iterator
 
 import kappybara.site_states as states
+from kappybara.utils import Counted
 
 
-@dataclass
-class Site:
-    label: str
-    state: "states.InternalPattern"
-    partner: "states.LinkPattern"
-    agent: "Agent" = None
-
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
-        return hash(self) == hash(other)
+class Site(Counted):
+    def __init__(
+        self,
+        label: str,
+        state: "states.InternalPattern",
+        partner: "states.LinkPattern",
+        agent: "Agent" = None,
+    ):
+        super().__init__()
+        self.label = label
+        self.state = state
+        self.partner = partner
+        self.agent = agent
 
     def __repr__(self):  # TODO: add detail
         res = self.label
@@ -93,22 +95,11 @@ class Site:
         return True
 
 
-@dataclass
 class Agent:
-    id: int  # You must ensure this is unique in its context
-    type: str
-    sites: dict[str, Site]
-
-    def __init__(self, id: int, type: str, sites: list[Site]):
-        self.id = id
+    def __init__(self, type: str, sites: list[Site]):
+        super().__init__()
         self.type = type
         self.sites = {site.label: site for site in sites}
-
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
-        return id(self) == id(other)
 
     @cached_property
     def underspecified(self) -> bool:
@@ -140,8 +131,7 @@ class Agent:
         return traversal
 
 
-@dataclass
-class Component:
+class Component(Counted):
     """
     A set of agents that are all in the same connected component (this is
     not guaranteed statically, you have to make sure it's enforced whenever
@@ -166,8 +156,11 @@ class Component:
     agents: list[Agent]
     agents_by_type: dict[str, set[Agent]]
     n_copies: int
+    id: int
 
     def __init__(self, agents: list[Agent], n_copies: int = 1):
+        super().__init__()
+
         assert len(agents) >= 1
         assert n_copies >= 1
 
@@ -183,12 +176,6 @@ class Component:
             self.agents_by_type[agent.type].add(agent)
 
         self.n_copies = n_copies
-
-    def __hash__(self):
-        return id(self)
-
-    def __eq__(self, other):
-        return hash(self) == hash(other)
 
     def add_agent(self, agent: Agent):
         """
@@ -307,7 +294,7 @@ class Component:
                 yield agent_map  # A valid bijection
 
     def __repr__(self):  # TODO: add detail
-        return f'Molecule(id={id(self)}, kappa_str="{self.kappa_str}")'
+        return f'Molecule(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
     def kappa_str(self, show_agent_ids=True) -> str:
@@ -340,7 +327,6 @@ class Component:
         return ", ".join(agent_signatures)
 
 
-@dataclass
 class Pattern:
     agents: list[Optional[Agent]]
     components: list[

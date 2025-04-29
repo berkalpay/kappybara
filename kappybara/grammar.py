@@ -125,8 +125,7 @@ class AgentBuilder(Visitor):
 
     @property
     def object(self) -> Agent:
-        """NOTE: `id` defaults to 0 and should be reassigned."""
-        agent = Agent(id=0, type=self.parsed_type, sites=self.parsed_interface)
+        agent = Agent(type=self.parsed_type, sites=self.parsed_interface)
         for site in agent.sites.values():
             site.agent = agent
         return agent
