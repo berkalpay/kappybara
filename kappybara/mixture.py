@@ -92,13 +92,13 @@ class Mixture:
                     raise AssertionError(
                         "Pattern is not specific enough to be instantiated."
                     )
-            match site.link_state:
+            match site.partner:
                 case states.Empty():
                     pass
                 case Site() | states.Undetermined():
                     # NOTE: This can cause unintended behavior if you're not aware of this
                     # Be aware of this if you're writing internal methods for instantiating patterns.
-                    site.link_state = states.Empty()
+                    site.partner = states.Empty()
                 case _:
                     raise AssertionError(
                         f"Agent pattern: {agent_p} is not specific enough to be instantiated."
@@ -128,10 +128,10 @@ class Mixture:
         for i, agent in enumerate(component.agents):
             # Duplicate the proper link structure
             for site in agent.sites.values():
-                if isinstance(site.link_state, Site):
-                    partner: Site = site.link_state
+                if isinstance(site.partner, Site):
+                    partner: Site = site.partner
                     i_partner = component.agents.index(partner.agent)
-                    new_agents[i].sites[site.label].link_state = new_agents[
+                    new_agents[i].sites[site.label].partner = new_agents[
                         i_partner
                     ].sites[partner.label]
 
@@ -194,9 +194,9 @@ class Mixture:
                         search_failed = True
                         break
 
-                    if isinstance(a_site.link_state, Site):
-                        a_partner = a_site.link_state.agent
-                        b_partner = b_site.link_state.agent
+                    if isinstance(a_site.partner, Site):
+                        a_partner = a_site.partner.agent
+                        b_partner = b_site.partner.agent
                         if a_partner in agent_map and agent_map[a_partner] != b_partner:
                             search_failed = True
                             break
@@ -304,7 +304,7 @@ class Mixture:
         """
         # Assert all sites are unbound
         assert all(
-            isinstance(site.link_state, states.Empty) for site in agent.sites.values()
+            isinstance(site.partner, states.Empty) for site in agent.sites.values()
         )
 
         self.agents.add(agent)
@@ -322,7 +322,7 @@ class Mixture:
         """
         # Assert all sites are unbound
         assert all(
-            isinstance(site.link_state, states.Empty) for site in agent.sites.values()
+            isinstance(site.partner, states.Empty) for site in agent.sites.values()
         )
 
         self.agents.remove(agent)
@@ -349,8 +349,8 @@ class Mixture:
         # up by using e.g. what Berk was doing with the distinction between the `sites` of
         # an Agent being just a simple list while `interface` allows us to access sites by
         # their labels. Just haven't gotten around to it. (TODO)
-        edge.site1.link_state = edge.site2
-        edge.site2.link_state = edge.site1
+        edge.site1.partner = edge.site2
+        edge.site2.partner = edge.site1
 
         # if self.enable_component_tracking
         agent1: Agent = edge.site1.agent
@@ -371,11 +371,11 @@ class Mixture:
 
     def _remove_edge(self, edge: Edge):
         # Sanity checking that the edge exists, can remove later
-        assert edge.site1.link_state == edge.site2
-        assert edge.site2.link_state == edge.site1
+        assert edge.site1.partner == edge.site2
+        assert edge.site2.partner == edge.site1
 
-        edge.site1.link_state = states.Empty()
-        edge.site2.link_state = states.Empty()
+        edge.site1.partner = states.Empty()
+        edge.site2.partner = states.Empty()
 
         # Check if component became disconnected
         agent1: Agent = edge.site1.agent
@@ -453,8 +453,8 @@ class MixtureUpdate:
 
         # Also remove any edges the removed agent was associated with
         for site in agent.sites.values():
-            if isinstance(site.link_state, Site):
-                self.edges_to_remove.append(Edge(site, site.link_state))
+            if isinstance(site.partner, Site):
+                self.edges_to_remove.append(Edge(site, site.partner))
 
     def create_agent(self, agent: Agent, mixture: Mixture) -> Agent:
         """
@@ -482,8 +482,8 @@ class MixtureUpdate:
         applied before any new bonds (`self.edges_to_add`) are created
         when this `MixtureUpdate` is actually applied.
         """
-        if isinstance(site.link_state, Site):
-            self.edges_to_remove.add(Edge(site, site.link_state))
+        if isinstance(site.partner, Site):
+            self.edges_to_remove.add(Edge(site, site.partner))
 
     def connect_sites(self, site1: Site, site2: Site):
         """
@@ -493,15 +493,15 @@ class MixtureUpdate:
         """
 
         # Indicate the removal of bonds to the wrong agents
-        if isinstance(site1.link_state, Site) and site1.link_state != site2:
+        if isinstance(site1.partner, Site) and site1.partner != site2:
             self.disconnect_site(site1)
-        if isinstance(site2.link_state, Site) and site2.link_state != site1:
+        if isinstance(site2.partner, Site) and site2.partner != site1:
             self.disconnect_site(site2)
 
         # Indicate these sites should be bound if they aren't already
         if not (
-            isinstance(site1.link_state, Site)
-            and isinstance(site2.link_state, Site)
-            and site1.link_state == site2
+            isinstance(site1.partner, Site)
+            and isinstance(site2.partner, Site)
+            and site1.partner == site2
         ):
             self.edges_to_add.add(Edge(site1, site2))
