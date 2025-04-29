@@ -61,7 +61,7 @@ class Mixture:
         agent.id = self.new_id()
 
         for site in agent.sites.values():
-            match site.internal_state:
+            match site.state:
                 case str():
                     pass
                 case states.Undetermined():
