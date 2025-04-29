@@ -1,7 +1,3 @@
-# TODO: this isn't working like I thought it would
-# I want to remove the quotes around types in
-# `LinkState` and `LinkStatePattern`
-from __future__ import annotations
 from typing import Union, NamedTuple
 
 Empty = type(None)  # '.' in Kappa
@@ -31,9 +27,7 @@ LinkPattern = (
     | int
     | Empty
     | Undetermined
-    | Union[
-        "Site"
-    ]  # Hack to make this a forward ref to avoid cyclic dependencies, same as Site in LinkState. TODO something better
+    | Union["Site"]  # TODO: something better for cyclic dependencies
 )
 
 # NOTE: This pattern (lru_cache) might help with memory overhead in the future
