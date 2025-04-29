@@ -62,6 +62,36 @@ class Site:
             case _:
                 return False
 
+    @property
+    def stated(self) -> bool:
+        return isinstance(self.internal_state, states.Internal)
+
+    def matches(self, other) -> bool:
+        if self.stated and self.internal_state != other.internal_state:
+            return False
+
+        match self.link_state:
+            case states.Empty():
+                if not isinstance(other.link_state, states.Empty):
+                    return False
+            case states.Bound() | states.SiteType() | Site():
+                if not isinstance(other.link_state, Site):
+                    return False
+            case states.SiteType():
+                if (
+                    self.link_state.site_name != other.link_state.label
+                    and self.link_state.agent_name != other.link_state.agent.type
+                ):
+                    return False
+            case Site():
+                if not (
+                    self.link_state.agent.type == other.link_state.agent.type
+                    and self.label == other.label
+                ):
+                    return False
+
+        return True
+
 
 @dataclass
 class Agent:
