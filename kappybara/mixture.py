@@ -68,6 +68,7 @@ class Mixture:
                     warn(
                         f"Agent pattern: {agent_p} was instantiated with an undetermined internal site state with no known default. We might want to require an agent signature for cases like these."
                     )
+                    pass
                     # TODO: Right now this code makes the assumption that if an internal state is undetermined in
                     # a pattern which is instantiated, the rest of the model will not depend on that internal state.
                     # Here we could alternatively force any internal states to be unambiguous by explicitly setting
@@ -114,9 +115,6 @@ class Mixture:
         return agent
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1):
-        """
-        TODO: n_copies feature is not actually supported right now, don't try to use it until it's impl'd
-        """
         assert (
             not pattern.underspecified
         ), "Pattern is not specific enough to be instantiated."
@@ -192,53 +190,20 @@ class Mixture:
 
                     b_site: Site = b.sites[site_name]
 
-                    # Check internal state
-                    match a_site.internal_state:
-                        case states.Wildcard() | states.Undetermined():
-                            pass
-                        case states.Internal():
-                            if a_site.internal_state != b_site.internal_state:
-                                search_failed = True
-                                break
+                    if not a_site.matches(b_site):
+                        search_failed = True
+                        break
 
-                    # Check link state
-                    match a_site.link_state:
-                        case states.Wildcard() | states.Undetermined():
-                            pass
-                        case states.Empty():
-                            if not isinstance(b_site.link_state, states.Empty):
-                                search_failed = True
-                                break
-                        case states.Bound():
-                            if not isinstance(b_site.link_state, Site):
-                                search_failed = True
-                                break
-                        case states.SiteType():
-                            if not isinstance(b_site.link_state, Site):
-                                search_failed = True
-                                break
-                            b_partner: Site = b_site.link_state
-                            if (
-                                a_site.link_state.site_name != b_partner.label
-                                and a_site.link_state.agent_name != b_partner.agent.type
-                            ):
-                                search_failed = True
-                                break
-                        case Site(agent=a_partner):
-                            if not isinstance(b_site.link_state, Site):
-                                search_failed = True
-                                break
-                            b_partner = b_site.link_state.agent
-                            if (
-                                a_partner in agent_map
-                                and agent_map[a_partner] != b_partner
-                            ):
-                                search_failed = True
-                                break
+                    if isinstance(a_site.link_state, Site):
+                        a_partner = a_site.link_state.agent
+                        b_partner = b_site.link_state.agent
+                        if a_partner in agent_map and agent_map[a_partner] != b_partner:
+                            search_failed = True
+                            break
 
-                            elif a_partner not in agent_map:
-                                frontier.add(a_partner)
-                                agent_map[a_partner] = b_partner
+                        elif a_partner not in agent_map:
+                            frontier.add(a_partner)
+                            agent_map[a_partner] = b_partner
 
             if not search_failed:
                 # We know we've constructed an acceptable embedding
