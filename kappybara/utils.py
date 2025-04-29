@@ -19,6 +19,20 @@ class OrderedSet[T]:
         del self.dict[item]
 
 
+class Counted:
+    counter = 0
+
+    def __init__(self):
+        self.id = Counted.counter
+        Counted.counter += 1
+
+    def __hash__(self):
+        return self.id
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
+
 def rejection_sample(population: Iterable, excluded: Iterable, max_attempts: int = 100):
     population = list(population)
     if not population:

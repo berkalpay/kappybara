@@ -77,6 +77,12 @@ def test_component_isomorphism(test_case):
     assert expected_result == a.isomorphic(b)
 
 
+def test_component_id_uniqueness():
+    a = kappa.component("A(a[.]{u})")
+    b = kappa.component("A(a[.]{u})")
+    assert a.id != b.id
+
+
 @pytest.mark.parametrize(
     "test_case",
     [
