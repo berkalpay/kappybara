@@ -154,7 +154,7 @@ class KappaRule(Rule):
             agent = new_selection[i]
             for r_site in r_agent.sites.values():
                 site: Site = agent.sites[r_site.label]
-                match r_site.link_state:
+                match r_site.partner:
                     case Site() as r_partner:
                         partner_idx = self.right.agents.index(r_partner.agent)
                         partner: Site = new_selection[partner_idx].sites[

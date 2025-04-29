@@ -10,7 +10,7 @@ import kappybara.site_states as states
 class Site:
     label: str
     state: "states.InternalPattern"
-    link_state: "states.LinkPattern"
+    partner: "states.LinkPattern"
     agent: "Agent" = None
 
     def __hash__(self):
@@ -22,7 +22,7 @@ class Site:
     def __repr__(self):  # TODO: add detail
         res = self.label
 
-        match self.link_state:
+        match self.partner:
             case states.Empty():
                 res += "[.]"
             case Site() as partner:
@@ -41,8 +41,8 @@ class Site:
         unnamed in an agent pattern.
         """
         return isinstance(self.state, states.Undetermined) and (
-            isinstance(self.link_state, states.Undetermined)
-            or isinstance(self.link_state, states.Empty)
+            isinstance(self.partner, states.Undetermined)
+            or isinstance(self.partner, states.Empty)
         )
 
     @cached_property
@@ -51,7 +51,7 @@ class Site:
         Tells you whether or not concrete `Site` instances can be created
         from this pattern, i.e. whether there are ambiguous site states
         """
-        match (self.state, self.link_state):
+        match (self.state, self.partner):
             case (
                 (states.Wildcard(), _)
                 | (_, states.Wildcard())
@@ -70,22 +70,22 @@ class Site:
         if self.stated and self.state != other.state:
             return False
 
-        match self.link_state:
+        match self.partner:
             case states.Empty():
-                if not isinstance(other.link_state, states.Empty):
+                if not isinstance(other.partner, states.Empty):
                     return False
             case states.Bound() | states.SiteType() | Site():
-                if not isinstance(other.link_state, Site):
+                if not isinstance(other.partner, Site):
                     return False
             case states.SiteType():
                 if (
-                    self.link_state.site_name != other.link_state.label
-                    and self.link_state.agent_name != other.link_state.agent.type
+                    self.partner.site_name != other.partner.label
+                    and self.partner.agent_name != other.partner.agent.type
                 ):
                     return False
             case Site():
                 if not (
-                    self.link_state.agent.type == other.link_state.agent.type
+                    self.partner.agent.type == other.partner.agent.type
                     and self.label == other.label
                 ):
                     return False
@@ -121,9 +121,9 @@ class Agent:
     @property
     def neighbors(self) -> list[Self]:
         return [
-            site.link_state.agent
+            site.partner.agent
             for site in self.sites.values()
-            if (isinstance(site.link_state, Site))
+            if (isinstance(site.partner, Site))
         ]
 
     @property
@@ -276,7 +276,7 @@ class Component:
                         search_failed = True
                         break
 
-                    match (a_site.link_state, b_site.link_state):
+                    match (a_site.partner, b_site.partner):
                         case (
                             Site(agent=a_partner),
                             Site(agent=b_partner),
@@ -318,16 +318,16 @@ class Component:
         for agent in self.agents:
             site_strs = []
             for site in agent.sites.values():
-                if site.link_state is None:
+                if site.partner is None:
                     bond_num = None
                 elif site in bond_nums:
                     bond_num = bond_nums[site]
-                elif isinstance(site.link_state, Site):
+                elif isinstance(site.partner, Site):
                     bond_num = bond_num_counter
-                    bond_nums[site.link_state] = bond_num
+                    bond_nums[site.partner] = bond_num
                     bond_num_counter += 1
                 else:
-                    bond_num = str(site.link_state)
+                    bond_num = str(site.partner)
                 state_str = (
                     "{" + site.state + "}" if isinstance(site.state, str) else ""
                 )
@@ -366,8 +366,8 @@ class Pattern:
 
         for agent in agents:
             for site in agent.sites.values():
-                if isinstance(site.link_state, int):
-                    integer_links[site.link_state].append(site)
+                if isinstance(site.partner, int):
+                    integer_links[site.partner].append(site)
 
         # Replace integer LinkStates with Agent references
         for i in integer_links:
@@ -382,8 +382,8 @@ class Pattern:
                         f"Site link {i} is referenced in more than two sites."
                     )
                 case n if n == 2:
-                    linked_sites[0].link_state = linked_sites[1]
-                    linked_sites[1].link_state = linked_sites[0]
+                    linked_sites[0].partner = linked_sites[1]
+                    linked_sites[1].partner = linked_sites[0]
 
         # Discover connected components
         # NOTE: some redundant loops but prioritized code simplicity;

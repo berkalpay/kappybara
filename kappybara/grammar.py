@@ -39,7 +39,7 @@ kappa_parser = KappaParser()
 class SiteBuilder(Visitor):
     parsed_site_name: str
     parsed_state: "states.InternalPattern"
-    parsed_link_state: "states.LinkPattern"
+    parsed_partner: "states.LinkPattern"
 
     def __init__(self, tree: ParseTree):
         super().__init__()
@@ -72,25 +72,23 @@ class SiteBuilder(Visitor):
                 )
 
     # Visitor method for Lark
-    def link_state(self, tree: ParseTree) -> None:
+    def partner(self, tree: ParseTree) -> None:
         match tree.children:
             case ["#"]:
-                self.parsed_link_state = states.Wildcard()
+                self.parsed_partner = states.Wildcard()
             case ["_"]:
-                self.parsed_link_state = states.Bound()
+                self.parsed_partner = states.Bound()
             case ["."]:
-                self.parsed_link_state = states.Empty()
+                self.parsed_partner = states.Empty()
             case [Token("INT", x)]:
-                self.parsed_link_state = int(x)
+                self.parsed_partner = int(x)
             case [
                 Tree(data="site_name", children=[site_name]),
                 Tree(data="agent_name", children=[agent_name]),
             ]:
-                self.parsed_link_state = states.SiteType(
-                    str(site_name), str(agent_name)
-                )
+                self.parsed_partner = states.SiteType(str(site_name), str(agent_name))
             case [Tree(data="unspecified")]:
-                self.parsed_link_state = states.Undetermined()
+                self.parsed_partner = states.Undetermined()
             case _:
                 raise ValueError(f"Unexpected link state in site parse tree: {tree}")
 
@@ -99,7 +97,7 @@ class SiteBuilder(Visitor):
         return Site(
             label=self.parsed_site_name,
             state=self.parsed_state,
-            link_state=self.parsed_link_state,
+            partner=self.parsed_partner,
         )
 
 

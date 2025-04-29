@@ -75,14 +75,14 @@ site_name : NAME
 pattern : agent [ ([","] pattern)* ]
 agent : agent_name "(" interface ")"         
 interface : [ site ([","] site)* ]
-site : site_name state link_state   
-     | site_name link_state state
+site : site_name state partner   
+     | site_name partner state
 state : "{" NAME "}"
                | "{" HASH "}" // NOTE: It seems like this kind of stuff is allowed in initial condition declarations
                // You just tell user that it's underspecified for initialized
                | "{" INT  "}" // TODO: This is still unsupported as of Apr. 17 2025
                | undetermined
-link_state : "[" INT "]"
+partner : "[" INT "]"
            | "[" site_name "." agent_name "]" // NOTE: What about agent_name with unspecified site_name? Not allowed
            | "[" DOT "]"
            | "[" UNDERSCORE "]" 
@@ -153,14 +153,14 @@ observable_declaration : "%obs:" LABEL algebraic_expression
 
 signature_declaration : "%agent:" signature_expression
 signature_expression : agent_name "(" signature_interface ")"
-signature_interface : site_name set_of_states set_of_link_states ([","] signature_interface)* 
-                    | site_name set_of_link_states set_of_states ([","] signature_interface)* 
+signature_interface : site_name set_of_states set_of_partners ([","] signature_interface)* 
+                    | site_name set_of_partners set_of_states ([","] signature_interface)* 
 // NOTE: Which of these is the default when initializing an agent but leaving an internal state unspecified?
 // Seems sensible to just use the first in the list, but it might be nice to be able to explicitly specify a default.
 // Yeah just use first
 set_of_states : [ "{" [ state_value (" " state_value)* ] "}" ]
 state_value : NAME | HASH
-set_of_link_states : [ "[" [ site_name "." agent_name (" " site_name "." agent_name)* ] "]" ]
+set_of_partners : [ "[" [ site_name "." agent_name (" " site_name "." agent_name)* ] "]" ]
 
 // initial condition
 
