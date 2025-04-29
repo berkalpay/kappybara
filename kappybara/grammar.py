@@ -38,7 +38,7 @@ kappa_parser = KappaParser()
 @dataclass
 class SiteBuilder(Visitor):
     parsed_site_name: str
-    parsed_internal_state: "states.InternalPattern"
+    parsed_state: "states.InternalPattern"
     parsed_link_state: "states.LinkPattern"
 
     def __init__(self, tree: ParseTree):
@@ -54,18 +54,18 @@ class SiteBuilder(Visitor):
         self.parsed_site_name = str(tree.children[0])
 
     # Visitor method for Lark
-    def internal_state(self, tree: ParseTree) -> None:
+    def state(self, tree: ParseTree) -> None:
         match tree.children[0]:
             case "#":
-                self.parsed_internal_state = states.Wildcard()
-            case str(internal_state):
+                self.parsed_state = states.Wildcard()
+            case str(state):
                 # TODO: check if this is a legal option as specified by the agent signature
                 # this object would need to hold the agent type this site is being built for and do some checks against that
                 # NOTE: Actually probably ignore the above. According to Walter Kappa models shouldn't require explicitly
                 # declared agent signatures in the first place.
-                self.parsed_internal_state = str(internal_state)
+                self.parsed_state = str(state)
             case Tree(data="unspecified"):
-                self.parsed_internal_state = states.Undetermined()
+                self.parsed_state = states.Undetermined()
             case _:
                 raise ValueError(
                     f"Unexpected internal state in site parse tree: {tree}"
@@ -98,7 +98,7 @@ class SiteBuilder(Visitor):
     def object(self) -> Site:
         return Site(
             label=self.parsed_site_name,
-            internal_state=self.parsed_internal_state,
+            state=self.parsed_state,
             link_state=self.parsed_link_state,
         )
 

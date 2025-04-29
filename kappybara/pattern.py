@@ -9,7 +9,7 @@ import kappybara.site_states as states
 @dataclass
 class Site:
     label: str
-    internal_state: "states.InternalPattern"
+    state: "states.InternalPattern"
     link_state: "states.LinkPattern"
     agent: "Agent" = None
 
@@ -28,7 +28,7 @@ class Site:
             case Site() as partner:
                 res += f"[id{partner.agent.id}]"
 
-        match self.internal_state:
+        match self.state:
             case str() as s:
                 res += "{" + s + "}"
 
@@ -40,7 +40,7 @@ class Site:
         Returns true if this site is in a state that would be equivalent to leaving it
         unnamed in an agent pattern.
         """
-        return isinstance(self.internal_state, states.Undetermined) and (
+        return isinstance(self.state, states.Undetermined) and (
             isinstance(self.link_state, states.Undetermined)
             or isinstance(self.link_state, states.Empty)
         )
@@ -51,7 +51,7 @@ class Site:
         Tells you whether or not concrete `Site` instances can be created
         from this pattern, i.e. whether there are ambiguous site states
         """
-        match (self.internal_state, self.link_state):
+        match (self.state, self.link_state):
             case (
                 (states.Wildcard(), _)
                 | (_, states.Wildcard())
@@ -64,10 +64,10 @@ class Site:
 
     @property
     def stated(self) -> bool:
-        return isinstance(self.internal_state, states.Internal)
+        return isinstance(self.state, states.Internal)
 
     def matches(self, other) -> bool:
-        if self.stated and self.internal_state != other.internal_state:
+        if self.stated and self.state != other.state:
             return False
 
         match self.link_state:
@@ -272,7 +272,7 @@ class Component:
                     )  # In this way we are left with any unexamined sites in b at the end
 
                     # TODO: make sure types work the way we intend (singleton)
-                    if a_site.internal_state != b_site.internal_state:
+                    if a_site.state != b_site.state:
                         search_failed = True
                         break
 
@@ -328,13 +328,11 @@ class Component:
                     bond_num_counter += 1
                 else:
                     bond_num = str(site.link_state)
-                internal_state_str = (
-                    "{" + site.internal_state + "}"
-                    if isinstance(site.internal_state, str)
-                    else ""
+                state_str = (
+                    "{" + site.state + "}" if isinstance(site.state, str) else ""
                 )
                 site_strs.append(
-                    f"{site.label}[{"." if bond_num is None else bond_num}]{internal_state_str}"
+                    f"{site.label}[{"." if bond_num is None else bond_num}]{state_str}"
                 )
             agent_signatures.append(
                 f"{agent.type}({"id" + str(agent.id) + ", " if show_agent_ids else ""}{' '.join(site_strs)})"

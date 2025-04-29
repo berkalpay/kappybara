@@ -136,14 +136,9 @@ class KappaRule(Rule):
                     new_selection[i] = update.create_agent(r_agent, mixture)
                 case Agent(), Agent() if l_agent.type == r_agent.type:
                     for r_site in r_agent.sites.values():
-                        if isinstance(r_site.internal_state, states.Internal):
-                            agent.sites[r_site.label].internal_state = (
-                                r_site.internal_state
-                            )
-                            if (
-                                r_site.internal_state
-                                != l_agent.sites[r_site.label].internal_state
-                            ):
+                        if isinstance(r_site.state, states.Internal):
+                            agent.sites[r_site.label].state = r_site.state
+                            if r_site.state != l_agent.sites[r_site.label].state:
                                 update.register_changed_agent(agent)
                     new_selection[i] = agent
                 case _:
