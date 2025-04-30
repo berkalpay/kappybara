@@ -80,9 +80,9 @@ class Site(Counted):
                 if not isinstance(other.partner, Site):
                     return False
             case states.SiteType():
-                if (
-                    self.partner.site_name != other.partner.label
-                    and self.partner.agent_name != other.partner.agent.type
+                if not (
+                    self.partner.site_name == other.partner.label
+                    and self.partner.agent_name == other.partner.agent.type
                 ):
                     return False
             case Site():
