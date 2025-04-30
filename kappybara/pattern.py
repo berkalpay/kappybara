@@ -1,5 +1,6 @@
 from collections import defaultdict
 from functools import cached_property
+from copy import deepcopy
 from typing import Self, Optional, Iterator, Iterable
 
 import kappybara.site_states as states
@@ -108,6 +109,9 @@ class Agent:
         self.type = type
         self.sites = {site.label: site for site in sites}
 
+    def __iter__(self):
+        yield from self.sites.values()
+
     @cached_property
     def underspecified(self) -> bool:
         """
@@ -132,6 +136,17 @@ class Agent:
                 traversal.append(agent)
                 stack.extend(agent.neighbors)
         return traversal
+
+    @property
+    def instantiable(self) -> bool:
+        return not any(site.underspecified for site in self)
+
+    def detached(self) -> Self:
+        detached = deepcopy(self)
+        # TODO: detached = type(self)(self.type, self.sites.values())
+        for site in detached:
+            site.partner = states.Empty()
+        return detached
 
 
 class Component(Counted):
