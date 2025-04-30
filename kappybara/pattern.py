@@ -74,23 +74,20 @@ class Site(Counted):
 
         match self.partner:
             case states.Empty():
-                if not isinstance(other.partner, states.Empty):
-                    return False
+                return isinstance(other.partner, states.Empty)
             case states.Bound() | states.SiteType() | Site():
                 if not isinstance(other.partner, Site):
                     return False
             case states.SiteType():
-                if not (
+                return (
                     self.partner.site_name == other.partner.label
                     and self.partner.agent_name == other.partner.agent.type
-                ):
-                    return False
+                )
             case Site():
-                if not (
+                return (
                     self.partner.agent.type == other.partner.agent.type
                     and self.label == other.label
-                ):
-                    return False
+                )
 
         return True
 
