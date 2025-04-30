@@ -102,7 +102,7 @@ class Mixture:
         for i, agent in enumerate(component.agents):
             # Duplicate the proper link structure
             for site in agent.sites.values():
-                if isinstance(site.partner, Site):
+                if site.coupled:
                     partner: Site = site.partner
                     i_partner = component.agents.index(partner.agent)
                     new_agents[i].sites[site.label].partner = new_agents[
@@ -154,7 +154,7 @@ class Mixture:
                         search_failed = True
                         break
 
-                    if isinstance(a_site.partner, Site):
+                    if a_site.coupled:
                         a_partner = a_site.partner.agent
                         b_partner = b_site.partner.agent
                         if (
@@ -414,7 +414,7 @@ class MixtureUpdate:
 
         # Also remove any edges the removed agent was associated with
         for site in agent.sites.values():
-            if isinstance(site.partner, Site):
+            if site.coupled:
                 self.edges_to_remove.append(Edge(site, site.partner))
 
     def create_agent(self, agent: Agent, mixture: Mixture) -> Agent:
@@ -443,7 +443,7 @@ class MixtureUpdate:
         applied before any new bonds (`self.edges_to_add`) are created
         when this `MixtureUpdate` is actually applied.
         """
-        if isinstance(site.partner, Site):
+        if site.coupled:
             self.edges_to_remove.add(Edge(site, site.partner))
 
     def connect_sites(self, site1: Site, site2: Site):
@@ -454,15 +454,11 @@ class MixtureUpdate:
         """
 
         # Indicate the removal of bonds to the wrong agents
-        if isinstance(site1.partner, Site) and site1.partner != site2:
+        if site1.coupled and site1.partner != site2:
             self.disconnect_site(site1)
-        if isinstance(site2.partner, Site) and site2.partner != site1:
+        if site2.coupled and site2.partner != site1:
             self.disconnect_site(site2)
 
         # Indicate these sites should be bound if they aren't already
-        if not (
-            isinstance(site1.partner, Site)
-            and isinstance(site2.partner, Site)
-            and site1.partner == site2
-        ):
+        if not (site1.coupled and site2.coupled and site1.partner == site2):
             self.edges_to_add.add(Edge(site1, site2))

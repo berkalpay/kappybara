@@ -75,11 +75,15 @@ class Site(Counted):
             for state in [states.Bound, states.SiteType, Site]
         )
 
+    @property
+    def coupled(self) -> bool:
+        return isinstance(self.partner, Site)
+
     def matches(self, other) -> bool:
         if self.stated and self.state != other.state:
             return False
 
-        if self.bound and not isinstance(other.partner, Site):
+        if self.bound and not other.coupled:
             return False
 
         match self.partner:
@@ -115,11 +119,7 @@ class Agent:
 
     @property
     def neighbors(self) -> list[Self]:
-        return [
-            site.partner.agent
-            for site in self.sites.values()
-            if (isinstance(site.partner, Site))
-        ]
+        return [site.partner.agent for site in self.sites.values() if site.coupled]
 
     @property
     def depth_first_traversal(self) -> list[Self]:
@@ -313,7 +313,7 @@ class Component(Counted):
                     bond_num = None
                 elif site in bond_nums:
                     bond_num = bond_nums[site]
-                elif isinstance(site.partner, Site):
+                elif site.coupled:
                     bond_num = bond_num_counter
                     bond_nums[site.partner] = bond_num
                     bond_num_counter += 1
