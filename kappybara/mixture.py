@@ -32,7 +32,6 @@ class Edge:
 class Mixture:
     agents: set[Agent]
     components: set[Component]
-    _nonce: int  # Used to assign id's to instantiated agents.
 
     # An index matching each agent in the mixture to the connected
     # component in the mixture it belongs to
@@ -47,7 +46,6 @@ class Mixture:
     def __init__(self):
         self.agents = set()
         self.components = set()
-        self._nonce = 0
         self.component_index = {}
         self.agents_by_type = defaultdict(list)
         self.match_cache = defaultdict(list)
@@ -58,7 +56,6 @@ class Mixture:
         NOTE: Bound sites in the given agent pattern are reset to empty on instantiation.
         """
         agent = deepcopy(agent_p)
-        agent.id = self.new_id()
 
         for site in agent.sites.values():
             match site.state:
@@ -151,10 +148,6 @@ class Mixture:
 
     def component_of_agent(self, agent):
         return self.component_index[agent]
-
-    def new_id(self) -> int:
-        self._nonce += 1
-        return self._nonce - 1
 
     def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         # Variables labelled with "a" are associate with `component`, as with "b" and `self`
