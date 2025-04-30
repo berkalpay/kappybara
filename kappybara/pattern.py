@@ -134,6 +134,9 @@ class Agent:
                 stack.extend(agent.neighbors)
         return traversal
 
+    def detached(self) -> Self:
+        return self
+
 
 class Component(Counted):
     """
