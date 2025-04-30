@@ -68,16 +68,23 @@ class Site(Counted):
     def stated(self) -> bool:
         return isinstance(self.state, states.Internal)
 
+    @property
+    def bound(self) -> bool:
+        return any(
+            isinstance(self.partner, state)
+            for state in [states.Bound, states.SiteType, Site]
+        )
+
     def matches(self, other) -> bool:
         if self.stated and self.state != other.state:
+            return False
+
+        if self.bound and not isinstance(other.partner, Site):
             return False
 
         match self.partner:
             case states.Empty():
                 return isinstance(other.partner, states.Empty)
-            case states.Bound() | states.SiteType() | Site():
-                if not isinstance(other.partner, Site):
-                    return False
             case states.SiteType():
                 return (
                     self.partner.site_name == other.partner.label
