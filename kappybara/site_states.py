@@ -29,9 +29,3 @@ LinkPattern = (
     | Undetermined
     | Union["Site"]  # TODO: something better for cyclic dependencies
 )
-
-# NOTE: This pattern (lru_cache) might help with memory overhead in the future
-# class NameState(str):
-#     @lru_cache(maxsize=1024)
-#     def __new__(cls, value):
-#         return super().__new__(cls, value)
