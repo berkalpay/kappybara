@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from collections import defaultdict
 from copy import deepcopy
-from warnings import warn
 
 import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Component, Pattern
