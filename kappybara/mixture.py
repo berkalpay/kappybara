@@ -31,11 +31,7 @@ class Edge:
 class Mixture:
     agents: set[Agent]
     components: set[Component]
-
-    # An index matching each agent in the mixture to the connected
-    # component in the mixture it belongs to
-    component_index: dict[Agent, Component]
-
+    component_index: dict[Agent, Component]  # Maps agents to their components
     agents_by_type: dict[str, set[Agent]]
 
     # An index of the matches for each component in any rule or observable pattern
@@ -50,33 +46,26 @@ class Mixture:
         self.match_cache = defaultdict(list)
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
-    def instantiate_agent(self, agent_p: Agent, add_to_mixture=False) -> Agent:
-        """
-        NOTE: Bound sites in the given agent pattern are reset to empty on instantiation.
-        """
-        agent = deepcopy(agent_p)
+    def instantiate_agent(self, agent: Agent, add_to_mixture=False) -> Agent:
+        """NOTE: Sites are emptied on instantiation."""
+        agent = deepcopy(agent)
+        specificity_error = AssertionError(
+            "Pattern isn't specific enough to instantiate."
+        )
 
         for site in agent.sites.values():
             match site.state:
-                case str():
-                    pass
-                case states.Undetermined():
+                case states.Internal() | states.Undetermined():
                     pass
                 case _:
-                    raise AssertionError(
-                        "Pattern is not specific enough to be instantiated."
-                    )
+                    raise specificity_error
             match site.partner:
                 case states.Empty():
                     pass
                 case Site() | states.Undetermined():
-                    # NOTE: This can cause unintended behavior if you're not aware of this
-                    # Be aware of this if you're writing internal methods for instantiating patterns.
                     site.partner = states.Empty()
                 case _:
-                    raise AssertionError(
-                        f"Agent pattern: {agent_p} is not specific enough to be instantiated."
-                    )
+                    raise specificity_error
 
         # TODO: Check against an agent signature to add in any sites that aren't
         # explicitly named in the `Agent` and fill in default internal states
@@ -195,8 +184,6 @@ class Mixture:
                 self.component_of_agent(next(iter(embedding.values())))
             ][component].append(embedding)
 
-    # TODO: Quoted type reference due to circular reference with `MixtureUpdate`,
-    # see the comments in `add_agent` there.
     def apply_update(self, update: "MixtureUpdate"):
         """
         In this first implementation, we will just apply the update and then
@@ -231,6 +218,9 @@ class Mixture:
             # who haven't been removed/added but whose internal states have changed.
             pass
 
+        self._update_embeddings()
+
+    def _update_embeddings(self):
         # TODO: Update APSP. This is imo the best thing to do to support horizon conditions. Don't worry
         # about it until later though, I'm more concerned with getting essential functionality for now.
         # In an incremental version the APSP should be updated at every agent/edge addition/removal above
@@ -244,11 +234,9 @@ class Mixture:
         # Similarly to elsewhere, for the first draft implementation we just reconstruct our indexes from scratch.
         # Eventually though, we might want to do this incrementally on every edge/agent removal/addition.
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
-
-        for component in self.match_cache.keys():
+        for component in self.match_cache:
             embeddings = self.embeddings(component)
             self.match_cache[component] = embeddings
-
             for embedding in embeddings:
                 self.match_cache_by_component[
                     self.component_of_agent(next(iter(embedding.values())))
