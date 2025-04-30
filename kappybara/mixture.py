@@ -150,38 +150,28 @@ class Mixture:
         return self.component_index[agent]
 
     def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
-        # Variables labelled with "a" are associate with `component`, as with "b" and `self`
-        a_root = component.agents[0]
+        embeddings = []
 
-        # The set of valid bijections
-        valid_maps: list[dict[Agent, Agent]] = []
-
-        # Narrow down our search space by only attempting to map `a_root` with
-        # agents in `self` with the same type.
+        a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
         for b_root in self.agents_by_type[a_root.type]:
-            # The bijection between agents of `pattern` and `self` that we're trying to construct
-            agent_map: dict[Agent, Agent] = {a_root: b_root}
-
-            frontier: set[Agent] = {a_root}
-            search_failed: bool = False
+            potential_embedding = {a_root: b_root}
+            frontier = {a_root}
+            search_failed = False
 
             while frontier and not search_failed:
-                a: Agent = frontier.pop()
-                b: Agent = agent_map[a]
+                a = frontier.pop()
+                b = potential_embedding[a]
 
                 if a.type != b.type:
                     search_failed = True
                     break
 
                 for site_name in a.sites:
-                    a_site: Site = a.sites[site_name]
-
-                    # Check that `b` has a site with the same name
+                    a_site = a.sites[site_name]
                     if site_name not in b.sites and not a_site.undetermined:
                         search_failed = True
                         break
-
-                    b_site: Site = b.sites[site_name]
+                    b_site = b.sites[site_name]
 
                     if not a_site.matches(b_site):
                         search_failed = True
@@ -190,19 +180,20 @@ class Mixture:
                     if isinstance(a_site.partner, Site):
                         a_partner = a_site.partner.agent
                         b_partner = b_site.partner.agent
-                        if a_partner in agent_map and agent_map[a_partner] != b_partner:
+                        if (
+                            a_partner in potential_embedding
+                            and potential_embedding[a_partner] != b_partner
+                        ):
                             search_failed = True
                             break
-
-                        elif a_partner not in agent_map:
+                        elif a_partner not in potential_embedding:
                             frontier.add(a_partner)
-                            agent_map[a_partner] = b_partner
+                            potential_embedding[a_partner] = b_partner
 
             if not search_failed:
-                # We know we've constructed an acceptable embedding
-                valid_maps.append(agent_map)
+                embeddings.append(potential_embedding)
 
-        return valid_maps
+        return embeddings
 
     def update_embeddings(self):
         pass
