@@ -1,7 +1,6 @@
-from dataclasses import dataclass
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator
+from typing import Self, Optional, Iterator, Iterable
 
 import kappybara.site_states as states
 from kappybara.utils import Counted
@@ -11,9 +10,9 @@ class Site(Counted):
     def __init__(
         self,
         label: str,
-        state: "states.InternalPattern",
-        partner: "states.LinkPattern",
-        agent: "Agent" = None,
+        state: states.InternalPattern,
+        partner: states.LinkPattern,
+        agent: Optional["Agent"] = None,
     ):
         super().__init__()
         self.label = label
@@ -104,7 +103,7 @@ class Site(Counted):
 
 
 class Agent:
-    def __init__(self, type: str, sites: list[Site]):
+    def __init__(self, type: str, sites: Iterable[Site]):
         super().__init__()
         self.type = type
         self.sites = {site.label: site for site in sites}
@@ -133,9 +132,6 @@ class Agent:
                 traversal.append(agent)
                 stack.extend(agent.neighbors)
         return traversal
-
-    def detached(self) -> Self:
-        return self
 
 
 class Component(Counted):
