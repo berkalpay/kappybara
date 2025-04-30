@@ -13,7 +13,7 @@
 # to make importing/testing these models more feasible. A non-exhaustive list of
 # stuff we still need to implement in that regard:
 # - Algebraic expressions (for example to be used in rate constants, see rule.py and rate.py)
-# - Agent signatures (see comments in Mixture.instantiate_agent in mixture.py)
+# - Agent signatures
 from kappybara.system import System
 import kappybara.kappa as kappa
 

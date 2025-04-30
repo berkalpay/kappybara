@@ -46,7 +46,7 @@ class Mixture:
         self.match_cache = defaultdict(list)
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
-    def instantiate_agent(self, agent: Agent, add_to_mixture=False) -> Agent:
+    def instantiate_agent(self, agent: Agent) -> Agent:
         """NOTE: Sites are emptied on instantiation."""
         agent = deepcopy(agent)
         specificity_error = AssertionError(
@@ -66,14 +66,6 @@ class Mixture:
                     site.partner = states.Empty()
                 case _:
                     raise specificity_error
-
-        # TODO: Check against an agent signature to add in any sites that aren't
-        # explicitly named in the `Agent` and fill in default internal states
-
-        if add_to_mixture:
-            raise NotImplementedError(
-                "Right now this call is only used to create agents that are added in manually later."
-            )
 
         return agent
 
@@ -415,7 +407,7 @@ class MixtureUpdate:
         had bound sites originally, due to the implementation of `instantiate_agent` in `Mixture`.
         It's up to you to add any desired bonds back in manually using `self.connect_sites`.
         """
-        new_agent = mixture.instantiate_agent(agent, add_to_mixture=False)
+        new_agent = mixture.instantiate_agent(agent)
         self.agents_to_add.append(new_agent)
         return new_agent
 
