@@ -149,7 +149,7 @@ class Mixture:
     def component_of_agent(self, agent):
         return self.component_index[agent]
 
-    def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
+    def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         embeddings = []
 
         a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
@@ -210,7 +210,7 @@ class Mixture:
         return self.match_cache_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
-        embeddings = self.find_embeddings(component)
+        embeddings = self.embeddings(component)
         self.match_cache[component] = embeddings
 
         for embedding in embeddings:
@@ -269,7 +269,7 @@ class Mixture:
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
         for component in self.match_cache.keys():
-            embeddings = self.find_embeddings(component)
+            embeddings = self.embeddings(component)
             self.match_cache[component] = embeddings
 
             for embedding in embeddings:
