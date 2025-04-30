@@ -62,29 +62,7 @@ class Mixture:
                 case str():
                     pass
                 case states.Undetermined():
-                    warn(
-                        f"Agent pattern: {agent_p} was instantiated with an undetermined internal site state with no known default. We might want to require an agent signature for cases like these."
-                    )
                     pass
-                    # TODO: Right now this code makes the assumption that if an internal state is undetermined in
-                    # a pattern which is instantiated, the rest of the model will not depend on that internal state.
-                    # Here we could alternatively force any internal states to be unambiguous by explicitly setting
-                    # them in patterns which are being instantiated, with something like this error:
-                    # raise NotImplementedError(
-                    #     f"Without an agent signature, we don't know how to instantiate the internal state of this site: {site}"
-                    # )
-                    #
-                    # However, once we have agent signatures we'll want to do something here like:
-                    # 1. Have the mixture maintain a set of agent signatures
-                    # 2. Check if there's a signature for agents of this type (or require it)
-                    # 3. Use the signature to determine what state we should default to here.
-                    #
-                    # You could also maybe think of a way of inferring what the default state of internal states
-                    # could/should be even without an explicit signature, by doing some logic with the other places
-                    # this agent type is mentioned, but I don't like this approach b/c of inherent ambiguity.
-                    #
-                    # I'd rather just require explicit agent signatures for everything, although Walter has noted that
-                    # this might make quickly prototyping models more difficult.
                 case _:
                     raise AssertionError(
                         "Pattern is not specific enough to be instantiated."
