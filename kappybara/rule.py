@@ -128,12 +128,12 @@ class KappaRule(Rule):
 
             match l_agent, r_agent:
                 case None, Agent():
-                    new_selection[i] = update.create_agent(r_agent, mixture)
+                    new_selection[i] = update.create_agent(r_agent)
                 case Agent(), None:
                     update.remove_agent(agent)
                 case Agent(), Agent() if l_agent.type != r_agent.type:
                     update.remove_agent(agent)
-                    new_selection[i] = update.create_agent(r_agent, mixture)
+                    new_selection[i] = update.create_agent(r_agent)
                 case Agent(), Agent() if l_agent.type == r_agent.type:
                     for r_site in r_agent.sites.values():
                         if isinstance(r_site.state, states.Internal):

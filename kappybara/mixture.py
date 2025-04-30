@@ -46,29 +46,6 @@ class Mixture:
         self.match_cache = defaultdict(list)
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
 
-    def instantiate_agent(self, agent: Agent) -> Agent:
-        """NOTE: Sites are emptied on instantiation."""
-        agent = deepcopy(agent)
-        specificity_error = AssertionError(
-            "Pattern isn't specific enough to instantiate."
-        )
-
-        for site in agent.sites.values():
-            match site.state:
-                case states.Internal() | states.Undetermined():
-                    pass
-                case _:
-                    raise specificity_error
-            match site.partner:
-                case states.Empty():
-                    pass
-                case Site() | states.Undetermined():
-                    site.partner = states.Empty()
-                case _:
-                    raise specificity_error
-
-        return agent
-
     def instantiate(self, pattern: Pattern, n_copies: int = 1):
         assert (
             not pattern.underspecified
@@ -78,7 +55,7 @@ class Mixture:
             self._instantiate_component(component, n_copies)
 
     def _instantiate_component(self, component: Component, n_copies: int):
-        new_agents = [self.instantiate_agent(a) for a in component.agents]
+        new_agents = [agent.detached() for agent in component.agents]
 
         for i, agent in enumerate(component.agents):
             # Duplicate the proper link structure
@@ -247,6 +224,7 @@ class Mixture:
         assert all(
             isinstance(site.partner, states.Empty) for site in agent.sites.values()
         )
+        assert agent.instantiable
 
         self.agents.add(agent)
         self.agents_by_type[agent.type].append(agent)
@@ -397,17 +375,9 @@ class MixtureUpdate:
             if site.coupled:
                 self.edges_to_remove.append(Edge(site, site.partner))
 
-    def create_agent(self, agent: Agent, mixture: Mixture) -> Agent:
-        """
-        It is important to note again that this method does not actually add
-        the created agent to the mixture. `mixture` is an argument here only because
-        we need it to assign a new agent ID.
-
-        NOTE: Link site states in the created agent will be `Empty`, even if `agent`
-        had bound sites originally, due to the implementation of `instantiate_agent` in `Mixture`.
-        It's up to you to add any desired bonds back in manually using `self.connect_sites`.
-        """
-        new_agent = mixture.instantiate_agent(agent)
+    def create_agent(self, agent: Agent) -> Agent:
+        """NOTE: Sites in the created agent will be emptied."""
+        new_agent = agent.detached()
         self.agents_to_add.append(new_agent)
         return new_agent
 
