@@ -272,37 +272,26 @@ class Mixture:
         self.components.remove(component2)
 
     def _remove_edge(self, edge: Edge):
-        # Sanity checking that the edge exists, can remove later
         assert edge.site1.partner == edge.site2
         assert edge.site2.partner == edge.site1
 
         edge.site1.partner = states.Empty()
         edge.site2.partner = states.Empty()
 
-        # Check if component became disconnected
         agent1: Agent = edge.site1.agent
         agent2: Agent = edge.site2.agent
         old_component = self.component_index[agent1]
         assert old_component == self.component_index[agent2]
 
-        # Update component indexes: `self.components` and `self.component_index`.
-        # Once that's done, also need to update `self.match_cache_by_component`
-        # (this is currently done globally in `apply_update`).
-        #
-        # This is required for `KappaRuleUnimolecular` and `KappaRuleBimolecular` to work correctly,
-        # but not for vanilla `KappaRule`s, so we should also switch off these code paths if
-        # the computation is not needed for a particular model.
-        #
-        # We start with the simple approach of BFSing from all disconnected agents
-        # like Berk was doing. If it ends up being a bottleneck, I'm pretty confident now
-        # that incremental min-cut could help a lot
+        # Create a new component if the old one got disconnected
+        # TODO: don't do component indexing if not required by the rules?
+        # TODO: improve efficiency with incremental min-cut?
         maybe_new_component = Component(agent1.depth_first_traversal)
         if agent2 not in maybe_new_component.agents:
             self.components.add(maybe_new_component)
-
-            for a in maybe_new_component.agents:
-                old_component.agents.remove(a)
-                self.component_index[a] = maybe_new_component
+            for agent in maybe_new_component.agents:
+                old_component.agents.remove(agent)
+                self.component_index[agent] = maybe_new_component
 
     # def update_components(self, update: MixtureUpdate):
     #     raise NotImplementedError
