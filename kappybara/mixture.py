@@ -329,13 +329,8 @@ class MixtureUpdate:
         self.agents_changed = set()
 
     def remove_agent(self, agent: Agent):
-        """
-        This function call will not actually change anything in a mixture.
-        """
-        # Specify this agent should be deleted
+        """Specify to remove the agent and its edges from the mixture."""
         self.agents_to_remove.append(agent)
-
-        # Also remove any edges the removed agent was associated with
         for site in agent:
             if site.coupled:
                 self.edges_to_remove.append(Edge(site, site.partner))
