@@ -31,16 +31,16 @@ class Mixture:
     agents_by_type: dict[str, set[Agent]]
 
     # An index of the matches for each component in any rule or observable pattern
-    match_cache: dict[Component, list[dict[Agent, Agent]]]
-    match_cache_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
+    _embeddings: dict[Component, list[dict[Agent, Agent]]]
+    _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
 
     def __init__(self):
         self.agents = set()
         self.components = set()
         self.component_index = {}
         self.agents_by_type = defaultdict(list)
-        self.match_cache = defaultdict(list)
-        self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
+        self._embeddings = defaultdict(list)
+        self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1):
         assert (
@@ -74,7 +74,7 @@ class Mixture:
 
         # TODO: Update APSP
 
-    def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
+    def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         embeddings = []
 
         a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
@@ -120,23 +120,23 @@ class Mixture:
 
         return embeddings
 
-    def fetch_embeddings(self, component: Component) -> list[list[Agent]]:
+    def embeddings(self, component: Component) -> list[list[Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
         """
-        return self.match_cache[component]
+        return self._embeddings[component]
 
-    def fetch_embeddings_in_component(
+    def embeddings_in_component(
         self, match_pattern: Component, mixture_component: Component
     ) -> list[list[Agent]]:
-        return self.match_cache_by_component[mixture_component][match_pattern]
+        return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
-        embeddings = self.embeddings(component)
-        self.match_cache[component] = embeddings
+        embeddings = self.find_embeddings(component)
+        self._embeddings[component] = embeddings
 
         for embedding in embeddings:
-            self.match_cache_by_component[
+            self._embeddings_by_component[
                 self.component_index[next(iter(embedding.values()))]
             ][component].append(embedding)
 
@@ -184,12 +184,12 @@ class Mixture:
         #    TODO: Only update embeddings of affected `Component`s. This requires a pre-simulation step
         #    where we build a dependency graph of rules at the level of either `Rule`s or `Component`s
         # We might want to do this incrementally on every edge/agent removal/addition.
-        self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
-        for component in self.match_cache:
-            embeddings = self.embeddings(component)
-            self.match_cache[component] = embeddings
+        self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
+        for component in self._embeddings:
+            embeddings = self.find_embeddings(component)
+            self._embeddings[component] = embeddings
             for embedding in embeddings:
-                self.match_cache_by_component[
+                self._embeddings_by_component[
                     self.component_index[next(iter(embedding.values()))]
                 ][component].append(embedding)
 

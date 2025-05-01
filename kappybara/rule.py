@@ -65,8 +65,7 @@ class KappaRule(Rule):
 
     def n_embeddings(self, mixture: Mixture) -> int:
         return prod(
-            len(mixture.fetch_embeddings(component))
-            for component in self.left.components
+            len(mixture.embeddings(component)) for component in self.left.components
         )
 
     def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
@@ -84,11 +83,11 @@ class KappaRule(Rule):
         selection_map: dict[Agent, Pattern] = {}
 
         for component in self.left.components:
-            choices = mixture.fetch_embeddings(component)
+            choices = mixture.embeddings(component)
             assert (
                 len(choices) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
-            component_selection = random.choice(mixture.fetch_embeddings(component))
+            component_selection = random.choice(mixture.embeddings(component))
 
             for agent in component_selection:
                 if component_selection[agent] in selection_map.values():
@@ -193,7 +192,7 @@ class KappaRuleUnimolecular(KappaRule):
 
         for component in mixture.components:
             weight = prod(
-                len(mixture.fetch_embeddings_in_component(match_component, component))
+                len(mixture.embeddings_in_component(match_component, component))
                 for match_component in self.left.components
             )
 
@@ -216,9 +215,7 @@ class KappaRuleUnimolecular(KappaRule):
         selection_map: dict[Agent, Pattern] = {}
 
         for component in self.left.components:
-            choices = mixture.fetch_embeddings_in_component(
-                component, selected_component
-            )
+            choices = mixture.embeddings_in_component(component, selected_component)
             assert (
                 len(choices) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
@@ -263,12 +260,12 @@ class KappaRuleBimolecular(KappaRule):
 
             # Number of times the first component in the left Pattern of this rule
             # embeds into `component`
-            n_match1 = len(mixture.fetch_embeddings_in_component(match1, component))
+            n_match1 = len(mixture.embeddings_in_component(match1, component))
 
             # Number of times the second component in the left Pattern of this rule
             # embeds anywhere *outside of* `component`
-            n_match2 = len(mixture.fetch_embeddings(match2)) - len(
-                mixture.fetch_embeddings_in_component(match2, component)
+            n_match2 = len(mixture.embeddings(match2)) - len(
+                mixture.embeddings_in_component(match2, component)
             )
 
             weight = n_match1 * n_match2
@@ -289,16 +286,14 @@ class KappaRuleBimolecular(KappaRule):
         selected_component = random.choices(components_ordered, weights)[0]
 
         match1 = random.choice(
-            mixture.fetch_embeddings_in_component(
-                self.left.components[0], selected_component
-            )
+            mixture.embeddings_in_component(self.left.components[0], selected_component)
         )
 
         # Sample from all embeddings of the second component in `self.left` in `mixture`,
         # excluding the embeddings found in the same component as `match1`
         match2 = rejection_sample(
-            mixture.fetch_embeddings(self.left.components[1]),
-            mixture.fetch_embeddings_in_component(
+            mixture.embeddings(self.left.components[1]),
+            mixture.embeddings_in_component(
                 self.left.components[1], selected_component
             ),
         )
