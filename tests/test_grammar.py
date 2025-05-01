@@ -48,7 +48,7 @@ def test_pattern_from_kappa():
     )
     assert [0, 1, 2, 3, 4] == list(map(lambda agent: agent.id, pattern.agents))
     assert ["a", "b", "c", "d", "e"] == list(
-        map(lambda site: site.label, pattern.agents[0].sites.values())
+        map(lambda site: site.label, pattern.agents[0])
     )
     assert len(pattern.components) == 2
 

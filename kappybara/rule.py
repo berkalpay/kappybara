@@ -135,7 +135,7 @@ class KappaRule(Rule):
                     update.remove_agent(agent)
                     new_selection[i] = update.create_agent(r_agent)
                 case Agent(), Agent() if l_agent.type == r_agent.type:
-                    for r_site in r_agent.sites.values():
+                    for r_site in r_agent:
                         if isinstance(r_site.state, states.Internal):
                             agent.sites[r_site.label].state = r_site.state
                             if r_site.state != l_agent.sites[r_site.label].state:
@@ -152,7 +152,7 @@ class KappaRule(Rule):
                 continue
 
             agent = new_selection[i]
-            for r_site in r_agent.sites.values():
+            for r_site in r_agent:
                 site: Site = agent.sites[r_site.label]
                 match r_site.partner:
                     case Site() as r_partner:
