@@ -7,11 +7,8 @@ from kappybara.pattern import Site, Agent, Component, Pattern
 
 @dataclass
 class Edge:
-    """
-    A data structure to represent bonds to use as keys to a set/dict.
-    Its hash should be unordered: Edge(x, y) is the same as Edge(y, x).
-
-    TODO: make this a frozen dataclass? Could simply cache hashes then.
+    """Represents bonds between sites. Edge(x, y) is the same as Edge(y, x).
+    TODO: make this a frozen dataclass? Could cache hashes then.
     """
 
     site1: Site
@@ -48,7 +45,7 @@ class Mixture:
     def instantiate(self, pattern: Pattern, n_copies: int = 1):
         assert (
             not pattern.underspecified
-        ), "Pattern is not specific enough to be instantiated."
+        ), "Pattern isn't specific enough to instantiate."
 
         for component in pattern.components:
             self._instantiate_component(component, n_copies)
@@ -68,12 +65,9 @@ class Mixture:
 
         new_component = Component(new_agents, n_copies)
 
-        # Update mixture contents
+        # Update mixture contents and indices
         self.agents.update(new_agents)
-
-        # Update component indices
         self.components.add(new_component)
-
         for agent in new_agents:
             self.agents_by_type[agent.type].append(agent)
             self.component_index[agent] = new_component
@@ -126,9 +120,6 @@ class Mixture:
 
         return embeddings
 
-    def update_embeddings(self):
-        pass
-
     def fetch_embeddings(self, component: Component) -> list[list[Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
@@ -178,26 +169,21 @@ class Mixture:
             self._add_edge(edge)
 
         for agent in update.agents_changed:
-            # For the naive approach we don't have to do anything here, but
-            # for incremental approaches it's important to know about any agents
+            # For incremental approaches it'll be important to know the agents
             # who haven't been removed/added but whose internal states have changed.
             pass
 
         self._update_embeddings()
 
     def _update_embeddings(self):
-        # TODO: Update APSP. This is imo the best thing to do to support horizon conditions. Don't worry
-        # about it until later though, I'm more concerned with getting essential functionality for now.
-        # In an incremental version the APSP should be updated at every agent/edge addition/removal above
+        # TODO: Update APSP. This is imo the best thing to do to support horizon conditions.
+        # In an incremental version the APSP should be updated at every agent/edge addition/removal
         # in the delegated calls above.
-        # raise NotImplementedError
 
         # 3. Update embeddings
         #    TODO: Only update embeddings of affected `Component`s. This requires a pre-simulation step
         #    where we build a dependency graph of rules at the level of either `Rule`s or `Component`s
-        #
-        # Similarly to elsewhere, for the first draft implementation we just reconstruct our indexes from scratch.
-        # Eventually though, we might want to do this incrementally on every edge/agent removal/addition.
+        # We might want to do this incrementally on every edge/agent removal/addition.
         self.match_cache_by_component = defaultdict(lambda: defaultdict(list))
         for component in self.match_cache:
             embeddings = self.embeddings(component)
@@ -239,7 +225,7 @@ class Mixture:
         self.agents.remove(agent)
         self.agents_by_type[agent.type].remove(agent)
 
-        # if self.enable_component_tracking:
+        # TODO: if self.enable_component_tracking:
         component = self.component_index[agent]
         assert len(component.agents) == 1
         self.components.remove(component)
