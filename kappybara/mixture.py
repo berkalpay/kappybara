@@ -312,26 +312,18 @@ class MixtureUpdate:
     edges_to_remove: set[Edge] = field(default_factory=set)
     agents_changed: set[Agent] = field(default_factory=set)  # Agents changed internally
 
-    def remove_agent(self, agent: Agent) -> None:
-        """Specify to remove the agent and its edges from the mixture."""
-        self.agents_to_remove.append(agent)
-        for site in agent:
-            if site.coupled:
-                self.edges_to_remove.add(Edge(site, site.partner))
-
     def create_agent(self, agent: Agent) -> Agent:
         """NOTE: Sites in the created agent will be emptied."""
         new_agent = agent.detached()
         self.agents_to_add.append(new_agent)
         return new_agent
 
-    def register_changed_agent(self, agent: Agent) -> None:
-        self.agents_changed.add(agent)
-
-    def disconnect_site(self, site: Site) -> None:
-        """Indicate that the site should be unbound."""
-        if site.coupled:
-            self.edges_to_remove.add(Edge(site, site.partner))
+    def remove_agent(self, agent: Agent) -> None:
+        """Specify to remove the agent and its edges from the mixture."""
+        self.agents_to_remove.append(agent)
+        for site in agent:
+            if site.coupled:
+                self.edges_to_remove.add(Edge(site, site.partner))
 
     def connect_sites(self, site1: Site, site2: Site) -> None:
         """
@@ -344,3 +336,11 @@ class MixtureUpdate:
             self.disconnect_site(site2)
         if not site1.partner == site2:
             self.edges_to_add.add(Edge(site1, site2))
+
+    def disconnect_site(self, site: Site) -> None:
+        """Indicate that the site should be unbound."""
+        if site.coupled:
+            self.edges_to_remove.add(Edge(site, site.partner))
+
+    def register_changed_agent(self, agent: Agent) -> None:
+        self.agents_changed.add(agent)
