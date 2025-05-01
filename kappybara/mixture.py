@@ -356,19 +356,15 @@ class MixtureUpdate:
         if site.coupled:
             self.edges_to_remove.add(Edge(site, site.partner))
 
-    def connect_sites(self, site1: Site, site2: Site):
+    def connect_sites(self, site1: Site, site2: Site) -> None:
         """
         Indicate there should be an edge between two sites. If either of the
         sites are already bound to some other agent, this will indicate those
         bonds for removal.
         """
-
-        # Indicate the removal of bonds to the wrong agents
         if site1.coupled and site1.partner != site2:
             self.disconnect_site(site1)
         if site2.coupled and site2.partner != site1:
             self.disconnect_site(site2)
-
-        # Indicate these sites should be bound if they aren't already
-        if not (site1.coupled and site2.coupled and site1.partner == site2):
+        if not site1.partner == site2:
             self.edges_to_add.add(Edge(site1, site2))
