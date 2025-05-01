@@ -333,7 +333,7 @@ class MixtureUpdate:
         self.agents_to_remove.append(agent)
         for site in agent:
             if site.coupled:
-                self.edges_to_remove.append(Edge(site, site.partner))
+                self.edges_to_remove.add(Edge(site, site.partner))
 
     def create_agent(self, agent: Agent) -> Agent:
         """NOTE: Sites in the created agent will be emptied."""
