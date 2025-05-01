@@ -253,39 +253,22 @@ class Mixture:
         self.components.remove(component)
         del self.component_index[agent]
 
-    def _add_edge(self, edge: Edge):
-        # TODO: sanity checks, can remove if confident about correctness
+    def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
         assert edge.site2.agent in self.agents
 
-        # NOTE: this is another place where it might be nice to have
-        # semantics like what Berk was doing, e.g. define a `bind` method
-        # of `Site`. I am holding off on this for now because I still
-        # am not certain about linked representations like these long term in
-        # the first place.
-        #
-        # However in other places I think it's just clearly better to clean things
-        # up by using e.g. what Berk was doing with the distinction between the `sites` of
-        # an Agent being just a simple list while `interface` allows us to access sites by
-        # their labels. Just haven't gotten around to it. (TODO)
         edge.site1.partner = edge.site2
         edge.site2.partner = edge.site1
 
-        # if self.enable_component_tracking
-        agent1: Agent = edge.site1.agent
-        agent2: Agent = edge.site2.agent
-
-        component1 = self.component_index[agent1]
-        component2 = self.component_index[agent2]
-
+        # If the agents are in different components, merge the components
+        # TODO: if self.enable_component_tracking
+        component1 = self.component_index[edge.site1.agent]
+        component2 = self.component_index[edge.site2.agent]
         if component1 == component2:
             return
-
-        # Otherwise, merge the two components
-        for a in component2.agents:
-            component1.add_agent(a)
-            self.component_index[a] = component1
-
+        for agent in component2.agents:
+            component1.add_agent(agent)
+            self.component_index[agent] = component1
         self.components.remove(component2)
 
     def _remove_edge(self, edge: Edge):
