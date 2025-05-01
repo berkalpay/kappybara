@@ -1,6 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from collections import defaultdict
-from copy import deepcopy
 
 import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Component, Pattern
@@ -305,30 +304,15 @@ class Mixture:
 
 @dataclass
 class MixtureUpdate:
-    """
-    Rather than having a `Rule` modify a `Mixture` directly when we select it, we
-    instead ask it to indicate what changes *should* occur in the mixture using this object.
-    """
+    """Indicates which changes should occur in the mixture."""
 
-    agents_to_add: list[Agent]
-    agents_to_remove: list[Agent]
-    edges_to_add: set[Edge]
-    edges_to_remove: set[Edge]
+    agents_to_add: list[Agent] = field(default_factory=list)
+    agents_to_remove: list[Agent] = field(default_factory=list)
+    edges_to_add: set[Edge] = field(default_factory=set)
+    edges_to_remove: set[Edge] = field(default_factory=set)
+    agents_changed: set[Agent] = field(default_factory=set)  # Agents changed internally
 
-    # Agents which have sites whose *internal* state should change
-    # If an agent's internal site states should all remain unchanged, but
-    # their link states have changed, you don't have to add it here, just
-    # use the `disconnect_site` and `connect_sites` to indicate the changed edges.
-    agents_changed: set[Agent]
-
-    def __init__(self):
-        self.agents_to_add = []
-        self.agents_to_remove = []
-        self.edges_to_add = set()
-        self.edges_to_remove = set()
-        self.agents_changed = set()
-
-    def remove_agent(self, agent: Agent):
+    def remove_agent(self, agent: Agent) -> None:
         """Specify to remove the agent and its edges from the mixture."""
         self.agents_to_remove.append(agent)
         for site in agent:
@@ -341,26 +325,18 @@ class MixtureUpdate:
         self.agents_to_add.append(new_agent)
         return new_agent
 
-    def register_changed_agent(self, agent: Agent):
+    def register_changed_agent(self, agent: Agent) -> None:
         self.agents_changed.add(agent)
 
-    def disconnect_site(self, site: Site):
-        """
-        If `site` is bound, indicate that it should be unbound.
-        Does nothing if `site` is already empty.
-
-        All removed bonds (indicated in `self.edges_to_remove`) will be
-        applied before any new bonds (`self.edges_to_add`) are created
-        when this `MixtureUpdate` is actually applied.
-        """
+    def disconnect_site(self, site: Site) -> None:
+        """Indicate that the site should be unbound."""
         if site.coupled:
             self.edges_to_remove.add(Edge(site, site.partner))
 
     def connect_sites(self, site1: Site, site2: Site) -> None:
         """
-        Indicate there should be an edge between two sites. If either of the
-        sites are already bound to some other agent, this will indicate those
-        bonds for removal.
+        Indicate there should be an edge between two sites. If the
+        sites are bound to other sites, indicate to remove those edges.
         """
         if site1.coupled and site1.partner != site2:
             self.disconnect_site(site1)
