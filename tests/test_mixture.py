@@ -54,5 +54,5 @@ def test_find_embeddings_one_component(test_case):
     match_pattern = kappa.pattern(match_pattern_str)
     assert len(match_pattern.components) == 1
 
-    embeddings = mixture.embeddings(match_pattern.components[0])
+    embeddings = mixture.find_embeddings(match_pattern.components[0])
     assert len(embeddings) == n_embeddings_expected * n

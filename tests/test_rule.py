@@ -352,8 +352,8 @@ def debug_mixture(mixture: Mixture):
     print(system.mixture.agents)
 
     print("\n Mixture components: ", system.mixture.components, "\n")
-    for component in system.mixture.match_cache_by_component:
-        cache = system.mixture.match_cache_by_component[component]
+    for component in system.mixture._embeddings_by_component:
+        cache = system.mixture._embeddings_by_component[component]
         print("Mixture component: ", component)
         for p in cache:
             print("Pattern component: ", p, " with matches:")

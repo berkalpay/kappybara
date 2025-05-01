@@ -60,7 +60,7 @@ class System:
         self.mixture.track_component(obs)
 
     def count_observable(self, obs: Component) -> int:
-        return len(self.mixture.fetch_embeddings(obs))
+        return len(self.mixture.embeddings(obs))
 
     def add_rule(self, rule: Rule) -> None:
         """
