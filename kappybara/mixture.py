@@ -59,7 +59,7 @@ class Mixture:
 
         for i, agent in enumerate(component.agents):
             # Duplicate the proper link structure
-            for site in agent.sites.values():
+            for site in agent:
                 if site.coupled:
                     partner: Site = site.partner
                     i_partner = component.agents.index(partner.agent)
@@ -218,9 +218,7 @@ class Mixture:
         afterwards using `self._add_edge`
         """
         # Assert all sites are unbound
-        assert all(
-            isinstance(site.partner, states.Empty) for site in agent.sites.values()
-        )
+        assert all(isinstance(site.partner, states.Empty) for site in agent)
         assert agent.instantiable
 
         self.agents.add(agent)
@@ -237,9 +235,7 @@ class Mixture:
         before trying to use this method call.
         """
         # Assert all sites are unbound
-        assert all(
-            isinstance(site.partner, states.Empty) for site in agent.sites.values()
-        )
+        assert all(isinstance(site.partner, states.Empty) for site in agent)
 
         self.agents.remove(agent)
         self.agents_by_type[agent.type].remove(agent)
@@ -340,7 +336,7 @@ class MixtureUpdate:
         self.agents_to_remove.append(agent)
 
         # Also remove any edges the removed agent was associated with
-        for site in agent.sites.values():
+        for site in agent:
             if site.coupled:
                 self.edges_to_remove.append(Edge(site, site.partner))
 

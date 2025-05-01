@@ -126,7 +126,7 @@ class AgentBuilder(Visitor):
     @property
     def object(self) -> Agent:
         agent = Agent(type=self.parsed_type, sites=self.parsed_interface)
-        for site in agent.sites.values():
+        for site in agent:
             site.agent = agent
         return agent
 

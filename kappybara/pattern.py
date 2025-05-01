@@ -118,11 +118,11 @@ class Agent:
         Tells you whether or not concrete `Agent` instances can be created
         from this pattern, i.e. whether there are any underspecified sites
         """
-        return any(site.underspecified for site in self.sites.values())
+        return any(site.underspecified for site in self)
 
     @property
     def neighbors(self) -> list[Self]:
-        return [site.partner.agent for site in self.sites.values() if site.coupled]
+        return [site.partner.agent for site in self if site.coupled]
 
     @property
     def depth_first_traversal(self) -> list[Self]:
@@ -322,7 +322,7 @@ class Component(Counted):
         agent_signatures = []
         for agent in self.agents:
             site_strs = []
-            for site in agent.sites.values():
+            for site in agent:
                 if site.partner is None:
                     bond_num = None
                 elif site in bond_nums:
@@ -369,7 +369,7 @@ class Pattern:
         integer_links: defaultdict[int, list[Site]] = defaultdict(list)
 
         for agent in agents:
-            for site in agent.sites.values():
+            for site in agent:
                 if isinstance(site.partner, int):
                     integer_links[site.partner].append(site)
 
