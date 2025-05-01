@@ -81,9 +81,6 @@ class Mixture:
 
         # TODO: Update APSP
 
-    def component_of_agent(self, agent):
-        return self.component_index[agent]
-
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         embeddings = []
 
@@ -150,7 +147,7 @@ class Mixture:
 
         for embedding in embeddings:
             self.match_cache_by_component[
-                self.component_of_agent(next(iter(embedding.values())))
+                self.component_index[next(iter(embedding.values()))]
             ][component].append(embedding)
 
     def apply_update(self, update: "MixtureUpdate"):
@@ -208,7 +205,7 @@ class Mixture:
             self.match_cache[component] = embeddings
             for embedding in embeddings:
                 self.match_cache_by_component[
-                    self.component_of_agent(next(iter(embedding.values())))
+                    self.component_index[next(iter(embedding.values()))]
                 ][component].append(embedding)
 
     def _add_agent(self, agent: Agent):
