@@ -42,7 +42,7 @@ class Mixture:
         self._embeddings = defaultdict(list)
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
 
-    def instantiate(self, pattern: Pattern, n_copies: int = 1):
+    def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
         assert (
             not pattern.underspecified
         ), "Pattern isn't specific enough to instantiate."
@@ -50,7 +50,7 @@ class Mixture:
         for component in pattern.components:
             self._instantiate_component(component, n_copies)
 
-    def _instantiate_component(self, component: Component, n_copies: int):
+    def _instantiate_component(self, component: Component, n_copies: int) -> None:
         new_agents = [agent.detached() for agent in component.agents]
 
         for i, agent in enumerate(component.agents):
@@ -120,7 +120,7 @@ class Mixture:
 
         return embeddings
 
-    def embeddings(self, component: Component) -> list[list[Agent]]:
+    def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
         """
@@ -128,7 +128,7 @@ class Mixture:
 
     def embeddings_in_component(
         self, match_pattern: Component, mixture_component: Component
-    ) -> list[list[Agent]]:
+    ) -> list[dict[Agent, Agent]]:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
@@ -140,7 +140,7 @@ class Mixture:
                 self.component_index[next(iter(embedding.values()))]
             ][component].append(embedding)
 
-    def apply_update(self, update: "MixtureUpdate"):
+    def apply_update(self, update: "MixtureUpdate") -> None:
         """
         In this first implementation, we will just apply the update and then
         naively recompute all of our indexes from scratch, without taking advantage
@@ -175,7 +175,7 @@ class Mixture:
 
         self._update_embeddings()
 
-    def _update_embeddings(self):
+    def _update_embeddings(self) -> None:
         # TODO: Update APSP. This is imo the best thing to do to support horizon conditions.
         # In an incremental version the APSP should be updated at every agent/edge addition/removal
         # in the delegated calls above.
@@ -193,7 +193,7 @@ class Mixture:
                     self.component_index[next(iter(embedding.values()))]
                 ][component].append(embedding)
 
-    def _add_agent(self, agent: Agent):
+    def _add_agent(self, agent: Agent) -> None:
         """
         Calling any of these private functions which modify the mixture is *not*
         guaranteed to keep any of our indexes up to date, which is why they should
@@ -214,7 +214,7 @@ class Mixture:
         self.components.add(component)
         self.component_index[agent] = component
 
-    def _remove_agent(self, agent: Agent):
+    def _remove_agent(self, agent: Agent) -> None:
         """
         NOTE: Any bonds associated with `agent` must be removed as well
         before trying to use this method call.
@@ -249,7 +249,7 @@ class Mixture:
             self.component_index[agent] = component1
         self.components.remove(component2)
 
-    def _remove_edge(self, edge: Edge):
+    def _remove_edge(self, edge: Edge) -> None:
         assert edge.site1.partner == edge.site2
         assert edge.site2.partner == edge.site1
 
