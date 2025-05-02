@@ -16,9 +16,7 @@ class Rule(ABC):
 
     @abstractmethod
     def rate(self, system: "System") -> float:
-        """
-        The stochastic rate of the rule.
-        """
+        """The stochastic rate of the rule."""
         pass
 
     @abstractmethod
@@ -28,15 +26,9 @@ class Rule(ABC):
     @abstractmethod
     def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
-        DO NOT modify anything in `mixture` directly here except for changing
+        Don't modify anything in `mixture` directly here except for changing
         internal sites of agents (which should be added to the `agents_changed` field
-        of the returned `MixtureUpdate`). Anything else will cause undefined behavior.
-        Instead, create a `MixtureUpdate` and use its helper functions to indicate
-        what connectivity changes or agent additions/removals *should* occur in the
-        mixture by the application of your rule.
-
-        The return type is an `Optional` because we want to allow the rule to return
-        a null event, which we represent with `None`
+        of the returned `MixtureUpdate`). A null event is represented by returning None.
         """
         pass
 
@@ -135,7 +127,7 @@ class KappaRule(Rule):
                     new_selection[i] = update.create_agent(r_agent)
                 case Agent(), Agent() if l_agent.type == r_agent.type:
                     for r_site in r_agent:
-                        if isinstance(r_site.state, states.Internal):
+                        if r_site.stated:
                             agent.sites[r_site.label].state = r_site.state
                             if r_site.state != l_agent.sites[r_site.label].state:
                                 update.register_changed_agent(agent)
@@ -282,7 +274,6 @@ class KappaRuleBimolecular(KappaRule):
         """
         components_ordered = list(self.component_weights.keys())
         weights = [self.component_weights[c] for c in components_ordered]
-
         selected_component = random.choices(components_ordered, weights)[0]
 
         match1 = random.choice(
