@@ -5,11 +5,9 @@ import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Component, Pattern
 
 
-@dataclass
+@dataclass(frozen=True)
 class Edge:
-    """Represents bonds between sites. Edge(x, y) is the same as Edge(y, x).
-    TODO: make this a frozen dataclass? Could cache hashes then.
-    """
+    """Represents bonds between sites. Edge(x, y) is the same as Edge(y, x)."""
 
     site1: Site
     site2: Site
@@ -19,7 +17,7 @@ class Edge:
             self.site1 == other.site2 and self.site2 == other.site1
         )
 
-    def __hash__(self):
+    def __hash__(self):  # TODO: cache?
         return hash(frozenset((self.site1, self.site2)))
 
 
