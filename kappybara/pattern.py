@@ -1,6 +1,5 @@
 from collections import defaultdict
 from functools import cached_property
-from copy import deepcopy
 from typing import Self, Optional, Iterator, Iterable
 
 import kappybara.site_states as states
@@ -103,7 +102,7 @@ class Site(Counted):
         return True
 
 
-class Agent:
+class Agent(Counted):
     def __init__(self, type: str, sites: Iterable[Site]):
         super().__init__()
         self.type = type
@@ -142,10 +141,12 @@ class Agent:
         return not any(site.underspecified for site in self)
 
     def detached(self) -> Self:
-        detached = deepcopy(self)
-        # TODO: detached = type(self)(self.type, self.sites.values())
+        """Makes a clone of itself but with all its sites emptied."""
+        detached = type(self)(
+            self.type, [Site(site.label, site.state, states.Empty()) for site in self]
+        )
         for site in detached:
-            site.partner = states.Empty()
+            site.agent = detached
         return detached
 
 
