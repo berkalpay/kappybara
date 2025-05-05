@@ -59,9 +59,6 @@ class System:
         self.wait()
         self.act()
 
-    def instantiate_pattern(self, pattern: Pattern, n_copies=1) -> None:
-        self.mixture.instantiate(pattern, n_copies)
-
     def add_observables(self, observables: Iterable[Component]) -> None:
         for obs in observables:
             self.add_observable(obs)

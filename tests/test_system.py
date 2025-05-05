@@ -47,7 +47,7 @@ def test_basic_system():
 
         # # TODO: If/when we implement isomorphic component tracking in a mixture,
         # # we can start using this version of the call.
-        # system.instantiate_pattern(pattern, count)
+        # mixture.instantiate(pattern, count)
 
     rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
     system = System(mixture, rules)
