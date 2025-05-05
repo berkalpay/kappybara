@@ -35,7 +35,7 @@ def test_basic_rule_n_embeddings(test_case):
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule)
+    system._add_rule(rule)
 
     assert rule.n_embeddings(system.mixture) == n_embeddings_expected
 
@@ -67,7 +67,7 @@ def test_unimolecular_rule_n_embeddings(test_case):
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule)
+    system._add_rule(rule)
 
     assert rule.n_embeddings(system.mixture) == n_embeddings_expected
 
@@ -98,7 +98,7 @@ def test_bimolecular_rule_n_embeddings(test_case):
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule)
+    system._add_rule(rule)
 
     assert rule.n_embeddings(system.mixture) == n_embeddings_expected
 
@@ -130,7 +130,7 @@ def test_simple_rule_application():
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule)
+    system._add_rule(rule)
     system.add_observables(observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies
@@ -174,7 +174,7 @@ def test_edge_creating_rule_application():
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule)
+    system._add_rule(rule)
     system.add_observables(observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies * n_copies
@@ -222,7 +222,7 @@ def test_rule_application():
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule)
+    system._add_rule(rule)
     system.add_observables(observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies
@@ -273,8 +273,8 @@ def test_simple_unimolecular_rule_application(n_copies):
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule1)
-    system.add_rule(rule2)
+    system._add_rule(rule1)
+    system._add_rule(rule2)
     system.add_observables(observables)
 
     n_rule1_applications = n_copies // 2
@@ -328,7 +328,7 @@ def test_simple_bimolecular_rule_application(n_copies):
     system = System()
     system.mixture = mixture
 
-    system.add_rule(rule1)
+    system._add_rule(rule1)
     system.add_observables(observables)
 
     n_rule1_applications = n_copies // 2
