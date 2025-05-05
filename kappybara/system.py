@@ -13,13 +13,19 @@ class System:
     time: float
 
     def __init__(
-        self, mixture: Optional[Mixture] = None, rules: Optional[Iterable[Rule]] = None
+        self,
+        mixture: Optional[Mixture] = None,
+        rules: Optional[Iterable[Rule]] = None,
+        observables: Optional[Iterable[Component]] = None,
     ):
         self.mixture = Mixture() if mixture is None else mixture
         self.rules = []
         if rules is not None:
             for rule in rules:
                 self._add_rule(rule)
+        if observables is not None:
+            for observable in observables:
+                self.mixture.track_component(observable)
         self.time = 0
 
     def _add_rule(self, rule: Rule) -> None:
@@ -59,20 +65,9 @@ class System:
         self.wait()
         self.act()
 
-    def add_observables(self, observables: Iterable[Component]) -> None:
-        for obs in observables:
-            self.add_observable(obs)
-
-    def add_observable(self, obs: Component) -> None:
-        """
-        NOTE: Currently, to retrieve the counts of an observable registered
-        through this method, you must provide `count_observable` with the exact
-        same object you gave to this method call. An isomorphic but non-identical
-        (i.e. different memory address) `Component` currently will not work
-        unless it also got registered through this call.
-        """
-        assert isinstance(obs, Component), "An observable must be a single Component"
-        self.mixture.track_component(obs)
-
     def count_observable(self, obs: Component) -> int:
+        """
+        NOTE: Must provide with the exact same observable as you set to track.
+        Ismorphic components aren't recognized.
+        """
         return len(self.mixture.embeddings(obs))

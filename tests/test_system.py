@@ -50,9 +50,7 @@ def test_basic_system():
         # mixture.instantiate(pattern, count)
 
     rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
-    system = System(mixture, rules)
-    for obs in observables:
-        system.add_observable(obs)
+    system = System(mixture, rules, observables)
 
     counts = {obs: [] for obs in observables}
 
