@@ -15,10 +15,7 @@ import kappybara.kappa as kappa
 )
 def test_instantiate_pattern_one_component(test_str):
     pattern = kappa.pattern(test_str)
-
-    mixture = Mixture()
-    mixture.instantiate(pattern)
-
+    mixture = Mixture([pattern])
     assert pattern.components.pop().isomorphic(mixture.components.pop())
 
 
@@ -48,7 +45,7 @@ def test_find_embeddings_one_component(test_case):
     mixture_pattern = kappa.pattern(mixture_pattern_str)
 
     mixture = Mixture()
-    for i in range(n):
+    for _ in range(n):
         mixture.instantiate(mixture_pattern, n_copies)
 
     match_pattern = kappa.pattern(match_pattern_str)

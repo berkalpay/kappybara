@@ -42,7 +42,7 @@ def test_basic_system():
         pattern_str, count = pair
         pattern = kappa.pattern(pattern_str)
 
-        for i in range(count):
+        for _ in range(count):
             mixture.instantiate(pattern)
 
         # # TODO: If/when we implement isomorphic component tracking in a mixture,

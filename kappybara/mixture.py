@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
+from typing import Optional, Iterable
 
 import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Component, Pattern
@@ -32,13 +33,17 @@ class Mixture:
     _embeddings: dict[Component, list[dict[Agent, Agent]]]
     _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
 
-    def __init__(self):
+    def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = set()
         self.components = set()
         self.component_index = {}
         self.agents_by_type = defaultdict(list)
         self._embeddings = defaultdict(list)
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
+
+        if patterns is not None:
+            for pattern in patterns:
+                self.instantiate(pattern)
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
         assert (
