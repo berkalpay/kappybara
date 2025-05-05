@@ -14,13 +14,12 @@
 # stuff we still need to implement in that regard:
 # - Algebraic expressions (for example to be used in rate constants, see rule.py and rate.py)
 # - Agent signatures
+from kappybara.mixture import Mixture
 from kappybara.system import System
 import kappybara.kappa as kappa
 
 
 def test_basic_system():
-    system = System()
-
     # %init patterns used to initialize the mixture + their counts
     init_patterns = [("A(a[.], b[.])", 100)]
 
@@ -38,21 +37,20 @@ def test_basic_system():
         ]
     ]
 
+    mixture = Mixture()
     for pair in init_patterns:
         pattern_str, count = pair
         pattern = kappa.pattern(pattern_str)
 
         for i in range(count):
-            system.instantiate_pattern(pattern)
+            mixture.instantiate(pattern)
 
         # # TODO: If/when we implement isomorphic component tracking in a mixture,
         # # we can start using this version of the call.
         # system.instantiate_pattern(pattern, count)
 
-    for rule_str in rules:
-        for rule in kappa.rules(rule_str):
-            system._add_rule(rule)
-
+    rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
+    system = System(mixture, rules)
     for obs in observables:
         system.add_observable(obs)
 

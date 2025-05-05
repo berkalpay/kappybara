@@ -1,11 +1,10 @@
 import random
 from functools import cached_property
-from typing import Iterable
+from typing import Optional, Iterable
 
 from kappybara.mixture import Mixture
 from kappybara.rule import Rule, KappaRule
 from kappybara.pattern import Component, Pattern
-import kappybara.kappa as kappa
 
 
 class System:
@@ -13,11 +12,14 @@ class System:
     rules: list[Rule]
     time: float
 
-    def __init__(self, rules: Iterable[Rule] = []):
-        self.mixture = Mixture()
+    def __init__(
+        self, mixture: Optional[Mixture] = None, rules: Optional[Iterable[Rule]] = None
+    ):
+        self.mixture = Mixture() if mixture is None else mixture
         self.rules = []
-        for rule in rules:
-            self._add_rule(rule)
+        if rules is not None:
+            for rule in rules:
+                self._add_rule(rule)
         self.time = 0
 
     def _add_rule(self, rule: Rule) -> None:
