@@ -50,7 +50,8 @@ def test_basic_system():
         # system.instantiate_pattern(pattern, count)
 
     for rule_str in rules:
-        system.add_rule_from_kappa(rule_str)
+        for rule in kappa.rules(rule_str):
+            system._add_rule(rule)
 
     for obs in observables:
         system.add_observable(obs)

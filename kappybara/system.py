@@ -13,10 +13,26 @@ class System:
     rules: list[Rule]
     time: float
 
-    def __init__(self):
+    def __init__(self, rules: Iterable[Rule] = []):
         self.mixture = Mixture()
         self.rules = []
+        for rule in rules:
+            self._add_rule(rule)
         self.time = 0
+
+    def _add_rule(self, rule: Rule) -> None:
+        """
+        NOTE: Right now an overarching assumption is that the mixture will be fully initialized
+        before any rules or observables are added. But stuff like interventions which instantiate
+        the mixture when the simulation is already underway and rules are already declared might
+        require us to rethink things a bit.
+        """
+        self.rules.append(rule)
+        if isinstance(rule, KappaRule):
+            for component in rule.left.components:
+                # TODO: Efficiency thing: check for isomorphism with existing components
+                #       Create a surjective map from *all* components to set of unique components
+                self.mixture.track_component(component)
 
     @cached_property
     def rule_reactivities(self) -> list[float]:
@@ -61,21 +77,3 @@ class System:
 
     def count_observable(self, obs: Component) -> int:
         return len(self.mixture.embeddings(obs))
-
-    def add_rule(self, rule: Rule) -> None:
-        """
-        NOTE: Right now an overarching assumption is that the mixture will be fully initialized
-        before any rules or observables are added. But stuff like interventions which instantiate
-        the mixture when the simulation is already underway and rules are already declared might
-        require us to rethink things a bit.
-        """
-        self.rules.append(rule)
-        if isinstance(rule, KappaRule):
-            for component in rule.left.components:
-                # TODO: Efficiency thing: check for isomorphism with existing components
-                #       Create a surjective map from *all* components to set of unique components
-                self.mixture.track_component(component)
-
-    def add_rule_from_kappa(self, rule_str: str) -> None:
-        for rule in kappa.rules(rule_str):
-            self.add_rule(rule)
