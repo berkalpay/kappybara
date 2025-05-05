@@ -24,9 +24,7 @@ def test_basic_rule_n_embeddings(test_case):
     mixture_pattern_str, n_copies, rule_pattern_str, n_embeddings_expected = test_case
     mixture_pattern = kappa.pattern(mixture_pattern_str)
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule_pattern = kappa.pattern(rule_pattern_str)
@@ -53,9 +51,7 @@ def test_unimolecular_rule_n_embeddings(test_case):
     mixture_pattern_str, n_copies, rule_pattern_str, n_embeddings_expected = test_case
     mixture_pattern = kappa.pattern(mixture_pattern_str)
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule_pattern = kappa.pattern(rule_pattern_str)
@@ -81,9 +77,7 @@ def test_bimolecular_rule_n_embeddings(test_case):
     mixture_pattern_str, n_copies, rule_pattern_str, n_embeddings_expected = test_case
     mixture_pattern = kappa.pattern(mixture_pattern_str)
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule_pattern = kappa.pattern(rule_pattern_str)
@@ -111,9 +105,7 @@ def test_simple_rule_application():
     rule_right = kappa.pattern(rule_right_str)
     observables = [kappa.component(s) for s in observables_str]
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule = KappaRule(rule_left, rule_right, 1.0)
@@ -151,9 +143,7 @@ def test_edge_creating_rule_application():
     rule_right = kappa.pattern(rule_right_str)
     observables = [kappa.component(s) for s in observables_str]
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule = KappaRule(rule_left, rule_right, 1.0)
@@ -195,9 +185,7 @@ def test_rule_application():
     rule_right = kappa.pattern(rule_right_str)
     observables = [kappa.component(s) for s in observables_str]
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule = KappaRule(rule_left, rule_right, 1.0)
@@ -238,9 +226,7 @@ def test_simple_unimolecular_rule_application(n_copies):
     mixture_pattern = kappa.pattern(mixture_pattern_str)
     observables = [kappa.component(s) for s in observables_str]
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
+    mixture = Mixture([mixture_pattern] * n_copies)
     # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
 
     rule1 = kappa.rule(rule1_str)
@@ -295,10 +281,7 @@ def test_simple_bimolecular_rule_application(n_copies):
     rule1 = kappa.rule(rule1_str)
     assert isinstance(rule1, KappaRuleBimolecular)
 
-    mixture = Mixture()
-    for _ in range(n_copies):
-        mixture.instantiate(mixture_pattern)
-
+    mixture = Mixture([mixture_pattern] * n_copies)
     system = System(mixture, [rule1], observables)
 
     n_rule1_applications = n_copies // 2
