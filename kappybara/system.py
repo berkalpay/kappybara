@@ -4,7 +4,7 @@ from typing import Optional, Iterable
 
 from kappybara.mixture import Mixture
 from kappybara.rule import Rule, KappaRule
-from kappybara.pattern import Component, Pattern
+from kappybara.pattern import Component
 
 
 class System:
@@ -40,6 +40,13 @@ class System:
                 #       Create a surjective map from *all* components to set of unique components
                 self.mixture.track_component(component)
 
+    def count_observable(self, obs: Component) -> int:
+        """
+        NOTE: Must provide with the exact same observable as you set to track.
+        Ismorphic components aren't recognized.
+        """
+        return len(self.mixture.embeddings(obs))
+
     @cached_property
     def rule_reactivities(self) -> list[float]:
         return [rule.reactivity(self) for rule in self.rules]
@@ -62,10 +69,3 @@ class System:
     def update(self) -> None:
         self.wait()
         self.act()
-
-    def count_observable(self, obs: Component) -> int:
-        """
-        NOTE: Must provide with the exact same observable as you set to track.
-        Ismorphic components aren't recognized.
-        """
-        return len(self.mixture.embeddings(obs))
