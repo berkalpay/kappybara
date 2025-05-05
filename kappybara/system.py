@@ -19,10 +19,9 @@ class System:
         observables: Optional[Iterable[Component]] = None,
     ):
         self.mixture = Mixture() if mixture is None else mixture
-        self.rules = []
-        if rules is not None:
-            for rule in rules:
-                self._add_rule(rule)
+        self.rules = [] if rules is None else list(rules)
+        for rule in self.rules:
+            self._add_rule(rule)
         if observables is not None:
             for observable in observables:
                 self.mixture.track_component(observable)
@@ -35,7 +34,6 @@ class System:
         the mixture when the simulation is already underway and rules are already declared might
         require us to rethink things a bit.
         """
-        self.rules.append(rule)
         if isinstance(rule, KappaRule):
             for component in rule.left.components:
                 # TODO: Efficiency thing: check for isomorphism with existing components
