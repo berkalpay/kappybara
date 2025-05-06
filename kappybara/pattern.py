@@ -358,7 +358,6 @@ class Component(Counted):
 
 class Pattern:
     agents: list[Optional[Agent]]
-    components: list[Component]
 
     def __init__(self, agents: list[Optional[Agent]]):
         """
@@ -370,14 +369,14 @@ class Pattern:
         empty slots (represented by ".") in rule expression patterns.
         """
         self.agents = agents
-        agents = [agent for agent in self.agents if agent is not None]
 
         # Parse site connections implied by integer LinkStates
         integer_links: defaultdict[int, list[Site]] = defaultdict(list)
         for agent in agents:
-            for site in agent:
-                if isinstance(site.partner, int):
-                    integer_links[site.partner].append(site)
+            if agent is not None:
+                for site in agent:
+                    if isinstance(site.partner, int):
+                        integer_links[site.partner].append(site)
 
         # Replace integer LinkStates with Agent references
         for i in integer_links:
@@ -392,15 +391,22 @@ class Pattern:
                 linked_sites[0].partner = linked_sites[1]
                 linked_sites[1].partner = linked_sites[0]
 
-        # Discover connected components
-        # NOTE: some redundant loops but only slows down initialization
-        self.components = []
-        not_seen = set(agents)
-        while not_seen:
-            agents_in_component = next(iter(not_seen)).depth_first_traversal
-            for agent in agents_in_component:
-                not_seen.remove(agent)
-            self.components.append(Component(agents_in_component))
+    @cached_property
+    def components(self) -> list[Component]:
+        """
+        Returns connected components.
+        NOTE: some redundant loops but only slows down initialization.
+        """
+        unseen = set(self.agents)
+        if None in unseen:
+            unseen.remove(None)
+        components = []
+        while unseen:
+            component = Component(next(iter(unseen)).depth_first_traversal)
+            for agent in component:
+                unseen.remove(agent)
+            components.append(component)
+        return components
 
     @cached_property
     def underspecified(self) -> bool:
