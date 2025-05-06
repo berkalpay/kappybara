@@ -358,9 +358,7 @@ class Component(Counted):
 
 class Pattern:
     agents: list[Optional[Agent]]
-    components: list[
-        Component
-    ]  # An index on the constituent connected components making up the pattern
+    components: list[Component]
 
     def __init__(self, agents: list[Optional[Agent]]):
         """
@@ -372,13 +370,10 @@ class Pattern:
         empty slots (represented by ".") in rule expression patterns.
         """
         self.agents = agents
+        agents = [agent for agent in self.agents if agent is not None]
 
-        # Only work with actual agents from now on
-        agents = [a for a in self.agents if a is not None]
-
-        # Parse out site connections implied by integer LinkStates
+        # Parse site connections implied by integer LinkStates
         integer_links: defaultdict[int, list[Site]] = defaultdict(list)
-
         for agent in agents:
             for site in agent:
                 if isinstance(site.partner, int):
@@ -387,30 +382,24 @@ class Pattern:
         # Replace integer LinkStates with Agent references
         for i in integer_links:
             linked_sites = integer_links[i]
-            match len(linked_sites):
-                case n if n == 1:
-                    raise AssertionError(
-                        f"Site link {i} is only referenced in one site."
-                    )
-                case n if n > 2:
-                    raise AssertionError(
-                        f"Site link {i} is referenced in more than two sites."
-                    )
-                case n if n == 2:
-                    linked_sites[0].partner = linked_sites[1]
-                    linked_sites[1].partner = linked_sites[0]
+            if len(linked_sites) == 1:
+                raise AssertionError(f"Site link {i} is only referenced in one site.")
+            elif len(linked_sites) > 2:
+                raise AssertionError(
+                    f"Site link {i} is referenced in more than two sites."
+                )
+            else:
+                linked_sites[0].partner = linked_sites[1]
+                linked_sites[1].partner = linked_sites[0]
 
         # Discover connected components
-        # NOTE: some redundant loops but prioritized code simplicity;
-        # worst this can do is slow down initialization.
+        # NOTE: some redundant loops but only slows down initialization
         self.components = []
-        not_seen: set[Agent] = set(agents)
-
+        not_seen = set(agents)
         while not_seen:
             agents_in_component = next(iter(not_seen)).depth_first_traversal
             for agent in agents_in_component:
                 not_seen.remove(agent)
-
             self.components.append(Component(agents_in_component))
 
     @cached_property
