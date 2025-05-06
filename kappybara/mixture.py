@@ -248,7 +248,7 @@ class Mixture:
         if component1 == component2:
             return
         for agent in component2:
-            component1.add_agent(agent)
+            component1.add(agent)
             self.component_index[agent] = component1
         self.components.remove(component2)
 
