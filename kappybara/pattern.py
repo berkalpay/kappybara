@@ -111,6 +111,9 @@ class Agent(Counted):
     def __iter__(self):
         yield from self.sites
 
+    def __getitem__(self, key: str) -> Site:
+        return self.interface[key]
+
     @property
     def sites(self) -> Iterable[Site]:
         yield from self.interface.values()
@@ -272,14 +275,14 @@ class Component(Counted):
                 b_sites_leftover = set(b.interface.keys())
 
                 for site_name in a.interface:
-                    a_site: Site = a.interface[site_name]
+                    a_site = a[site_name]
 
                     # Check that `b` has a site with the same name
                     if site_name not in b.interface and not a_site.undetermined:
                         search_failed = True
                         break
 
-                    b_site: Site = b.interface[site_name]
+                    b_site = b[site_name]
                     b_sites_leftover.remove(
                         site_name
                     )  # In this way we are left with any unexamined sites in b at the end
@@ -310,7 +313,7 @@ class Component(Counted):
 
                 # Check leftovers not mentioned in a_sites
                 for site_name in b_sites_leftover:
-                    leftover_site: Site = b.interface[site_name]
+                    leftover_site = b[site_name]
 
                     if not leftover_site.undetermined:
                         search_failed = True
