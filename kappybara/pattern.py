@@ -202,7 +202,7 @@ class Component(Counted):
     def __iter__(self):
         yield from self.agents
 
-    def add_agent(self, agent: Agent):
+    def add(self, agent: Agent):
         self.agents.append(agent)
         self.agents_by_type[agent.type].add(agent)
 
