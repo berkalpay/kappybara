@@ -62,9 +62,9 @@ class Mixture:
                 if site.coupled:
                     partner: Site = site.partner
                     i_partner = component.agents.index(partner.agent)
-                    new_agents[i].sites[site.label].partner = new_agents[
+                    new_agents[i].interface[site.label].partner = new_agents[
                         i_partner
-                    ].sites[partner.label]
+                    ].interface[partner.label]
 
         new_component = Component(new_agents, n_copies)
 
@@ -94,12 +94,12 @@ class Mixture:
                     search_failed = True
                     break
 
-                for site_name in a.sites:
-                    a_site = a.sites[site_name]
-                    if site_name not in b.sites and not a_site.undetermined:
+                for site_name in a.interface:
+                    a_site = a.interface[site_name]
+                    if site_name not in b.interface and not a_site.undetermined:
                         search_failed = True
                         break
-                    b_site = b.sites[site_name]
+                    b_site = b.interface[site_name]
 
                     if not a_site.matches(b_site):
                         search_failed = True

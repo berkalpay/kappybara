@@ -128,8 +128,8 @@ class KappaRule(Rule):
                 case Agent(), Agent() if l_agent.type == r_agent.type:
                     for r_site in r_agent:
                         if r_site.stated:
-                            agent.sites[r_site.label].state = r_site.state
-                            if r_site.state != l_agent.sites[r_site.label].state:
+                            agent.interface[r_site.label].state = r_site.state
+                            if r_site.state != l_agent.interface[r_site.label].state:
                                 update.register_changed_agent(agent)
                     new_selection[i] = agent
                 case _:
@@ -144,11 +144,11 @@ class KappaRule(Rule):
 
             agent = new_selection[i]
             for r_site in r_agent:
-                site: Site = agent.sites[r_site.label]
+                site: Site = agent.interface[r_site.label]
                 match r_site.partner:
                     case Site() as r_partner:
                         partner_idx = self.right.agents.index(r_partner.agent)
-                        partner: Site = new_selection[partner_idx].sites[
+                        partner: Site = new_selection[partner_idx].interface[
                             r_partner.label
                         ]
                         update.connect_sites(site, partner)
