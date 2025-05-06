@@ -106,10 +106,10 @@ class Agent(Counted):
     def __init__(self, type: str, sites: Iterable[Site]):
         super().__init__()
         self.type = type
-        self.sites = {site.label: site for site in sites}
+        self.interface = {site.label: site for site in sites}
 
     def __iter__(self):
-        yield from self.sites.values()
+        yield from self.interface.values()
 
     @cached_property
     def underspecified(self) -> bool:
@@ -265,17 +265,17 @@ class Component(Counted):
                     break
 
                 # We use this to track sites in b which aren't mentioned in a
-                b_sites_leftover = set(b.sites.keys())
+                b_sites_leftover = set(b.interface.keys())
 
-                for site_name in a.sites:
-                    a_site: Site = a.sites[site_name]
+                for site_name in a.interface:
+                    a_site: Site = a.interface[site_name]
 
                     # Check that `b` has a site with the same name
-                    if site_name not in b.sites and not a_site.undetermined:
+                    if site_name not in b.interface and not a_site.undetermined:
                         search_failed = True
                         break
 
-                    b_site: Site = b.sites[site_name]
+                    b_site: Site = b.interface[site_name]
                     b_sites_leftover.remove(
                         site_name
                     )  # In this way we are left with any unexamined sites in b at the end
@@ -306,7 +306,7 @@ class Component(Counted):
 
                 # Check leftovers not mentioned in a_sites
                 for site_name in b_sites_leftover:
-                    leftover_site: Site = b.sites[site_name]
+                    leftover_site: Site = b.interface[site_name]
 
                     if not leftover_site.undetermined:
                         search_failed = True
