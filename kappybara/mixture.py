@@ -54,9 +54,9 @@ class Mixture:
             self._instantiate_component(component, n_copies)
 
     def _instantiate_component(self, component: Component, n_copies: int) -> None:
-        new_agents = [agent.detached() for agent in component.agents]
+        new_agents = [agent.detached() for agent in component]
 
-        for i, agent in enumerate(component.agents):
+        for i, agent in enumerate(component):
             # Duplicate the proper link structure
             for site in agent:
                 if site.coupled:
@@ -247,7 +247,7 @@ class Mixture:
         component2 = self.component_index[edge.site2.agent]
         if component1 == component2:
             return
-        for agent in component2.agents:
+        for agent in component2:
             component1.add_agent(agent)
             self.component_index[agent] = component1
         self.components.remove(component2)
@@ -270,7 +270,7 @@ class Mixture:
         maybe_new_component = Component(agent1.depth_first_traversal)
         if agent2 not in maybe_new_component.agents:
             self.components.add(maybe_new_component)
-            for agent in maybe_new_component.agents:
+            for agent in maybe_new_component:
                 old_component.agents.remove(agent)
                 self.component_index[agent] = maybe_new_component
 

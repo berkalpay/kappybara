@@ -196,6 +196,9 @@ class Component(Counted):
 
         self.n_copies = n_copies
 
+    def __iter__(self):
+        yield from self.agents
+
     def add_agent(self, agent: Agent):
         """
         Adds an agent along with maintaining the type index.
