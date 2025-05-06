@@ -109,6 +109,10 @@ class Agent(Counted):
         self.interface = {site.label: site for site in sites}
 
     def __iter__(self):
+        yield from self.sites
+
+    @property
+    def sites(self) -> Iterable[Site]:
         yield from self.interface.values()
 
     @cached_property
