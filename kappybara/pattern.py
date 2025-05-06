@@ -182,62 +182,44 @@ class Component(Counted):
     agents: list[Agent]
     agents_by_type: dict[str, set[Agent]]
     n_copies: int
-    id: int
 
     def __init__(self, agents: list[Agent], n_copies: int = 1):
         super().__init__()
 
-        assert len(agents) >= 1
+        assert agents
         assert n_copies >= 1
-
         if n_copies != 1:
             raise NotImplementedError(
-                "Simulation code currently will not handle the n_copies field correctly when counting embeddings."
+                "Simulations won't handle n_copies correctly in counting embeddings."
             )
 
         self.agents = agents  # TODO: I want this to be ordered by graph traversal
         self.agents_by_type = defaultdict(set)  # Reverse index on agent type
-
         for agent in agents:
             self.agents_by_type[agent.type].add(agent)
-
         self.n_copies = n_copies
 
     def __iter__(self):
         yield from self.agents
 
     def add_agent(self, agent: Agent):
-        """
-        Adds an agent along with maintaining the type index.
-        """
         self.agents.append(agent)
         self.agents_by_type[agent.type].add(agent)
 
     def isomorphic(self, other: Self) -> bool:
-        """
-        NOTE: concerns with ambiguity if we overloaded __eq__ with this method
-        """
+        # TODO: set __eq__ with this method?
         return next(self.isomorphisms(other), None) is not None
 
     def isomorphisms(self, other: Self) -> Iterator[dict[Agent, Agent]]:
         """
-        NOTE: There is some potential ambiguity to 'isomorphism' in the context of what
-        we're trying to accomplish in this codebase. Consider two patterns, p1="A(site1[a])" and
-        p2="A(site1[a], site2[b])". If we consider p1 as a rule pattern and p2 as a component
-        in a mixture, then p2 should match p1, since we can embed p1 into it.
+        For tracking identical components in a mixture.
+        This method checks for a bijection which respects links in the site graph,
+        and ensures that any internal site state specified in one compononent
+        exists and is the same in the other.
 
-        But when we're tracking identical components in a mixture (which is what this this
-        method is written for), we cannot consider these as equivalent patterns.
-        This method not only checks for a bijection which respects links in the site graph,
-        but also ensures that any internal site state specified in one compononent must
-        exist and be the same in the other.
+        NOTE: Can't assume agents of the same type will have the same site signatures.
 
-        NOTE: re: convo with Walter, we can't assume that agents with the same type
-        will have the same site signatures.
-
-        NOTE: This code isn't nearly as readable as most of what Berk has written so far.
-        Part of this is just that it's a complicated operation. Another part is that this
-        is trying to handle the problem in a bit more generality than just isomorphisms
+        NOTE: This is trying to handle things more general than just isomorphisms
         between instantiated components in a mixture so that we can also potentially
         check isomorphism between rule patterns. However, should discuss w/ Berk some
         of the tradeoffs here.
