@@ -1,9 +1,11 @@
 import math
 
+
 class AlgExp:
     """
     Algebraic expressions as specified by the Kappa language.
     """
+
     def __init__(self, type, **attrs):
         self.type = type
         self.attrs = attrs
@@ -125,7 +127,9 @@ class AlgExp:
             if var == "inf":
                 return math.inf
             else:
-                raise NotImplementedError(f"Reserved variable {var} not implemented yet.")
+                raise NotImplementedError(
+                    f"Reserved variable {var} not implemented yet."
+                )
 
         else:
             raise ValueError(f"Unsupported node type: {self.type}")
