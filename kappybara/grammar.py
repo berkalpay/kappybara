@@ -1,11 +1,12 @@
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
-from lark import Lark, ParseTree, Tree, Visitor, Token
+from lark import Lark, ParseTree, Tree, Visitor, Token, Transformer
 
 import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Pattern
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
+from kappybara.alg_exp import AlgExp
 
 
 class KappaParser:
@@ -185,14 +186,9 @@ class RuleBuilder(Visitor):
 
         alg_exp = tree.children[0]
         assert alg_exp.data == "algebraic_expression"
-        if (
-            len(alg_exp.children) > 1
-            or not isinstance(alg_exp.children[0], Token)
-            or alg_exp.children[0].type != "SIGNED_FLOAT"
-        ):
-            raise NotImplementedError("Generic algebraic expressions not implemented.")
-        else:
-            self.parsed_rates.append(float(alg_exp.children[0]))
+
+        rate = parse_tree_to_alg_exp(alg_exp)
+        self.parsed_rates.append(rate)
 
     # Visitor method for Lark
     def rule_expression(self, tree: ParseTree) -> None:
@@ -250,3 +246,94 @@ class RuleBuilder(Visitor):
                 rules.append(KappaRule(right, left, rates[2]))
 
         return [r for r in rules if r is not None]
+
+
+class LarkTreetoAlgExp(Transformer):
+    """Transforms a Lark ParseTree (rooted at 'algebraic_expression') into an AlgExp."""
+
+    # --- Literals ---
+    def SIGNED_FLOAT(self, token):
+        return AlgExp("literal", value=float(token.value))
+
+    def SIGNED_INT(self, token):
+        return AlgExp("literal", value=int(token.value))
+
+    # --- Variables/Constants ---
+    def declared_variable_name(self, children):
+        return AlgExp("variable", name=children[0].value.strip("'\""))
+
+    def reserved_variable_name(self, children):
+        return AlgExp("reserved_variable", name=children[0].value)
+
+    def defined_constant(self, children):
+        return AlgExp("defined_constant", name=children[0].value)
+
+    # --- Operations ---
+    def binary_op_expression(self, children):
+        left, op, right = children
+        return AlgExp("binary_op", operator=op.value, left=left, right=right)
+
+    def unary_op_expression(self, children):
+        op, child = children
+        return AlgExp("unary_op", operator=op.value, child=child)
+
+    def list_op_expression(self, children):
+        op_node, *args = children
+        return AlgExp("list_op", operator=op_node.value, children=args)
+
+    # --- Parentheses ---
+    def parentheses(self, children):
+        return AlgExp("parentheses", child=children[0])
+
+    # --- Ternary Conditional ---
+    def ternary(self, children):
+        cond, true_expr, false_expr = children
+        return AlgExp(
+            "ternary", condition=cond, true_expr=true_expr, false_expr=false_expr
+        )
+
+    # --- Boolean Logic ---
+    def comparison(self, children):
+        left, op, right = children
+        return AlgExp("comparison", operator=op.value, left=left, right=right)
+
+    def logical_or(self, children):
+        left, right = children
+        return AlgExp("logical_or", left=left, right=right)
+
+    def logical_and(self, children):
+        left, right = children
+        return AlgExp("logical_and", left=left, right=right)
+
+    def logical_not(self, children):
+        return AlgExp("logical_not", child=children[0])
+
+    # --- Boolean Literals ---
+    def TRUE(self, _):
+        return AlgExp("boolean_literal", value=True)
+
+    def FALSE(self, _):
+        return AlgExp("boolean_literal", value=False)
+
+    # --- Default Fallthrough ---
+    def __default__(self, data, children, meta):
+        return (
+            children[0] if len(children) == 1 else AlgExp("unsupported", raw=children)
+        )
+
+
+def parse_tree_to_alg_exp(tree: Tree) -> AlgExp:
+    """Convert a Lark ParseTree (rooted at algebraic_expression) to AlgExp."""
+    return LarkTreetoAlgExp().transform(tree)
+
+
+# 1. Parse the raw string to a Tree using your existing Lark parser
+raw_parser = Lark.open(
+    str(Path(__file__).parent / "kappa.lark"),
+    parser="earley",
+    start="algebraic_expression",
+)
+tree = raw_parser.parse("2 + [sin]([pi] * 2)")
+
+# 2. Convert the Tree to AlgExp
+a = parse_tree_to_alg_exp(tree)

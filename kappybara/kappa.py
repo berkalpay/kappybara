@@ -1,5 +1,6 @@
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
+from kappybara.alg_exp import AlgExp
 from kappybara.grammar import kappa_parser, AgentBuilder, PatternBuilder, RuleBuilder
 
 
@@ -52,3 +53,12 @@ def rule(kappa_str: str) -> Rule:
     r = rules(kappa_str)
     assert len(r) == 1, "The given rule expression represents more than one rule."
     return r[0]
+
+def alg_exp(kappa_str: str) -> AlgExp:
+    input_tree = kappa_parser.parse(kappa_str)
+    assert input_tree.data == "kappa_input"
+
+    alg_exp_tree = input_tree.children[0]
+    assert alg_exp_tree.data == "!algebraic_expression"
+
+    return parse_tree_to_alg_exp(alg_exp_tree)

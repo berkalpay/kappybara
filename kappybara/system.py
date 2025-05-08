@@ -5,18 +5,21 @@ from typing import Optional, Iterable
 from kappybara.mixture import Mixture
 from kappybara.rule import Rule, KappaRule
 from kappybara.pattern import Component
+from kappybara.alg_exp import AlgExp
 
 
 class System:
     mixture: Mixture
     rules: list[Rule]
     time: float
+    variables: dict[str, AlgExp]
 
     def __init__(
         self,
         mixture: Optional[Mixture] = None,
         rules: Optional[Iterable[Rule]] = None,
         observables: Optional[Iterable[Component]] = None,
+        variables: Optional[dict[str, AlgExp]] = None,
     ):
         self.mixture = Mixture() if mixture is None else mixture
         self.rules = [] if rules is None else list(rules)
@@ -25,6 +28,7 @@ class System:
         if observables is not None:
             for observable in observables:
                 self.mixture.track_component(observable)
+        self.variables = variables # TODO: once we support pattern counts in variables, make sure to check for those and track them
         self.time = 0
 
     def _add_rule(self, rule: Rule) -> None:
