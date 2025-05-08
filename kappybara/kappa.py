@@ -54,6 +54,7 @@ def rule(kappa_str: str) -> Rule:
     assert len(r) == 1, "The given rule expression represents more than one rule."
     return r[0]
 
+
 def alg_exp(kappa_str: str) -> AlgExp:
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"

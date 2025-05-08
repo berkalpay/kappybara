@@ -28,7 +28,7 @@ class System:
         if observables is not None:
             for observable in observables:
                 self.mixture.track_component(observable)
-        self.variables = variables # TODO: once we support pattern counts in variables, make sure to check for those and track them
+        self.variables = variables  # TODO: once we support pattern counts in variables, make sure to check for those and track them
         self.time = 0
 
     def _add_rule(self, rule: Rule) -> None:

@@ -233,15 +233,15 @@ class RuleBuilder(Visitor):
             case "ambi_rule":
                 # TODO: check that the order of the rates is right
                 assert len(rates) == 2
-                if rates[0] != 0:
+                if rates[0].evaluate() != 0:
                     rules.append(KappaRuleBimolecular(left, right, rates[0]))
-                if rates[1] != 0:
+                if rates[1].evaluate() != 0:
                     rules.append(KappaRuleUnimolecular(left, right, rates[1]))
             case "ambi_fr_rule":
                 assert len(rates) == 3
-                if rates[0] != 0:
+                if rates[0].evaluate() != 0:
                     rules.append(KappaRuleBimolecular(left, right, rates[0]))
-                if rates[1] != 0:
+                if rates[1].evaluate() != 0:
                     rules.append(KappaRuleUnimolecular(left, right, rates[1]))
                 rules.append(KappaRule(right, left, rates[2]))
 
