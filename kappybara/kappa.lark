@@ -117,10 +117,10 @@ declared_variable_name : LABEL
 !algebraic_expression : defined_constant
                       | declared_variable_name
                       | reserved_variable_name
-                      | algebraic_expression binary_op algebraic_expression
+                      | binary_op_expression
                       | "(" algebraic_expression ")"
-                      | unary_op "(" algebraic_expression ")"
-                      | list_op "(" algebraic_expression [ ([","] algebraic_expression)* ] ")"
+                      | unary_op_expression
+                      | list_op_expression
                       | boolean_expression "[?]" algebraic_expression "[:]" algebraic_expression
                       | SIGNED_FLOAT
                       | SIGNED_INT
@@ -141,9 +141,12 @@ reserved_variable_name : "[E]"    -> productive_events
                     | TRUE
                     | FALSE
 
+unary_op_expression : unary_op "(" algebraic_expression ")"
 unary_op : LOG | EXP | SIN | COS | TAN | SQRT
+binary_op_expression : algebraic_expression binary_op algebraic_expression
 binary_op : PLUS | MINUS |  MULT | DIV | POW | MOD
 defined_constant : PI
+list_op_expression: list_op "(" algebraic_expression [ ([","] algebraic_expression)* ] ")"
 list_op : MAX | MIN
 
 plot_declaration : "%plot:" declared_variable_name

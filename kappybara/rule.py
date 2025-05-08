@@ -7,6 +7,7 @@ import random
 import kappybara.site_states as states
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, MixtureUpdate
+from kappybara.alg_exp import AlgExp
 from kappybara.utils import rejection_sample
 
 
@@ -37,7 +38,7 @@ class Rule(ABC):
 class KappaRule(Rule):
     left: Pattern
     right: Pattern
-    stochastic_rate: float
+    stochastic_rate: AlgExp
 
     def __post_init__(self):
         l = len(self.left.agents)
@@ -53,7 +54,7 @@ class KappaRule(Rule):
         yield from zip(self.left.agents, self.right.agents)
 
     def rate(self, system: "System") -> float:
-        return self.stochastic_rate
+        return self.stochastic_rate.evaluate(system)
 
     def n_embeddings(self, mixture: Mixture) -> int:
         return prod(
