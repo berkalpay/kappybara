@@ -24,14 +24,14 @@ class System:
         self.mixture = Mixture() if mixture is None else mixture
         self.rules = [] if rules is None else list(rules)
         for rule in self.rules:
-            self._add_rule(rule)
+            self._track_rule(rule)
         if observables is not None:
             for observable in observables:
                 self.mixture.track_component(observable)
         self.variables = variables  # TODO: once we support pattern counts in variables, make sure to check for those and track them
         self.time = 0
 
-    def _add_rule(self, rule: Rule) -> None:
+    def _track_rule(self, rule: Rule) -> None:
         """
         NOTE: Right now an overarching assumption is that the mixture will be fully initialized
         before any rules or observables are added. But stuff like interventions which instantiate
