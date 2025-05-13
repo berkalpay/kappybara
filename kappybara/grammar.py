@@ -1,7 +1,7 @@
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Optional
-from lark import Lark, ParseTree, Tree, Visitor, Token, Transformer
+from lark import Lark, ParseTree, Tree, Visitor, Token, Transformer_NonRecursive
 
 import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Pattern
@@ -248,8 +248,12 @@ class RuleBuilder(Visitor):
         return [r for r in rules if r is not None]
 
 
-class LarkTreetoAlgExp(Transformer):
+class LarkTreetoAlgExp(Transformer_NonRecursive):
     """Transforms a Lark ParseTree (rooted at 'algebraic_expression') into an AlgExp."""
+
+    def algebraic_expression(self, children):
+        children = [self.transform(c) for c in children]
+        # print(c.pretty for c in children)
 
     # --- Literals ---
     def SIGNED_FLOAT(self, token):
@@ -260,80 +264,103 @@ class LarkTreetoAlgExp(Transformer):
 
     # --- Variables/Constants ---
     def declared_variable_name(self, children):
-        return AlgExp("variable", name=children[0].value.strip("'\""))
+        child = self.transform(children[0])
+        return AlgExp("variable", name=child.value.strip("'\""))
 
     def reserved_variable_name(self, children):
-        return AlgExp("reserved_variable", name=children[0].value)
+        print(children)
+        child = self.transform(children[0])
+        print(child.attrs)
+        return AlgExp("reserved_variable", value=child)
+
+    def pattern(self, children):
+        print("\npattern found")
+        print(self)
+        print(children)
+        tree = Tree("pattern", children)
+        return AlgExp("pattern", value=PatternBuilder(tree).object)
 
     def defined_constant(self, children):
-        return AlgExp("defined_constant", name=children[0].value)
+        child = self.transform(children[0])
+        return AlgExp("defined_constant", name=child.value)
 
     # --- Operations ---
     def binary_op_expression(self, children):
+        children = [self.transform(c) for c in children]
         left, op, right = children
-        return AlgExp("binary_op", operator=op.value, left=left, right=right)
+        return AlgExp("binary_op", operator=op, left=left, right=right)
+
+    def binary_op(self, token):
+        return token
 
     def unary_op_expression(self, children):
+        children = [self.transform(c) for c in children]
         op, child = children
-        return AlgExp("unary_op", operator=op.value, child=child)
+        return AlgExp("unary_op", operator=op, child=child)
+
+    def unary_op(self, token):
+        return token
 
     def list_op_expression(self, children):
-        op_node, *args = children
-        return AlgExp("list_op", operator=op_node.value, children=args)
+        children = [self.transform(c) for c in children]
+        op_token, *args = children
+        return AlgExp("list_op", operator=op_token.value, children=args)
 
     # --- Parentheses ---
     def parentheses(self, children):
+        children = [self.transform(c) for c in children]
         return AlgExp("parentheses", child=children[0])
 
     # --- Ternary Conditional ---
     def ternary(self, children):
+        children = [self.transform(c) for c in children]
         cond, true_expr, false_expr = children
-        return AlgExp(
-            "ternary", condition=cond, true_expr=true_expr, false_expr=false_expr
-        )
+        return AlgExp("ternary", condition=cond, true_expr=true_expr, false_expr=false_expr)
 
     # --- Boolean Logic ---
     def comparison(self, children):
+        children = [self.transform(c) for c in children]
         left, op, right = children
         return AlgExp("comparison", operator=op.value, left=left, right=right)
 
     def logical_or(self, children):
+        children = [self.transform(c) for c in children]
         left, right = children
         return AlgExp("logical_or", left=left, right=right)
 
     def logical_and(self, children):
+        children = [self.transform(c) for c in children]
         left, right = children
         return AlgExp("logical_and", left=left, right=right)
 
     def logical_not(self, children):
+        children = [self.transform(c) for c in children]
         return AlgExp("logical_not", child=children[0])
 
     # --- Boolean Literals ---
-    def TRUE(self, _):
+    def TRUE(self, token):
         return AlgExp("boolean_literal", value=True)
 
-    def FALSE(self, _):
+    def FALSE(self, token):
         return AlgExp("boolean_literal", value=False)
 
     # --- Default Fallthrough ---
     def __default__(self, data, children, meta):
-        return (
-            children[0] if len(children) == 1 else AlgExp("unsupported", raw=children)
-        )
+        # TODO fix
+        # if isinstance(node, Tree):
+        #     raise NotImplementedError(f"Unsupported AlgExp type: {node.data}")
+        # return node
+        print("defaulting")
+        print(data)
+        return Tree(data, children, meta)
 
 
 def parse_tree_to_alg_exp(tree: Tree) -> AlgExp:
-    """Convert a Lark ParseTree (rooted at algebraic_expression) to AlgExp."""
+    """
+    Convert a Lark ParseTree (rooted at algebraic_expression) to AlgExp.
+    Since there isn't extra logic when converting algebraic expressions,
+    we can convert from the Lark representation in-place, without creating
+    a new object, hence the different design pattern (Transformer instead of Visitor)
+    """
+    print(tree.pretty())
     return LarkTreetoAlgExp().transform(tree)
-
-
-# 1. Parse the raw string to a Tree using your existing Lark parser
-raw_parser = Lark.open(
-    str(Path(__file__).parent / "kappa.lark"),
-    parser="earley",
-    start="algebraic_expression",
-)
-tree = raw_parser.parse("2 + [sin]([pi] * 2)")
-
-# 2. Convert the Tree to AlgExp
-a = parse_tree_to_alg_exp(tree)
