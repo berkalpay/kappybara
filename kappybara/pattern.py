@@ -233,14 +233,14 @@ class Component(Counted):
 
             agent_map = {a_root: b_root}  # The potential bijection
             frontier = {a_root}
-            search_failed = False
+            root_failed = False
 
-            while frontier and not search_failed:
+            while frontier and not root_failed:
                 a = frontier.pop()
                 b = agent_map[a]
 
                 if a.type != b.type:
-                    search_failed = True
+                    root_failed = True
                     break
 
                 # We use this to track sites in b which aren't mentioned in a
@@ -251,7 +251,7 @@ class Component(Counted):
 
                     # Check that `b` has a site with the same name
                     if site_name not in b.interface and not a_site.undetermined:
-                        search_failed = True
+                        root_failed = True
                         break
 
                     b_site = b[site_name]
@@ -261,7 +261,7 @@ class Component(Counted):
 
                     # TODO: make sure types work the way we intend (singleton)
                     if a_site.state != b_site.state:
-                        search_failed = True
+                        root_failed = True
                         break
 
                     match (a_site.partner, b_site.partner):
@@ -273,21 +273,21 @@ class Component(Counted):
                                 a_partner in agent_map
                                 and agent_map[a_partner] != b_partner
                             ):
-                                search_failed = True
+                                root_failed = True
                                 break
                             elif a_partner not in agent_map:
                                 frontier.add(a_partner)
                                 agent_map[a_partner] = b_partner
                         case (a_state, b_state) if a_state != b_state:
-                            search_failed = True
+                            root_failed = True
                             break
 
                 # Check leftovers not mentioned in a_sites
                 if any(not b[site_name].undetermined for site_name in b_sites_leftover):
-                    search_failed = True
+                    root_failed = True
                     break
 
-            if not search_failed:
+            if not root_failed:
                 yield agent_map  # A valid bijection
 
     def __repr__(self):  # TODO: add detail
