@@ -126,7 +126,12 @@ class Mixture:
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
+
+        NOTE: This depends on the _embeddings cache being up to date
         """
+        assert (
+            component in self._embeddings
+        ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
         return self._embeddings[component]
 
     def embeddings_in_component(
