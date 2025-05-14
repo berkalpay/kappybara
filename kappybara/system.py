@@ -12,24 +12,44 @@ class System:
     mixture: Mixture
     rules: list[Rule]
     time: float
+    observables: dict[str, AlgExp]
     variables: dict[str, AlgExp]
 
     def __init__(
         self,
         mixture: Optional[Mixture] = None,
         rules: Optional[Iterable[Rule]] = None,
-        observables: Optional[Iterable[Component]] = None,
+        observables: Optional[dict[str, AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
     ):
         self.mixture = Mixture() if mixture is None else mixture
         self.rules = [] if rules is None else list(rules)
         for rule in self.rules:
             self._track_rule(rule)
-        if observables is not None:
-            for observable in observables:
-                self.mixture.track_component(observable)
-        self.variables = variables  # TODO: once we support pattern counts in variables, make sure to check for those and track them
+        if observables:
+            for name in observables:
+                self._track_alg_exp(observables[name])
+        if variables:
+            for name in variables:
+                self._track_alg_exp(variables[name])
+
+        self.observables = observables if observables else {}
+        # TODO: once we support pattern counts in variables, make sure to check for those and track them
+        self.variables = variables if variables else {}
         self.time = 0
+
+    def _track_alg_exp(self, alg_exp: AlgExp) -> None:
+        """
+        Tracks the `Component`s which existing in `obs`.
+
+        NOTE: Does not track patterns nested by indirection in `obs`, see
+        the comment in the `filter` method.
+        """
+        filtered: list[AlgExp] = alg_exp.filter("component_pattern")
+
+        for component_exp in filtered:
+            component: Component = component_exp.attrs["value"]
+            self.mixture.track_component(component)
 
     def _track_rule(self, rule: Rule) -> None:
         """
@@ -44,12 +64,11 @@ class System:
                 #       Create a surjective map from *all* components to set of unique components
                 self.mixture.track_component(component)
 
-    def count_observable(self, obs: Component) -> int:
-        """
-        NOTE: Must provide with the exact same observable as you set to track.
-        Ismorphic components aren't recognized.
-        """
-        return len(self.mixture.embeddings(obs))
+    def count_observable(self, name: str) -> int:
+        assert name in self.observables, f"Undeclared observable: {name}"
+        obs: AlgExp = self.observables[name]
+
+        return obs.evaluate(self)
 
     @cached_property
     def rule_reactivities(self) -> list[float]:
