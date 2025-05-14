@@ -114,6 +114,22 @@ class Agent(Counted):
     def __getitem__(self, key: str) -> Site:
         return self.interface[key]
 
+    def isomorphic(self, other: Self) -> bool:  # TODO: make this __eq__?
+        if self.type != other.type:
+            return False
+
+        b_sites_leftover = set(other.interface)
+        for site_name, a_site in self.interface.items():
+            # Check that `b` has a site with the same name and state
+            if site_name not in other.interface and not a_site.undetermined:
+                return False
+            b_sites_leftover.remove(site_name)
+            if a_site.state != other[site_name].state:
+                return False
+
+        # Check that sites in other not mentioned in self are undetermined
+        return all(other[site_name].undetermined for site_name in b_sites_leftover)
+
     @property
     def sites(self) -> Iterable[Site]:
         yield from self.interface.values()
@@ -225,8 +241,7 @@ class Component(Counted):
         if len(self.agents) != len(other.agents):
             return
 
-        # Variables labelled with "a" are associate with `self`, as with "b" and `other`
-        a_root = self.agents[0]
+        a_root = self.agents[0]  # "a" refers to self and "b" to other
 
         # Narrow the search by only trying to map `a_root` with agents in `other` of the same type.
         for b_root in other.agents_by_type[a_root.type]:
@@ -239,31 +254,13 @@ class Component(Counted):
                 a = frontier.pop()
                 b = agent_map[a]
 
-                if a.type != b.type:
+                if not a.isomorphic(b):
                     root_failed = True
                     break
 
-                # We use this to track sites in b which aren't mentioned in a
-                b_sites_leftover = set(b.interface.keys())
-
                 for site_name in a.interface:
                     a_site = a[site_name]
-
-                    # Check that `b` has a site with the same name
-                    if site_name not in b.interface and not a_site.undetermined:
-                        root_failed = True
-                        break
-
                     b_site = b[site_name]
-                    b_sites_leftover.remove(
-                        site_name
-                    )  # In this way we are left with any unexamined sites in b at the end
-
-                    # TODO: make sure types work the way we intend (singleton)
-                    if a_site.state != b_site.state:
-                        root_failed = True
-                        break
-
                     match (a_site.partner, b_site.partner):
                         case (
                             Site(agent=a_partner),
@@ -281,11 +278,6 @@ class Component(Counted):
                         case (a_state, b_state) if a_state != b_state:
                             root_failed = True
                             break
-
-                # Check leftovers not mentioned in a_sites
-                if any(not b[site_name].undetermined for site_name in b_sites_leftover):
-                    root_failed = True
-                    break
 
             if not root_failed:
                 yield agent_map  # A valid bijection
