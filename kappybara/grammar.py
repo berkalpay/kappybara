@@ -149,9 +149,6 @@ class PatternBuilder(Visitor):
 
     @property
     def object(self) -> Pattern:
-        # Reassign agent id's so they're unique in this Pattern
-        for i in range(len(self.parsed_agents)):
-            self.parsed_agents[i].id = i
         return Pattern(agents=self.parsed_agents)
 
 
