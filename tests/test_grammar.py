@@ -10,6 +10,10 @@ import kappybara.kappa as kappa
 
 
 def test_parse_file():
+    """
+    NOTE: This currently doesn't actually test anything besides
+    the parser not breaking on the first pass.
+    """
     kappa_file_path = str(Path(__file__).parent / "wnt_v8.ka")
 
     kappa_parser.parse_file(kappa_file_path)
@@ -115,3 +119,49 @@ def test_ambi_fr_rule_from_kappa():
     assert rules[0].stochastic_rate.evaluate() == 1.0
     assert rules[1].stochastic_rate.evaluate() == 2.0
     assert rules[2].stochastic_rate.evaluate() == 3.0
+
+
+# System
+
+
+def test_system_from_kappa():
+    system_str = """
+    %def: "maxConsecutiveClash" "20"
+    %def: "seed" "365457"
+
+    // constants
+    %var: 'x'     0.03
+    %var: 'k_on'  'x' * 10
+    %var: 'g_on'  'k_on' / 100
+
+    %var: 'n' 3 * 100
+
+    %init: 'n' A(a[1]{p}), B(b[1]{u})
+
+    %obs: 'A_total'   |A()|
+    %obs: 'A_u'       |A(a{u})|
+    %obs: 'B_u'       |B(b{u})|
+    %obs: 'A_p'       |A(a{p})|
+    %obs: 'pairs'     |A(a[1]), B(b[1])|
+
+    A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
+    """
+
+    system: KappaSystem = kappa.system(system_str)
+
+    n = system.eval_variable("n")
+    assert n == 300
+
+    assert system.eval_variable("g_on") == 0.003
+    assert len(system.mixture.components) == n
+    assert system.eval_observable("A_total") == n
+
+    for i in range(1, n):
+        system.wait()
+        system.act()
+
+        assert system.eval_observable("A_total") == n
+        assert system.eval_observable("A_u") == i
+        assert system.eval_observable("B_u") == n
+        assert system.eval_observable("A_p") == n - i
+        assert system.eval_observable("pairs") == n
