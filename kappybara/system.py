@@ -55,6 +55,10 @@ class System:
     def reactivity(self) -> float:
         return sum(self.rule_reactivities)
 
+    def variable(self, var_name: str) -> AlgExp:
+        assert var_name in self.variables, f"Variable `{var_name}` not defined"
+        return self.variables[var_name]
+
     def wait(self) -> None:
         self.time += random.expovariate(self.reactivity)
 
