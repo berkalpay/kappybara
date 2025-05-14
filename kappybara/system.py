@@ -21,19 +21,17 @@ class System:
     ):
         self.mixture = Mixture() if mixture is None else mixture
         self.rules = [] if rules is None else list(rules)
-        for rule in self.rules:
-            self._track_rule(rule)
-        if observables is not None:
+        if rules:
+            for rule in self.rules:
+                self._track_rule(rule)
+        if observables:
             for observable in observables:
                 self.mixture.track_component(observable)
         self.time = 0
 
     def _track_rule(self, rule: Rule) -> None:
         """
-        NOTE: Right now an overarching assumption is that the mixture will be fully initialized
-        before any rules or observables are added. But stuff like interventions which instantiate
-        the mixture when the simulation is already underway and rules are already declared might
-        require us to rethink things a bit.
+        Track any components mentioned in the left hand side of a `Rule`
         """
         if isinstance(rule, KappaRule):
             for component in rule.left.components:
@@ -43,9 +41,10 @@ class System:
 
     def count_observable(self, obs: Component) -> int:
         """
-        NOTE: Must provide with the exact same observable as you set to track.
+        NOTE: You must query with the same object in memory that you provided in the constructor.
         Ismorphic components aren't recognized.
         """
+        assert type(obs) is Component
         return len(self.mixture.embeddings(obs))
 
     @cached_property
