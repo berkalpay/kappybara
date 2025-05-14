@@ -144,9 +144,6 @@ class PatternBuilder(Visitor):
         assert tree.data == "pattern"
         self.visit(tree)
 
-        # The agents get visited in reverse order
-        self.parsed_agents.reverse()
-
     # Visitor method for Lark
     def agent(self, tree: ParseTree) -> None:
         self.parsed_agents.append(AgentBuilder(tree).object)
@@ -246,11 +243,23 @@ class RuleBuilder(Visitor):
 
 
 class LarkTreetoAlgExp(Transformer_NonRecursive):
-    """Transforms a Lark ParseTree (rooted at 'algebraic_expression') into an AlgExp."""
+    """
+    Transforms a Lark ParseTree (rooted at 'algebraic_expression') into an AlgExp.
+
+    NOTE: We use a `Transformer` to parse algebraic expressions, as opposed to `Visitor`
+    as with most other Lark objects, because we want to preserve the tree structure of
+    the original `ParseTree`, and this is the most convenient way to do so.
+
+    TODO: This doesn't need to use `Transformer_NonRecursive` anymore; I made some changes
+    to the Lark grammar that make it easier to parse. If we switch back to using regular
+    `Transformer` we can clean up all the methods below to avoid having to explicitly call
+    `transform` on all the children.
+    """
 
     def algebraic_expression(self, children):
         children = [self.transform(c) for c in children]
-        # print(c.pretty for c in children)
+        assert len(children) == 1
+        return children[0]
 
     # --- Literals ---
     def SIGNED_FLOAT(self, token):
@@ -265,17 +274,18 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
         return AlgExp("variable", name=child.value.strip("'\""))
 
     def reserved_variable_name(self, children):
-        print(children)
         child = self.transform(children[0])
-        print(child.attrs)
         return AlgExp("reserved_variable", value=child)
 
     def pattern(self, children):
-        print("\npattern found")
-        print(self)
-        print(children)
         tree = Tree("pattern", children)
-        return AlgExp("pattern", value=PatternBuilder(tree).object)
+        pattern = PatternBuilder(tree).object
+        assert (
+            len(pattern.components) == 1
+        ), "The pattern {pattern} must consist of a single component, since it is part of an AlgExp."
+        component = pattern.components[0]
+
+        return AlgExp("component_pattern", value=component)
 
     def defined_constant(self, children):
         child = self.transform(children[0])
@@ -287,16 +297,16 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
         left, op, right = children
         return AlgExp("binary_op", operator=op, left=left, right=right)
 
-    def binary_op(self, token):
-        return token
+    def binary_op(self, children):
+        return children[0]
 
     def unary_op_expression(self, children):
         children = [self.transform(c) for c in children]
         op, child = children
         return AlgExp("unary_op", operator=op, child=child)
 
-    def unary_op(self, token):
-        return token
+    def unary_op(self, children):
+        return children[0]
 
     def list_op_expression(self, children):
         children = [self.transform(c) for c in children]
@@ -312,7 +322,9 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
     def ternary(self, children):
         children = [self.transform(c) for c in children]
         cond, true_expr, false_expr = children
-        return AlgExp("ternary", condition=cond, true_expr=true_expr, false_expr=false_expr)
+        return AlgExp(
+            "ternary", condition=cond, true_expr=true_expr, false_expr=false_expr
+        )
 
     # --- Boolean Logic ---
     def comparison(self, children):
@@ -347,8 +359,6 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
         # if isinstance(node, Tree):
         #     raise NotImplementedError(f"Unsupported AlgExp type: {node.data}")
         # return node
-        print("defaulting")
-        print(data)
         return Tree(data, children, meta)
 
 
@@ -359,5 +369,4 @@ def parse_tree_to_alg_exp(tree: Tree) -> AlgExp:
     we can convert from the Lark representation in-place, without creating
     a new object, hence the different design pattern (Transformer instead of Visitor)
     """
-    print(tree.pretty())
     return LarkTreetoAlgExp().transform(tree)
