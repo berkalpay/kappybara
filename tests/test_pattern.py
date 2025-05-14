@@ -2,26 +2,6 @@ import pytest
 import kappybara.kappa as kappa
 
 
-def test_pattern_from_kappa():
-    test_kappa = """
-        A(a[.]{blah}, b[_]{bleh}, c[#], d[some_site_name.some_agent_name], e[13]),
-        B(f[13], e[1], z[3]),
-        C(x[1]),
-        D(w[3]),
-        E()
-    """
-    pattern = kappa.pattern(test_kappa)
-
-    assert ["A", "B", "C", "D", "E"] == list(
-        map(lambda agent: agent.type, pattern.agents)
-    )
-    assert [0, 1, 2, 3, 4] == list(map(lambda agent: agent.id, pattern.agents))
-    assert ["a", "b", "c", "d", "e"] == list(
-        map(lambda site: site.label, pattern.agents[0])
-    )
-    assert len(pattern.components) == 2
-
-
 @pytest.mark.parametrize(
     "test_case",
     [
