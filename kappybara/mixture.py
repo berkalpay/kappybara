@@ -54,25 +54,26 @@ class Mixture:
 
     def _instantiate_component(self, component: Component, n_copies: int) -> None:
         new_agents = [agent.detached() for agent in component]
+        new_edges = set()
 
         for i, agent in enumerate(component):
             # Duplicate the proper link structure
             for site in agent:
                 if site.coupled:
                     partner: Site = site.partner
-                    i_partner = component.agents.index(partner.agent)
-                    new_agents[i][site.label].partner = new_agents[i_partner][
-                        partner.label
-                    ]
+                    i_partner: int = component.agents.index(partner.agent)
+
+                    new_site: Site = new_agents[i][site.label]
+                    new_partner: Site = new_agents[i_partner][partner.label]
+
+                    # Explicitly enumerate edges in the new component to give to `MixtureUpdate`
+                    # We don't actually link the agents here, that's handled by `apply_update`
+                    new_edges.add(Edge(new_site, new_partner))
 
         new_component = Component(new_agents, n_copies)
 
-        # Update mixture contents and indices
-        self.agents.update(new_agents)
-        self.components.add(new_component)
-        for agent in new_agents:
-            self.agents_by_type[agent.type].append(agent)
-            self.component_index[agent] = new_component
+        update = MixtureUpdate(agents_to_add=new_agents, edges_to_add=new_edges)
+        self.apply_update(update)
 
         # TODO: Update APSP
 
