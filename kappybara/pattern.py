@@ -212,21 +212,15 @@ class Component(Counted):
 
     def isomorphisms(self, other: Self) -> Iterator[dict[Agent, Agent]]:
         """
-        For tracking identical components in a mixture.
-        This method checks for a bijection which respects links in the site graph,
-        and ensures that any internal site state specified in one compononent
+        Checks for bijections which respect links in the site graph,
+        ensuring that any internal site state specified in one compononent
         exists and is the same in the other.
 
         NOTE: Can't assume agents of the same type will have the same site signatures.
 
         NOTE: This is trying to handle things more general than just isomorphisms
         between instantiated components in a mixture so that we can also potentially
-        check isomorphism between rule patterns. However, should discuss w/ Berk some
-        of the tradeoffs here.
-
-        TODO: There will be times when we need the explicit bijection to know which
-        agents to apply rule transformations to. We'll also need methods that count
-        every possible
+        check isomorphism between rule patterns.
         """
         if len(self.agents) != len(other.agents):
             return
@@ -234,20 +228,16 @@ class Component(Counted):
         # Variables labelled with "a" are associate with `self`, as with "b" and `other`
         a_root = self.agents[0]
 
-        # Narrow down our search space by only attempting to map `a_root` with
-        # agents in `other` with the same type.
+        # Narrow the search by only trying to map `a_root` with agents in `other` of the same type.
         for b_root in other.agents_by_type[a_root.type]:
-            # The bijection between agents of `self` and `other` that we're trying to construct
-            agent_map: dict[Agent, Agent] = {a_root: b_root}
 
-            frontier: set[Agent] = {a_root}
-            search_failed: bool = False
+            agent_map = {a_root: b_root}  # The potential bijection
+            frontier = {a_root}
+            search_failed = False
 
             while frontier and not search_failed:
-                a: Agent = frontier.pop()
-                # TODO: sanity check, can remove if confident about correctness
-                assert a in agent_map
-                b: Agent = agent_map[a]
+                a = frontier.pop()
+                b = agent_map[a]
 
                 if a.type != b.type:
                     search_failed = True
@@ -285,7 +275,6 @@ class Component(Counted):
                             ):
                                 search_failed = True
                                 break
-
                             elif a_partner not in agent_map:
                                 frontier.add(a_partner)
                                 agent_map[a_partner] = b_partner
@@ -294,12 +283,9 @@ class Component(Counted):
                             break
 
                 # Check leftovers not mentioned in a_sites
-                for site_name in b_sites_leftover:
-                    leftover_site = b[site_name]
-
-                    if not leftover_site.undetermined:
-                        search_failed = True
-                        break
+                if any(not b[site_name].undetermined for site_name in b_sites_leftover):
+                    search_failed = True
+                    break
 
             if not search_failed:
                 yield agent_map  # A valid bijection
