@@ -50,8 +50,10 @@ class Mixture:
             not pattern.underspecified
         ), "Pattern isn't specific enough to instantiate."
 
-        for component in pattern.components:
-            self._instantiate_component(component, n_copies)
+        # TODO: handle `n_copies` differently when implementing isomorphic component tracking
+        for _ in range(n_copies):
+            for component in pattern.components:
+                self._instantiate_component(component, 1)
 
     def _instantiate_component(self, component: Component, n_copies: int) -> None:
         new_agents = [agent.detached() for agent in component]
@@ -244,6 +246,7 @@ class Mixture:
 
         # If the agents are in different components, merge the components
         # TODO: if self.enable_component_tracking
+        # TODO: incremental mincut
         component1 = self.component_index[edge.site1.agent]
         component2 = self.component_index[edge.site2.agent]
         if component1 == component2:
