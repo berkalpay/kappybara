@@ -115,6 +115,8 @@ class Agent(Counted):
         return self.interface[key]
 
     def isomorphic(self, other: Self) -> bool:
+        # NOTE: Can't assume agents of the same type will have the same site signatures
+
         if self.type != other.type:
             return False
 
@@ -232,8 +234,6 @@ class Component(Counted):
         ensuring that any internal site state specified in one compononent
         exists and is the same in the other.
 
-        NOTE: Can't assume agents of the same type will have the same site signatures.
-
         NOTE: This is trying to handle things more general than just isomorphisms
         between instantiated components in a mixture so that we can also potentially
         check isomorphism between rule patterns.
@@ -242,8 +242,7 @@ class Component(Counted):
             return
 
         a_root = self.agents[0]  # "a" refers to self and "b" to other
-
-        # Narrow the search by only trying to map `a_root` with agents in `other` of the same type
+        # Narrow the search by mapping `a_root` to agents in `other` of the same type
         for b_root in other.agents_by_type[a_root.type]:
 
             agent_map = {a_root: b_root}  # The potential bijection
@@ -258,17 +257,14 @@ class Component(Counted):
                     root_failed = True
                     break
 
-                for site_name in a.interface:
-                    a_site = a[site_name]
-                    b_site = b[site_name]
+                for a_site, b_site in zip(a, b):
                     if a_site.coupled and b_site.coupled:
-                        if a_site.partner.agent in agent_map:
-                            if agent_map[a_site.partner.agent] != b_site.partner.agent:
-                                root_failed = True
-                                break
-                        else:
+                        if a_site.partner.agent not in agent_map:
                             frontier.add(a_site.partner.agent)
                             agent_map[a_site.partner.agent] = b_site.partner.agent
+                        elif agent_map[a_site.partner.agent] != b_site.partner.agent:
+                            root_failed = True
+                            break
                     elif a_site.partner != b_site.partner:
                         root_failed = True
                         break
