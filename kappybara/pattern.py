@@ -262,13 +262,11 @@ class Component(Counted):
                     a_site = a[site_name]
                     b_site = b[site_name]
                     if a_site.coupled and b_site.coupled:
-                        if (
-                            a_site.partner.agent in agent_map
-                            and agent_map[a_site.partner.agent] != b_site.partner.agent
-                        ):
-                            root_failed = True
-                            break
-                        elif a_site.partner.agent not in agent_map:
+                        if a_site.partner.agent in agent_map:
+                            if agent_map[a_site.partner.agent] != b_site.partner.agent:
+                                root_failed = True
+                                break
+                        else:
                             frontier.add(a_site.partner.agent)
                             agent_map[a_site.partner.agent] = b_site.partner.agent
                     elif a_site.partner != b_site.partner:
