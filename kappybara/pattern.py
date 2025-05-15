@@ -114,24 +114,6 @@ class Agent(Counted):
     def __getitem__(self, key: str) -> Site:
         return self.interface[key]
 
-    def isomorphic(self, other: Self) -> bool:
-        # NOTE: Can't assume agents of the same type will have the same site signatures
-
-        if self.type != other.type:
-            return False
-
-        b_sites_leftover = set(other.interface)
-        for site_name, a_site in self.interface.items():
-            # Check that `b` has a site with the same name and state
-            if site_name not in other.interface and not a_site.undetermined:
-                return False
-            b_sites_leftover.remove(site_name)
-            if a_site.state != other[site_name].state:
-                return False
-
-        # Check that sites in other not mentioned in self are undetermined
-        return all(other[site_name].undetermined for site_name in b_sites_leftover)
-
     @property
     def sites(self) -> Iterable[Site]:
         yield from self.interface.values()
@@ -173,6 +155,24 @@ class Agent(Counted):
         for site in detached:
             site.agent = detached
         return detached
+
+    def same_site_states(self, other: Self) -> bool:
+        # NOTE: Can't assume agents of the same type will have the same site signatures
+
+        if self.type != other.type:
+            return False
+
+        b_sites_leftover = set(other.interface)
+        for site_name, a_site in self.interface.items():
+            # Check that `b` has a site with the same name and state
+            if site_name not in other.interface and not a_site.undetermined:
+                return False
+            b_sites_leftover.remove(site_name)
+            if a_site.state != other[site_name].state:
+                return False
+
+        # Check that sites in other not mentioned in self are undetermined
+        return all(other[site_name].undetermined for site_name in b_sites_leftover)
 
 
 class Component(Counted):
@@ -253,7 +253,7 @@ class Component(Counted):
                 a = frontier.pop()
                 b = agent_map[a]
 
-                if not a.isomorphic(b):
+                if not a.same_site_states(b):
                     root_failed = True
                     break
 
