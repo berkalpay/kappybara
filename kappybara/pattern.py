@@ -114,7 +114,7 @@ class Agent(Counted):
     def __getitem__(self, key: str) -> Site:
         return self.interface[key]
 
-    def isomorphic(self, other: Self) -> bool:  # TODO: make this __eq__?
+    def isomorphic(self, other: Self) -> bool:
         if self.type != other.type:
             return False
 
@@ -243,7 +243,7 @@ class Component(Counted):
 
         a_root = self.agents[0]  # "a" refers to self and "b" to other
 
-        # Narrow the search by only trying to map `a_root` with agents in `other` of the same type.
+        # Narrow the search by only trying to map `a_root` with agents in `other` of the same type
         for b_root in other.agents_by_type[a_root.type]:
 
             agent_map = {a_root: b_root}  # The potential bijection
@@ -261,23 +261,19 @@ class Component(Counted):
                 for site_name in a.interface:
                     a_site = a[site_name]
                     b_site = b[site_name]
-                    match (a_site.partner, b_site.partner):
-                        case (
-                            Site(agent=a_partner),
-                            Site(agent=b_partner),
+                    if a_site.coupled and b_site.coupled:
+                        if (
+                            a_site.partner.agent in agent_map
+                            and agent_map[a_site.partner.agent] != b_site.partner.agent
                         ):
-                            if (
-                                a_partner in agent_map
-                                and agent_map[a_partner] != b_partner
-                            ):
-                                root_failed = True
-                                break
-                            elif a_partner not in agent_map:
-                                frontier.add(a_partner)
-                                agent_map[a_partner] = b_partner
-                        case (a_state, b_state) if a_state != b_state:
                             root_failed = True
                             break
+                        elif a_site.partner.agent not in agent_map:
+                            frontier.add(a_site.partner.agent)
+                            agent_map[a_site.partner.agent] = b_site.partner.agent
+                    elif a_site.partner != b_site.partner:
+                        root_failed = True
+                        break
 
             if not root_failed:
                 yield agent_map  # A valid bijection
