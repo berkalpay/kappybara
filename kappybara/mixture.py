@@ -206,7 +206,7 @@ class Mixture:
         afterwards using `self._add_edge`
         """
         # Assert all sites are unbound
-        assert all(isinstance(site.partner, states.Empty) for site in agent)
+        assert all(site.partner == "." for site in agent)
         assert agent.instantiable
 
         self.agents.add(agent)
@@ -223,7 +223,7 @@ class Mixture:
         before trying to use this method call.
         """
         # Assert all sites are unbound
-        assert all(isinstance(site.partner, states.Empty) for site in agent)
+        assert all(site.partner == "." for site in agent)
 
         self.agents.remove(agent)
         self.agents_by_type[agent.type].remove(agent)
@@ -256,8 +256,8 @@ class Mixture:
         assert edge.site1.partner == edge.site2
         assert edge.site2.partner == edge.site1
 
-        edge.site1.partner = states.Empty()
-        edge.site2.partner = states.Empty()
+        edge.site1.partner = "."
+        edge.site2.partner = "."
 
         agent1: Agent = edge.site1.agent
         agent2: Agent = edge.site2.agent

@@ -151,9 +151,9 @@ class KappaRule(Rule):
                         partner_idx = self.right.agents.index(r_partner.agent)
                         partner = new_selection[partner_idx][r_partner.label]
                         update.connect_sites(site, partner)
-                    case states.Empty():
+                    case ".":
                         update.disconnect_site(site)
-                    case x if not isinstance(x, states.Undetermined):
+                    case x if x != "?":
                         raise TypeError(
                             f"Link states of type {type(x)} are unsupported for right-hand rule patterns."
                         )

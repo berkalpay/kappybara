@@ -39,7 +39,7 @@ kappa_parser = KappaParser()
 @dataclass
 class SiteBuilder(Visitor):
     parsed_site_name: str
-    parsed_state: "states.InternalPattern"
+    parsed_state: str
     parsed_partner: "states.LinkPattern"
 
     def __init__(self, tree: ParseTree):
@@ -58,7 +58,7 @@ class SiteBuilder(Visitor):
     def state(self, tree: ParseTree) -> None:
         match tree.children[0]:
             case "#":
-                self.parsed_state = states.Wildcard()
+                self.parsed_state = "#"
             case str(state):
                 # TODO: check if this is a legal option as specified by the agent signature
                 # this object would need to hold the agent type this site is being built for and do some checks against that
@@ -66,7 +66,7 @@ class SiteBuilder(Visitor):
                 # declared agent signatures in the first place.
                 self.parsed_state = str(state)
             case Tree(data="unspecified"):
-                self.parsed_state = states.Undetermined()
+                self.parsed_state = "?"
             case _:
                 raise ValueError(
                     f"Unexpected internal state in site parse tree: {tree}"
@@ -76,11 +76,11 @@ class SiteBuilder(Visitor):
     def partner(self, tree: ParseTree) -> None:
         match tree.children:
             case ["#"]:
-                self.parsed_partner = states.Wildcard()
+                self.parsed_partner = "#"
             case ["_"]:
-                self.parsed_partner = states.Bound()
+                self.parsed_partner = "_"
             case ["."]:
-                self.parsed_partner = states.Empty()
+                self.parsed_partner = "."
             case [Token("INT", x)]:
                 self.parsed_partner = int(x)
             case [
@@ -89,7 +89,7 @@ class SiteBuilder(Visitor):
             ]:
                 self.parsed_partner = states.SiteType(str(site_name), str(agent_name))
             case [Tree(data="unspecified")]:
-                self.parsed_partner = states.Undetermined()
+                self.parsed_partner = "?"
             case _:
                 raise ValueError(f"Unexpected link state in site parse tree: {tree}")
 
