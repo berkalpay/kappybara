@@ -156,23 +156,35 @@ class Agent(Counted):
             site.agent = detached
         return detached
 
+    def same_site_states(self, other: Self) -> bool:
+        """
+        Check if two `Agent`s are equivalent locally, i.e. whether they
+        are identical if we ignore any `partner` fields in sites.
+
+        NOTE: Doesn't assume agents of the same type will have the same site signatures
+        """
+
+        if self.type != other.type:
+            return False
+
+        b_sites_leftover = set(other.interface)
+        for site_name, a_site in self.interface.items():
+            # Check that `b` has a site with the same name and state
+            if site_name not in other.interface and not a_site.undetermined:
+                return False
+            b_sites_leftover.remove(site_name)
+            if a_site.state != other[site_name].state:
+                return False
+
+        # Check that sites in `other` not mentioned in `self`are undetermined
+        return all(other[site_name].undetermined for site_name in b_sites_leftover)
+
 
 class Component(Counted):
     """
     A set of agents that are all in the same connected component (this is
     not guaranteed statically, you have to make sure it's enforced whenever
     you create or manipulate it.)
-
-    NOTE: I'm including this class as a demonstration that stylistically
-    follows the ideas in physics.py, but I'm pretty hesitant about committing
-    to this pattern unless it's strictly just a dataclass without implemented
-    methods for pattern matching/isomorphism; one concrete consideration is
-    w.r.t. rectangular approximation and the necessary computations for
-    observable patterns. Will try to elaborate later. (Update 26-03-2025: eh
-    just go with this for now. It's actually not that important to be able to
-    correct rect. approximation analytically according to Walter. Just warning
-    users when they declare an %obs pattern with more than one connected component
-    should be enough.)
 
     NOTE(24-03-2025): Some new considerations following convo w/ Walter, elaborate.
     - Optionally turning off connected component tracking
@@ -212,96 +224,48 @@ class Component(Counted):
 
     def isomorphisms(self, other: Self) -> Iterator[dict[Agent, Agent]]:
         """
-        For tracking identical components in a mixture.
-        This method checks for a bijection which respects links in the site graph,
-        and ensures that any internal site state specified in one compononent
+        Checks for bijections which respect links in the site graph,
+        ensuring that any internal site state specified in one compononent
         exists and is the same in the other.
 
-        NOTE: Can't assume agents of the same type will have the same site signatures.
-
-        NOTE: This is trying to handle things more general than just isomorphisms
-        between instantiated components in a mixture so that we can also potentially
-        check isomorphism between rule patterns. However, should discuss w/ Berk some
-        of the tradeoffs here.
-
-        TODO: There will be times when we need the explicit bijection to know which
-        agents to apply rule transformations to. We'll also need methods that count
-        every possible
+        NOTE: This is trying to handle things more general than just isomorphisms between
+        instantiated components in a mixture, so that we can also potentially check
+        isomorphism between rule patterns. See the cases in `test_component_isomorphism`
+        (in tests/test_pattern.py) for some usage examples between component patterns and
+        their expected behavior.
         """
         if len(self.agents) != len(other.agents):
             return
 
-        # Variables labelled with "a" are associate with `self`, as with "b" and `other`
-        a_root = self.agents[0]
-
-        # Narrow down our search space by only attempting to map `a_root` with
-        # agents in `other` with the same type.
+        a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
+        # Narrow the search by mapping `a_root` to agents in `other` of the same type
         for b_root in other.agents_by_type[a_root.type]:
-            # The bijection between agents of `self` and `other` that we're trying to construct
-            agent_map: dict[Agent, Agent] = {a_root: b_root}
 
-            frontier: set[Agent] = {a_root}
-            search_failed: bool = False
+            agent_map = {a_root: b_root}  # The potential bijection
+            frontier = {a_root}
+            root_failed = False
 
-            while frontier and not search_failed:
-                a: Agent = frontier.pop()
-                # TODO: sanity check, can remove if confident about correctness
-                assert a in agent_map
-                b: Agent = agent_map[a]
+            while frontier and not root_failed:
+                a = frontier.pop()
+                b = agent_map[a]
 
-                if a.type != b.type:
-                    search_failed = True
+                if not a.same_site_states(b):
+                    root_failed = True
                     break
 
-                # We use this to track sites in b which aren't mentioned in a
-                b_sites_leftover = set(b.interface.keys())
-
-                for site_name in a.interface:
-                    a_site = a[site_name]
-
-                    # Check that `b` has a site with the same name
-                    if site_name not in b.interface and not a_site.undetermined:
-                        search_failed = True
-                        break
-
-                    b_site = b[site_name]
-                    b_sites_leftover.remove(
-                        site_name
-                    )  # In this way we are left with any unexamined sites in b at the end
-
-                    # TODO: make sure types work the way we intend (singleton)
-                    if a_site.state != b_site.state:
-                        search_failed = True
-                        break
-
-                    match (a_site.partner, b_site.partner):
-                        case (
-                            Site(agent=a_partner),
-                            Site(agent=b_partner),
-                        ):
-                            if (
-                                a_partner in agent_map
-                                and agent_map[a_partner] != b_partner
-                            ):
-                                search_failed = True
-                                break
-
-                            elif a_partner not in agent_map:
-                                frontier.add(a_partner)
-                                agent_map[a_partner] = b_partner
-                        case (a_state, b_state) if a_state != b_state:
-                            search_failed = True
+                for a_site, b_site in zip(a, b):
+                    if a_site.coupled and b_site.coupled:
+                        if a_site.partner.agent not in agent_map:
+                            frontier.add(a_site.partner.agent)
+                            agent_map[a_site.partner.agent] = b_site.partner.agent
+                        elif agent_map[a_site.partner.agent] != b_site.partner.agent:
+                            root_failed = True
                             break
-
-                # Check leftovers not mentioned in a_sites
-                for site_name in b_sites_leftover:
-                    leftover_site = b[site_name]
-
-                    if not leftover_site.undetermined:
-                        search_failed = True
+                    elif a_site.partner != b_site.partner:
+                        root_failed = True
                         break
 
-            if not search_failed:
+            if not root_failed:
                 yield agent_map  # A valid bijection
 
     def __repr__(self):  # TODO: add detail
