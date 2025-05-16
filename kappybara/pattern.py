@@ -20,20 +20,9 @@ class Site(Counted):
         self.partner = partner
         self.agent = agent
 
-    def __repr__(self):  # TODO: add detail
-        res = self.label
-
-        match self.partner:
-            case states.Empty():
-                res += "[.]"
-            case Site() as partner:
-                res += f"[id{partner.agent.id}]"
-
-        match self.state:
-            case str() as s:
-                res += "{" + s + "}"
-
-        return res
+    def __repr__(self):
+        partner = states.Bound() if self.coupled else self.partner
+        return f"{self.label}[{partner}]{{{self.state}}}"
 
     @property
     def undetermined(self) -> bool:
@@ -113,6 +102,9 @@ class Agent(Counted):
 
     def __getitem__(self, key: str) -> Site:
         return self.interface[key]
+
+    def __repr__(self):
+        return f"{self.type}({" ".join(str(site) for site in self)})"
 
     @property
     def sites(self) -> Iterable[Site]:
@@ -280,7 +272,7 @@ class Component(Counted):
         for agent in self.agents:
             site_strs = []
             for site in agent:
-                if site.partner is None:
+                if site.partner == states.Empty():
                     bond_num = None
                 elif site in bond_nums:
                     bond_num = bond_nums[site]

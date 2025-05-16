@@ -1,18 +1,34 @@
 from typing import Union, NamedTuple
 
-Empty = type(None)  # '.' in Kappa
 
-# Default state in pattern instantiation. Same as a wildcard in rules and observations.
-Undetermined = NamedTuple("Undetermined", [])
+class Empty(NamedTuple):
+    def __str__(self):
+        return "."
 
-# Matches anything ('#' in Kappa)
-Wildcard = NamedTuple("Wildcard", [])
 
-# Matches if the sites is bound ('_' in Kappa)
-Bound = NamedTuple("Bound", [])
+class Undetermined(NamedTuple):
+    """Default in pattern instantiation and a wildcard in rules and observations."""
 
-# Matches if the site is bound to a specific type of site
-SiteType = NamedTuple("SiteType", [("site_name", str), ("agent_name", str)])
+    def __str__(self):
+        return "?"
+
+
+class Wildcard(NamedTuple):
+    def __str__(self):
+        return "#"
+
+
+class Bound(NamedTuple):
+    def __str__(self):
+        return "_"
+
+
+class SiteType(NamedTuple):
+    """Specifies the site is bound to a specific type of site."""
+
+    site_name: str
+    agent_name: str
+
 
 # TODO: implementing other internal state types should start by extending this to a union type e.g. str | int
 Internal = str
