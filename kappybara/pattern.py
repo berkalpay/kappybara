@@ -1,6 +1,6 @@
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator, Iterable
+from typing import Self, Optional, Iterator, Iterable, NamedTuple
 
 import kappybara.site_states as states
 from kappybara.utils import Counted
@@ -10,7 +10,7 @@ class Site(Counted):
     def __init__(
         self,
         label: str,
-        state: states.InternalPattern,
+        state: str,
         partner: states.LinkPattern,
         agent: Optional["Agent"] = None,
     ):
@@ -21,7 +21,7 @@ class Site(Counted):
         self.agent = agent
 
     def __repr__(self):
-        partner = states.Bound() if self.coupled else self.partner
+        partner = "_" if self.coupled else self.partner
         return f"{self.label}[{partner}]{{{self.state}}}"
 
     @property
@@ -30,10 +30,7 @@ class Site(Counted):
         Returns true if this site is in a state that would be equivalent to leaving it
         unnamed in an agent pattern.
         """
-        return isinstance(self.state, states.Undetermined) and (
-            isinstance(self.partner, states.Undetermined)
-            or isinstance(self.partner, states.Empty)
-        )
+        return self.state == "?" and self.partner in ("?", ".")
 
     @cached_property
     def underspecified(self) -> bool:
@@ -42,25 +39,19 @@ class Site(Counted):
         from this pattern, i.e. whether there are ambiguous site states
         """
         match (self.state, self.partner):
-            case (
-                (states.Wildcard(), _)
-                | (_, states.Wildcard())
-                | (_, states.Bound())
-                | (_, states.SiteType())
-            ):
+            case ("#", _) | (_, "#") | (_, "_") | (_, states.SiteType()):
                 return True
             case _:
                 return False
 
     @property
     def stated(self) -> bool:
-        return isinstance(self.state, states.Internal)
+        return self.state not in ("#", "?")
 
     @property
     def bound(self) -> bool:
-        return any(
-            isinstance(self.partner, state)
-            for state in [states.Bound, states.SiteType, Site]
+        return self.partner == "_" or any(
+            isinstance(self.partner, state) for state in [states.SiteType, Site]
         )
 
     @property
@@ -75,8 +66,8 @@ class Site(Counted):
             return False
 
         match self.partner:
-            case states.Empty():
-                return isinstance(other.partner, states.Empty)
+            case ".":
+                return other.partner == "."
             case states.SiteType():
                 return (
                     self.partner.site_name == other.partner.label
@@ -142,7 +133,7 @@ class Agent(Counted):
     def detached(self) -> Self:
         """Makes a clone of itself but with all its sites emptied."""
         detached = type(self)(
-            self.type, [Site(site.label, site.state, states.Empty()) for site in self]
+            self.type, [Site(site.label, site.state, ".") for site in self]
         )
         for site in detached:
             site.agent = detached
@@ -272,7 +263,7 @@ class Component(Counted):
         for agent in self.agents:
             site_strs = []
             for site in agent:
-                if site.partner == states.Empty():
+                if site.partner == ".":
                     bond_num = None
                 elif site in bond_nums:
                     bond_num = bond_nums[site]
