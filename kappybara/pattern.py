@@ -157,7 +157,12 @@ class Agent(Counted):
         return detached
 
     def same_site_states(self, other: Self) -> bool:
-        # NOTE: Can't assume agents of the same type will have the same site signatures
+        """
+        Check if two `Agent`s are equivalent locally, i.e. whether they
+        are identical if we ignore any `partner` fields in sites.
+
+        NOTE: Doesn't assume agents of the same type will have the same site signatures
+        """
 
         if self.type != other.type:
             return False
@@ -171,7 +176,7 @@ class Agent(Counted):
             if a_site.state != other[site_name].state:
                 return False
 
-        # Check that sites in other not mentioned in self are undetermined
+        # Check that sites in `other` not mentioned in `self`are undetermined
         return all(other[site_name].undetermined for site_name in b_sites_leftover)
 
 
@@ -180,17 +185,6 @@ class Component(Counted):
     A set of agents that are all in the same connected component (this is
     not guaranteed statically, you have to make sure it's enforced whenever
     you create or manipulate it.)
-
-    NOTE: I'm including this class as a demonstration that stylistically
-    follows the ideas in physics.py, but I'm pretty hesitant about committing
-    to this pattern unless it's strictly just a dataclass without implemented
-    methods for pattern matching/isomorphism; one concrete consideration is
-    w.r.t. rectangular approximation and the necessary computations for
-    observable patterns. Will try to elaborate later. (Update 26-03-2025: eh
-    just go with this for now. It's actually not that important to be able to
-    correct rect. approximation analytically according to Walter. Just warning
-    users when they declare an %obs pattern with more than one connected component
-    should be enough.)
 
     NOTE(24-03-2025): Some new considerations following convo w/ Walter, elaborate.
     - Optionally turning off connected component tracking
@@ -234,14 +228,16 @@ class Component(Counted):
         ensuring that any internal site state specified in one compononent
         exists and is the same in the other.
 
-        NOTE: This is trying to handle things more general than just isomorphisms
-        between instantiated components in a mixture so that we can also potentially
-        check isomorphism between rule patterns.
+        NOTE: This is trying to handle things more general than just isomorphisms between
+        instantiated components in a mixture, so that we can also potentially check
+        isomorphism between rule patterns. See the cases in `test_component_isomorphism`
+        (in tests/test_pattern.py) for some usage examples between component patterns and
+        their expected behavior.
         """
         if len(self.agents) != len(other.agents):
             return
 
-        a_root = self.agents[0]  # "a" refers to self and "b" to other
+        a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
         # Narrow the search by mapping `a_root` to agents in `other` of the same type
         for b_root in other.agents_by_type[a_root.type]:
 
