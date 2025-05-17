@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import random
 
-import kappybara.site_states as states
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, MixtureUpdate
 from kappybara.alg_exp import AlgExp
