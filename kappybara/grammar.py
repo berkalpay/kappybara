@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Optional
 from lark import Lark, ParseTree, Tree, Visitor, Token, Transformer
 
-from kappybara.pattern import Site, Agent, Pattern, SiteType, LinkPattern
+from kappybara.pattern import Site, Agent, Pattern, SiteType, Partner
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.alg_exp import AlgExp
 
@@ -39,7 +39,7 @@ kappa_parser = KappaParser()
 class SiteBuilder(Visitor):
     parsed_site_name: str
     parsed_state: str
-    parsed_partner: LinkPattern
+    parsed_partner: Partner
 
     def __init__(self, tree: ParseTree):
         super().__init__()

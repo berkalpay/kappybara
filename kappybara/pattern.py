@@ -8,16 +8,12 @@ from kappybara.utils import Counted
 # String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
 # "?" is the default in pattern instantiation and a wildcard in rules and observations
 SiteType = NamedTuple("SiteType", [("site_name", str), ("agent_name", str)])
-LinkPattern = str | SiteType | int | Union["Site"]
+Partner = str | SiteType | int | Union["Site"]
 
 
 class Site(Counted):
     def __init__(
-        self,
-        label: str,
-        state: str,
-        partner: LinkPattern,
-        agent: Optional["Agent"] = None,
+        self, label: str, state: str, partner: Partner, agent: Optional["Agent"] = None
     ):
         super().__init__()
         self.label = label
