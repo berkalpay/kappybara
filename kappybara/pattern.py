@@ -37,7 +37,7 @@ class Site(Counted):
         """
         return self.state == "?" and self.partner in ("?", ".")
 
-    @cached_property
+    @property
     def underspecified(self) -> bool:
         """
         Tells you whether or not concrete `Site` instances can be created
