@@ -32,17 +32,13 @@ class Site(Counted):
     @property
     def undetermined(self) -> bool:
         """
-        Returns true if this site is in a state that would be equivalent to leaving it
-        unnamed in an agent pattern.
+        Is the site in a state equivalent to leaving it unnamed in an agent?
         """
         return self.state == "?" and self.partner in ("?", ".")
 
     @property
     def underspecified(self) -> bool:
-        """
-        Tells you whether or not concrete `Site` instances can be created
-        from this pattern, i.e. whether there are ambiguous site states
-        """
+        """Checks if a concrete `Site` can be created from this pattern."""
         return (
             self.state == "#"
             or self.partner in ("#", "_")
@@ -64,10 +60,9 @@ class Site(Counted):
         return isinstance(self.partner, Site)
 
     def matches(self, other) -> bool:
-        if self.stated and self.state != other.state:
-            return False
-
-        if self.bound and not other.coupled:
+        if (self.stated and self.state != other.state) or (
+            self.bound and not other.coupled
+        ):
             return False
 
         match self.partner:
@@ -108,10 +103,7 @@ class Agent(Counted):
 
     @cached_property
     def underspecified(self) -> bool:
-        """
-        Tells you whether or not concrete `Agent` instances can be created
-        from this pattern, i.e. whether there are any underspecified sites
-        """
+        """Checks if a concrete `Agent` can be created from this pattern."""
         return any(site.underspecified for site in self)
 
     @property
@@ -146,10 +138,8 @@ class Agent(Counted):
 
     def same_site_states(self, other: Self) -> bool:
         """
-        Check if two `Agent`s are equivalent locally, i.e. whether they
-        are identical if we ignore any `partner` fields in sites.
-
-        NOTE: Doesn't assume agents of the same type will have the same site signatures
+        Check if two `Agent`s are equivalent locally, ignoring partners.
+        NOTE: Doesn't assume agents of the same type will have the same site signatures.
         """
 
         if self.type != other.type:
@@ -201,6 +191,9 @@ class Component(Counted):
 
     def __iter__(self):
         yield from self.agents
+
+    def __repr__(self):  # TODO: add detail
+        return f'Molecule(id={self.id}, kappa_str="{self.kappa_str}")'
 
     def add(self, agent: Agent):
         self.agents.append(agent)
@@ -255,9 +248,6 @@ class Component(Counted):
 
             if not root_failed:
                 yield agent_map  # A valid bijection
-
-    def __repr__(self):  # TODO: add detail
-        return f'Molecule(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
     def kappa_str(self, show_agent_ids=True) -> str:
