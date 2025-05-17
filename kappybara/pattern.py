@@ -43,11 +43,11 @@ class Site(Counted):
         Tells you whether or not concrete `Site` instances can be created
         from this pattern, i.e. whether there are ambiguous site states
         """
-        match (self.state, self.partner):
-            case ("#", _) | (_, "#") | (_, "_") | (_, SiteType()):
-                return True
-            case _:
-                return False
+        return (
+            self.state == "#"
+            or self.partner in ("#", "_")
+            or isinstance(self.partner, SiteType)
+        )
 
     @property
     def stated(self) -> bool:
