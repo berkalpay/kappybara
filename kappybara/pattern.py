@@ -22,6 +22,10 @@ class Site(Counted):
         self.agent = agent
 
     def __repr__(self):
+        return f'Site(id={self.id}, kappa_str="{self.kappa_str}")'
+
+    @property
+    def kappa_str(self) -> str:
         partner = "_" if self.coupled else self.partner
         return f"{self.label}[{partner}]{{{self.state}}}"
 
@@ -91,7 +95,11 @@ class Agent(Counted):
         return self.interface[key]
 
     def __repr__(self):
-        return f"{self.type}({" ".join(str(site) for site in self)})"
+        return f'Agent(id={self.id}, kappa_str="{self.kappa_str}")'
+
+    @property
+    def kappa_str(self):
+        return f"{self.type}({" ".join(site.kappa_str for site in self)})"
 
     @property
     def sites(self) -> Iterable[Site]:
@@ -188,8 +196,28 @@ class Component(Counted):
     def __iter__(self):
         yield from self.agents
 
-    def __repr__(self):  # TODO: add detail
-        return f'Molecule(id={self.id}, kappa_str="{self.kappa_str}")'
+    def __repr__(self):
+        return f'Component(id={self.id}, kappa_str="{self.kappa_str}")'
+
+    @property
+    def kappa_str(self) -> str:
+        bond_num_counter = 1
+        bond_nums: dict[Site, int] = dict()
+        agent_strs = []
+        for agent in self.agents:
+            site_strs = []
+            for site in agent:
+                if site in bond_nums:
+                    bond_num = bond_nums[site]
+                elif site.coupled:
+                    bond_num = bond_num_counter
+                    bond_nums[site.partner] = bond_num
+                    bond_num_counter += 1
+                else:
+                    bond_num = str(site.partner)
+                site_strs.append(f"{site.label}[{bond_num}]{site.state}")
+            agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
+        return ", ".join(agent_strs)
 
     def add(self, agent: Agent):
         self.agents.append(agent)
@@ -244,26 +272,6 @@ class Component(Counted):
 
             if not root_failed:
                 yield agent_map  # A valid bijection
-
-    @property
-    def kappa_str(self) -> str:
-        bond_num_counter = 1
-        bond_nums: dict[Site, int] = dict()
-        agent_strs = []
-        for agent in self.agents:
-            site_strs = []
-            for site in agent:
-                if site in bond_nums:
-                    bond_num = bond_nums[site]
-                elif site.coupled:
-                    bond_num = bond_num_counter
-                    bond_nums[site.partner] = bond_num
-                    bond_num_counter += 1
-                else:
-                    bond_num = str(site.partner)
-                site_strs.append(f"{site.label}[{bond_num}]{site.state}")
-            agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
-        return ", ".join(agent_strs)
 
 
 class Pattern:
