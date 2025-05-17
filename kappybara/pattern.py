@@ -246,17 +246,14 @@ class Component(Counted):
                 yield agent_map  # A valid bijection
 
     @property
-    def kappa_str(self, show_agent_ids=True) -> str:
-        # TODO: add arg to canonicalize?
+    def kappa_str(self) -> str:
         bond_num_counter = 1
         bond_nums: dict[Site, int] = dict()
-        agent_signatures = []
+        agent_strs = []
         for agent in self.agents:
             site_strs = []
             for site in agent:
-                if site.partner == ".":
-                    bond_num = None
-                elif site in bond_nums:
+                if site in bond_nums:
                     bond_num = bond_nums[site]
                 elif site.coupled:
                     bond_num = bond_num_counter
@@ -264,16 +261,9 @@ class Component(Counted):
                     bond_num_counter += 1
                 else:
                     bond_num = str(site.partner)
-                state_str = (
-                    "{" + site.state + "}" if isinstance(site.state, str) else ""
-                )
-                site_strs.append(
-                    f"{site.label}[{"." if bond_num is None else bond_num}]{state_str}"
-                )
-            agent_signatures.append(
-                f"{agent.type}({"id" + str(agent.id) + ", " if show_agent_ids else ""}{' '.join(site_strs)})"
-            )
-        return ", ".join(agent_signatures)
+                site_strs.append(f"{site.label}[{bond_num}]{site.state}")
+            agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
+        return ", ".join(agent_strs)
 
 
 class Pattern:
