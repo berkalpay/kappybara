@@ -1,9 +1,14 @@
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator, Iterable, NamedTuple
+from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple
 
-import kappybara.site_states as states
 from kappybara.utils import Counted
+
+
+# String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
+# "?" is the default in pattern instantiation and a wildcard in rules and observations
+SiteType = NamedTuple("SiteType", [("site_name", str), ("agent_name", str)])
+LinkPattern = str | SiteType | int | Union["Site"]
 
 
 class Site(Counted):
@@ -11,7 +16,7 @@ class Site(Counted):
         self,
         label: str,
         state: str,
-        partner: states.LinkPattern,
+        partner: LinkPattern,
         agent: Optional["Agent"] = None,
     ):
         super().__init__()
@@ -39,7 +44,7 @@ class Site(Counted):
         from this pattern, i.e. whether there are ambiguous site states
         """
         match (self.state, self.partner):
-            case ("#", _) | (_, "#") | (_, "_") | (_, states.SiteType()):
+            case ("#", _) | (_, "#") | (_, "_") | (_, SiteType()):
                 return True
             case _:
                 return False
@@ -51,7 +56,7 @@ class Site(Counted):
     @property
     def bound(self) -> bool:
         return self.partner == "_" or any(
-            isinstance(self.partner, state) for state in [states.SiteType, Site]
+            isinstance(self.partner, state) for state in [SiteType, Site]
         )
 
     @property
@@ -68,7 +73,7 @@ class Site(Counted):
         match self.partner:
             case ".":
                 return other.partner == "."
-            case states.SiteType():
+            case SiteType():
                 return (
                     self.partner.site_name == other.partner.label
                     and self.partner.agent_name == other.partner.agent.type

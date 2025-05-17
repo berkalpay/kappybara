@@ -2,7 +2,6 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 from typing import Optional, Iterable
 
-import kappybara.site_states as states
 from kappybara.pattern import Site, Agent, Component, Pattern
 
 
