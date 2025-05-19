@@ -51,8 +51,10 @@ class Site(Counted):
 
     @property
     def bound(self) -> bool:
-        return self.partner == "_" or any(
-            isinstance(self.partner, state) for state in [SiteType, Site]
+        return (
+            self.partner == "_"
+            or isinstance(self.partner, SiteType)
+            or isinstance(self.partner, Site)
         )
 
     @property
