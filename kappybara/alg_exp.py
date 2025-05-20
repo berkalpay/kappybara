@@ -14,13 +14,13 @@ class AlgExp:
         self.type = type
         self.attrs = attrs
 
-    def evaluate(self, system: "System" = None):
+    def evaluate(self, system: "System" = None) -> int | float:
         try:
             return self._evaluate(system)
         except KeyError as e:
             raise ValueError(f"Undefined variable in expression: {e}")
 
-    def _evaluate(self, system: "System"):
+    def _evaluate(self, system: "System") -> int | float:
         if self.type == "literal":
             return self.attrs["value"]
 
@@ -32,7 +32,10 @@ class AlgExp:
                     f"{self} requires a System to evaluate, due to referenced variable '{name}'."
                 )
 
-            return system.variables[name].evaluate(system)
+            if not hasattr(system, "eval_variable"):
+                raise Error("AlgExp's with named variables require a KappaSystem")
+
+            return system.eval_variable(name)
 
         elif self.type == "binary_op":
             left_val = self.attrs["left"].evaluate(system)
@@ -138,7 +141,7 @@ class AlgExp:
                         f"{self} requires a System to evaluate, due to referenced pattern {component}."
                     )
 
-                return len(system.mixture._embeddings[component])
+                return system.count_observable(component)
             else:
                 raise NotImplementedError(
                     f"Reserved variable {value.type} not implemented yet."
