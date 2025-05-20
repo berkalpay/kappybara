@@ -69,3 +69,56 @@ class System:
     def update(self) -> None:
         self.wait()
         self.act()
+
+
+class KappaSystem(System):
+    """
+    A wrapper around a base `System` that allows for more expressive observables
+    in the form of an `AlgExp`.
+    """
+
+    alg_exp_observables: dict[str, AlgExp]
+    variables: dict[str, AlgExp]
+
+    def __init__(
+        self,
+        mixture: Optional[Mixture] = None,
+        rules: Optional[Iterable[Rule]] = None,
+        alg_exp_observables: Optional[dict[str, AlgExp]] = None,
+        variables: Optional[dict[str, AlgExp]] = None,
+    ):
+        super().__init__(mixture, rules, None)
+
+        if alg_exp_observables:
+            for name in alg_exp_observables:
+                self._track_alg_exp(alg_exp_observables[name])
+        if variables:
+            for name in variables:
+                self._track_alg_exp(variables[name])
+
+        self.alg_exp_observables = alg_exp_observables or {}
+        self.variables = variables or {}
+
+    def _track_alg_exp(self, alg_exp: AlgExp) -> None:
+        """
+        Tracks the `Component`s which existing in `obs`.
+
+        NOTE: Does not track patterns nested by indirection in `obs`, see
+        the comment in the `filter` method.
+        """
+        filtered: list[AlgExp] = alg_exp.filter("component_pattern")
+
+        for component_exp in filtered:
+            component: Component = component_exp.attrs["value"]
+            self.mixture.track_component(component)
+
+    def eval_observable(self, obs_name: str) -> int | float:
+        assert type(obs_name) is str
+        assert (
+            obs_name in self.alg_exp_observables
+        ), f"Observable `{obs_name}` not defined"
+        return self.alg_exp_observables[obs_name].evaluate(self)
+
+    def eval_variable(self, var_name: str) -> int | float:
+        assert var_name in self.variables, f"Variable `{var_name}` not defined"
+        return self.variables[var_name].evaluate(self)
