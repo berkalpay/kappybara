@@ -21,10 +21,9 @@ class System:
     ):
         self.mixture = Mixture() if mixture is None else mixture
         self.rules = [] if rules is None else list(rules)
-        if rules:
-            for rule in self.rules:
-                self._track_rule(rule)
-        if observables:
+        for rule in self.rules:
+            self._track_rule(rule)
+        if observables is not None:
             for observable in observables:
                 self.mixture.track_component(observable)
         self.time = 0
