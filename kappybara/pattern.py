@@ -209,14 +209,14 @@ class Component(Counted):
             site_strs = []
             for site in agent:
                 if site in bond_nums:
-                    bond_num = bond_nums[site]
+                    partner = bond_nums[site]
                 elif site.coupled:
-                    bond_num = bond_num_counter
-                    bond_nums[site.partner] = bond_num
+                    partner = bond_num_counter
+                    bond_nums[site.partner] = bond_num_counter
                     bond_num_counter += 1
                 else:
-                    bond_num = str(site.partner)
-                site_strs.append(f"{site.label}[{bond_num}]{site.state}")
+                    partner = site.partner
+                site_strs.append(f"{site.label}[{partner}]{site.state}")
             agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
         return ", ".join(agent_strs)
 
