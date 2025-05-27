@@ -312,18 +312,11 @@ class Pattern:
 
     @cached_property
     def components(self) -> list[Component]:
-        """
-        Returns connected components.
-        NOTE: some redundant loops but only slows down initialization.
-        """
-        unseen = set(self.agents)
-        if None in unseen:
-            unseen.remove(None)
+        unseen = set(agent for agent in self.agents if agent is not None)
         components = []
         while unseen:
             component = Component(next(iter(unseen)).depth_first_traversal)
-            for agent in component:
-                unseen.remove(agent)
+            unseen = unseen.difference(component)
             components.append(component)
         return components
 
