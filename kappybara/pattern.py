@@ -12,14 +12,13 @@ Partner = str | SiteType | int | Union["Site"]
 
 
 class Site(Counted):
-    def __init__(
-        self, label: str, state: str, partner: Partner, agent: Optional["Agent"] = None
-    ):
+    agent: "Agent"  # Expected to be set after initialization
+
+    def __init__(self, label: str, state: str, partner: Partner):
         super().__init__()
         self.label = label
         self.state = state
         self.partner = partner
-        self.agent = agent
 
     def __repr__(self):
         return f'Site(id={self.id}, kappa_str="{self.kappa_str}")'
