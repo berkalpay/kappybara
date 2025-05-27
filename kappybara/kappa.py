@@ -81,7 +81,7 @@ def system(kappa_str: str) -> KappaSystem:
     observables: dict[str, AlgExp] = {}
     rules: list[Rule] = []
     system_params: dict[str, int] = {}
-    inits: list[(AlgExp, Pattern)] = []
+    inits: list[tuple[AlgExp, Pattern]] = []
 
     for child in input_tree.children:
         tag = child.data

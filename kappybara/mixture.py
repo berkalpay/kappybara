@@ -26,7 +26,7 @@ class Mixture:
     agents: set[Agent]
     components: set[Component]
     component_index: dict[Agent, Component]  # Maps agents to their components
-    agents_by_type: dict[str, set[Agent]]
+    agents_by_type: defaultdict[str, list[Agent]]
 
     # An index of the matches for each component in any rule or observable pattern
     _embeddings: dict[Component, list[dict[Agent, Agent]]]
