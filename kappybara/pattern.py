@@ -329,4 +329,4 @@ class Pattern:
 
     @cached_property
     def underspecified(self) -> bool:
-        return any(agent.underspecified for agent in self.agents)
+        return any(agent is None or agent.underspecified for agent in self.agents)
