@@ -216,7 +216,7 @@ class Component(Counted):
                     bond_num_counter += 1
                 else:
                     partner = site.partner
-                site_strs.append(f"{site.label}[{partner}]{site.state}")
+                site_strs.append(f"{site.label}[{partner}]{{{site.state}}}")
             agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
         return ", ".join(agent_strs)
 
