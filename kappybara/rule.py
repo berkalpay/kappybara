@@ -1,13 +1,16 @@
+import random
 from dataclasses import dataclass
 from math import prod
 from abc import ABC, abstractmethod
-from typing import Optional
-import random
+from typing import Optional, TYPE_CHECKING
 
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, MixtureUpdate
 from kappybara.alg_exp import AlgExp
 from kappybara.utils import rejection_sample
+
+if TYPE_CHECKING:
+    from kappybara.system import System
 
 
 class Rule(ABC):

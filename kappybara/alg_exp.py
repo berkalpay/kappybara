@@ -1,8 +1,11 @@
-from typing import Self
-from collections import deque
 import math
+from collections import deque
+from typing import Self, Optional, TYPE_CHECKING
 
 from kappybara.pattern import Component
+
+if TYPE_CHECKING:
+    from kappybara.system import System
 
 
 class AlgExp:
@@ -14,7 +17,7 @@ class AlgExp:
         self.type = type
         self.attrs = attrs
 
-    def evaluate(self, system: "System" = None) -> int | float:
+    def evaluate(self, system: Optional["System"] = None) -> int | float:
         try:
             return self._evaluate(system)
         except KeyError as e:
