@@ -157,7 +157,7 @@ class RuleBuilder(Visitor):
     parsed_label: Optional[str]
     left_agents: list[Optional[Agent]]
     right_agents: list[Optional[Agent]]
-    parsed_rates: list[float]
+    parsed_rates: list[AlgExp]
     tree_data: str
 
     def __init__(self, tree: ParseTree):
