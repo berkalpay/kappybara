@@ -79,9 +79,6 @@ class Mixture:
 
         # TODO: Update APSP
 
-    def find_embeddings(self, component: Component) -> Iterator[dict[Agent, Agent]]:
-        yield from component.embeddings(self)
-
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
@@ -99,7 +96,7 @@ class Mixture:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
-        embeddings = list(self.find_embeddings(component))
+        embeddings = list(component.embeddings(self))
         self._embeddings[component] = embeddings
 
         for embedding in embeddings:
@@ -153,7 +150,7 @@ class Mixture:
         # We might want to do this incrementally on every edge/agent removal/addition.
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
         for component in self._embeddings:
-            embeddings = list(self.find_embeddings(component))
+            embeddings = list(component.embeddings(self))
             self._embeddings[component] = embeddings
             for embedding in embeddings:
                 self._embeddings_by_component[
