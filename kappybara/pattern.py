@@ -1,8 +1,11 @@
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple
+from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
 from kappybara.utils import Counted
+
+if TYPE_CHECKING:
+    from kappybara.mixture import Mixture
 
 
 # String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
@@ -243,7 +246,43 @@ class Component(Counted):
         # TODO: set __eq__ with this method?
         return next(self.isomorphisms(other), None) is not None
 
-    def isomorphisms(self, other: Self) -> Iterator[dict[Agent, Agent]]:
+    def embeddings(
+        self, other: Self | "Mixture", exact: bool = False
+    ) -> Iterator[dict[Agent, Agent]]:
+        a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
+        # Narrow the search by mapping `a_root` to agents in `other` of the same type
+        for b_root in other.agents_by_type[a_root.type]:
+
+            agent_map = {a_root: b_root}  # The potential bijection
+            frontier = {a_root}
+            root_failed = False
+
+            while frontier and not root_failed:
+                a = frontier.pop()
+                b = agent_map[a]
+
+                match_func = a.same_site_states if exact else a.matches
+                if not match_func(b):
+                    root_failed = True
+                    break
+
+                for a_site in a:
+                    b_site = b[a_site.label]
+                    if a_site.coupled:
+                        if a_site.partner.agent not in agent_map:
+                            frontier.add(a_site.partner.agent)
+                            agent_map[a_site.partner.agent] = b_site.partner.agent
+                        elif agent_map[a_site.partner.agent] != b_site.partner.agent:
+                            root_failed = True
+                            break
+                    elif exact and a_site.partner != b_site.partner:
+                        root_failed = True
+                        break
+
+            if not root_failed:
+                yield agent_map  # A valid bijection
+
+    def isomorphisms(self, other: Self | "Mixture") -> Iterator[dict[Agent, Agent]]:
         """
         Checks for bijections which respect links in the site graph,
         ensuring that any internal site state specified in one compononent
@@ -257,38 +296,7 @@ class Component(Counted):
         """
         if len(self.agents) != len(other.agents):
             return
-
-        a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
-        # Narrow the search by mapping `a_root` to agents in `other` of the same type
-        for b_root in other.agents_by_type[a_root.type]:
-
-            agent_map = {a_root: b_root}  # The potential bijection
-            frontier = {a_root}
-            root_failed = False
-
-            while frontier and not root_failed:
-                a = frontier.pop()
-                b = agent_map[a]
-
-                if not a.same_site_states(b):
-                    root_failed = True
-                    break
-
-                for a_site in a:
-                    b_site = b[a_site.label]
-                    if a_site.coupled:
-                        if a_site.partner.agent not in agent_map:
-                            frontier.add(a_site.partner.agent)
-                            agent_map[a_site.partner.agent] = b_site.partner.agent
-                        elif agent_map[a_site.partner.agent] != b_site.partner.agent:
-                            root_failed = True
-                            break
-                    elif a_site.partner != b_site.partner:
-                        root_failed = True
-                        break
-
-            if not root_failed:
-                yield agent_map  # A valid bijection
+        yield from self.embeddings(other, exact=True)
 
 
 class Pattern:

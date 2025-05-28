@@ -80,33 +80,7 @@ class Mixture:
         # TODO: Update APSP
 
     def find_embeddings(self, component: Component) -> Iterator[dict[Agent, Agent]]:
-        a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
-        for b_root in self.agents_by_type[a_root.type]:
-
-            agent_map = {a_root: b_root}
-            frontier = {a_root}
-            root_failed = False
-
-            while frontier and not root_failed:
-                a = frontier.pop()
-                b = agent_map[a]
-
-                if not a.matches(b):
-                    root_failed = True
-                    break
-
-                for a_site in a:
-                    b_site = b[a_site.label]
-                    if a_site.coupled:
-                        if a_site.partner.agent not in agent_map:
-                            frontier.add(a_site.partner.agent)
-                            agent_map[a_site.partner.agent] = b_site.partner.agent
-                        elif agent_map[a_site.partner.agent] != b_site.partner.agent:
-                            root_failed = True
-                            break
-
-            if not root_failed:
-                yield agent_map
+        yield from component.embeddings(self)
 
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         """
