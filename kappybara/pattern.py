@@ -276,7 +276,7 @@ class Component(Counted):
 
                 for a_site in a:
                     b_site = b[a_site.label]
-                    if a_site.coupled and b_site.coupled:
+                    if a_site.coupled:
                         if a_site.partner.agent not in agent_map:
                             frontier.add(a_site.partner.agent)
                             agent_map[a_site.partner.agent] = b_site.partner.agent
