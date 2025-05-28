@@ -63,7 +63,7 @@ class Site(Counted):
     def coupled(self) -> bool:
         return isinstance(self.partner, Site)
 
-    def matches(self, other: Self) -> bool:
+    def embeds_in(self, other: Self) -> bool:
         """Checks whether self as a pattern matches other as a concrete site."""
         if (self.stated and self.state != other.state) or (
             self.bound and not other.coupled
@@ -145,7 +145,7 @@ class Agent(Counted):
             site.agent = detached
         return detached
 
-    def same_site_states(self, other: Self) -> bool:
+    def isomorphic(self, other: Self) -> bool:
         """
         Check if two `Agent`s are equivalent locally, ignoring partners.
         NOTE: Doesn't assume agents of the same type will have the same site signatures.
@@ -166,7 +166,7 @@ class Agent(Counted):
         # Check that sites in `other` not mentioned in `self`are undetermined
         return all(other[site_name].undetermined for site_name in b_sites_leftover)
 
-    def matches(self, other: Self) -> bool:
+    def embeds_in(self, other: Self) -> bool:
         """Checks whether self as a pattern matches other as a concrete agent."""
         if self.type != other.type:
             return False
@@ -175,7 +175,7 @@ class Agent(Counted):
             if a_site.label not in other.interface and not a_site.undetermined:
                 return False
             b_site = other[a_site.label]
-            if not a_site.matches(b_site):
+            if not a_site.embeds_in(b_site):
                 return False
 
         return True
@@ -249,6 +249,8 @@ class Component(Counted):
     def embeddings(
         self, other: Self | "Mixture", exact: bool = False
     ) -> Iterator[dict[Agent, Agent]]:
+        """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
+
         a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
         # Narrow the search by mapping `a_root` to agents in `other` of the same type
         for b_root in other.agents_by_type[a_root.type]:
@@ -261,7 +263,7 @@ class Component(Counted):
                 a = frontier.pop()
                 b = agent_map[a]
 
-                match_func = a.same_site_states if exact else a.matches
+                match_func = a.isomorphic if exact else a.embeds_in
                 if not match_func(b):
                     root_failed = True
                     break
