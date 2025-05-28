@@ -84,44 +84,42 @@ class Mixture:
 
         a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
         for b_root in self.agents_by_type[a_root.type]:
-            potential_embedding = {a_root: b_root}
-            frontier = {a_root}
-            search_failed = False
 
-            while frontier and not search_failed:
+            agent_map = {a_root: b_root}
+            frontier = {a_root}
+            root_failed = False
+
+            while frontier and not root_failed:
                 a = frontier.pop()
-                b = potential_embedding[a]
+                b = agent_map[a]
 
                 if a.type != b.type:
-                    search_failed = True
+                    root_failed = True
                     break
 
                 for site_name in a.interface:
                     a_site = a[site_name]
                     if site_name not in b.interface and not a_site.undetermined:
-                        search_failed = True
+                        root_failed = True
                         break
                     b_site = b[site_name]
 
                     if not a_site.matches(b_site):
-                        search_failed = True
+                        root_failed = True
                         break
 
                     if a_site.coupled:
                         a_partner = a_site.partner.agent
                         b_partner = b_site.partner.agent
-                        if (
-                            a_partner in potential_embedding
-                            and potential_embedding[a_partner] != b_partner
-                        ):
-                            search_failed = True
+                        if a_partner in agent_map and agent_map[a_partner] != b_partner:
+                            root_failed = True
                             break
-                        elif a_partner not in potential_embedding:
+                        elif a_partner not in agent_map:
                             frontier.add(a_partner)
-                            potential_embedding[a_partner] = b_partner
+                            agent_map[a_partner] = b_partner
 
-            if not search_failed:
-                embeddings.append(potential_embedding)
+            if not root_failed:
+                embeddings.append(agent_map)
 
         return embeddings
 
