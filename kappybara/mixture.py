@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
-from typing import Optional, Iterable
+from typing import Optional, Iterator, Iterable
 
 from kappybara.pattern import Site, Agent, Component, Pattern
 
@@ -79,9 +79,7 @@ class Mixture:
 
         # TODO: Update APSP
 
-    def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
-        embeddings = []
-
+    def find_embeddings(self, component: Component) -> Iterator[dict[Agent, Agent]]:
         a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
         for b_root in self.agents_by_type[a_root.type]:
 
@@ -108,9 +106,7 @@ class Mixture:
                             break
 
             if not root_failed:
-                embeddings.append(agent_map)
-
-        return embeddings
+                yield agent_map
 
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         """
@@ -129,7 +125,7 @@ class Mixture:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
-        embeddings = self.find_embeddings(component)
+        embeddings = list(self.find_embeddings(component))
         self._embeddings[component] = embeddings
 
         for embedding in embeddings:
@@ -183,7 +179,7 @@ class Mixture:
         # We might want to do this incrementally on every edge/agent removal/addition.
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
         for component in self._embeddings:
-            embeddings = self.find_embeddings(component)
+            embeddings = list(self.find_embeddings(component))
             self._embeddings[component] = embeddings
             for embedding in embeddings:
                 self._embeddings_by_component[
