@@ -93,20 +93,12 @@ class Mixture:
                 a = frontier.pop()
                 b = agent_map[a]
 
-                if a.type != b.type:
+                if not a.matches(b):
                     root_failed = True
                     break
 
                 for a_site in a:
-                    if a_site.label not in b.interface and not a_site.undetermined:
-                        root_failed = True
-                        break
                     b_site = b[a_site.label]
-
-                    if not a_site.matches(b_site):
-                        root_failed = True
-                        break
-
                     if a_site.coupled:
                         if a_site.partner.agent not in agent_map:
                             frontier.add(a_site.partner.agent)

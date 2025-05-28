@@ -60,7 +60,8 @@ class Site(Counted):
     def coupled(self) -> bool:
         return isinstance(self.partner, Site)
 
-    def matches(self, other) -> bool:
+    def matches(self, other: Self) -> bool:
+        """Checks whether self as a pattern matches other as a concrete site."""
         if (self.stated and self.state != other.state) or (
             self.bound and not other.coupled
         ):
@@ -161,6 +162,20 @@ class Agent(Counted):
 
         # Check that sites in `other` not mentioned in `self`are undetermined
         return all(other[site_name].undetermined for site_name in b_sites_leftover)
+
+    def matches(self, other: Self) -> bool:
+        """Checks whether self as a pattern matches other as a concrete agent."""
+        if self.type != other.type:
+            return False
+
+        for a_site in self:
+            if a_site.label not in other.interface and not a_site.undetermined:
+                return False
+            b_site = other[a_site.label]
+            if not a_site.matches(b_site):
+                return False
+
+        return True
 
 
 class Component(Counted):
