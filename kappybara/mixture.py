@@ -97,26 +97,23 @@ class Mixture:
                     root_failed = True
                     break
 
-                for site_name in a.interface:
-                    a_site = a[site_name]
-                    if site_name not in b.interface and not a_site.undetermined:
+                for a_site in a:
+                    if a_site.label not in b.interface and not a_site.undetermined:
                         root_failed = True
                         break
-                    b_site = b[site_name]
+                    b_site = b[a_site.label]
 
                     if not a_site.matches(b_site):
                         root_failed = True
                         break
 
                     if a_site.coupled:
-                        a_partner = a_site.partner.agent
-                        b_partner = b_site.partner.agent
-                        if a_partner in agent_map and agent_map[a_partner] != b_partner:
+                        if a_site.partner.agent not in agent_map:
+                            frontier.add(a_site.partner.agent)
+                            agent_map[a_site.partner.agent] = b_site.partner.agent
+                        elif agent_map[a_site.partner.agent] != b_site.partner.agent:
                             root_failed = True
                             break
-                        elif a_partner not in agent_map:
-                            frontier.add(a_partner)
-                            agent_map[a_partner] = b_partner
 
             if not root_failed:
                 embeddings.append(agent_map)
