@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
-from typing import Optional, Iterable
+from typing import Optional, Iterator, Iterable
 
 from kappybara.pattern import Site, Agent, Component, Pattern
 
@@ -79,52 +79,6 @@ class Mixture:
 
         # TODO: Update APSP
 
-    def find_embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
-        embeddings = []
-
-        a_root = component.agents[0]  # "a" refers to `component`, "b" refers to `self`
-        for b_root in self.agents_by_type[a_root.type]:
-            potential_embedding = {a_root: b_root}
-            frontier = {a_root}
-            search_failed = False
-
-            while frontier and not search_failed:
-                a = frontier.pop()
-                b = potential_embedding[a]
-
-                if a.type != b.type:
-                    search_failed = True
-                    break
-
-                for site_name in a.interface:
-                    a_site = a[site_name]
-                    if site_name not in b.interface and not a_site.undetermined:
-                        search_failed = True
-                        break
-                    b_site = b[site_name]
-
-                    if not a_site.matches(b_site):
-                        search_failed = True
-                        break
-
-                    if a_site.coupled:
-                        a_partner = a_site.partner.agent
-                        b_partner = b_site.partner.agent
-                        if (
-                            a_partner in potential_embedding
-                            and potential_embedding[a_partner] != b_partner
-                        ):
-                            search_failed = True
-                            break
-                        elif a_partner not in potential_embedding:
-                            frontier.add(a_partner)
-                            potential_embedding[a_partner] = b_partner
-
-            if not search_failed:
-                embeddings.append(potential_embedding)
-
-        return embeddings
-
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
         """
         TODO: Take advantage of isomorphism redundancies
@@ -142,7 +96,7 @@ class Mixture:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
-        embeddings = self.find_embeddings(component)
+        embeddings = list(component.embeddings(self))
         self._embeddings[component] = embeddings
 
         for embedding in embeddings:
@@ -196,7 +150,7 @@ class Mixture:
         # We might want to do this incrementally on every edge/agent removal/addition.
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
         for component in self._embeddings:
-            embeddings = self.find_embeddings(component)
+            embeddings = list(component.embeddings(self))
             self._embeddings[component] = embeddings
             for embedding in embeddings:
                 self._embeddings_by_component[

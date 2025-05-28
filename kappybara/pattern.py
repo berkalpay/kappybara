@@ -1,8 +1,11 @@
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple
+from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
 from kappybara.utils import Counted
+
+if TYPE_CHECKING:
+    from kappybara.mixture import Mixture
 
 
 # String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
@@ -60,7 +63,8 @@ class Site(Counted):
     def coupled(self) -> bool:
         return isinstance(self.partner, Site)
 
-    def matches(self, other) -> bool:
+    def embeds_in(self, other: Self) -> bool:
+        """Checks whether self as a pattern matches other as a concrete site."""
         if (self.stated and self.state != other.state) or (
             self.bound and not other.coupled
         ):
@@ -141,7 +145,7 @@ class Agent(Counted):
             site.agent = detached
         return detached
 
-    def same_site_states(self, other: Self) -> bool:
+    def isomorphic(self, other: Self) -> bool:
         """
         Check if two `Agent`s are equivalent locally, ignoring partners.
         NOTE: Doesn't assume agents of the same type will have the same site signatures.
@@ -161,6 +165,20 @@ class Agent(Counted):
 
         # Check that sites in `other` not mentioned in `self`are undetermined
         return all(other[site_name].undetermined for site_name in b_sites_leftover)
+
+    def embeds_in(self, other: Self) -> bool:
+        """Checks whether self as a pattern matches other as a concrete agent."""
+        if self.type != other.type:
+            return False
+
+        for a_site in self:
+            if a_site.label not in other.interface and not a_site.undetermined:
+                return False
+            b_site = other[a_site.label]
+            if not a_site.embeds_in(b_site):
+                return False
+
+        return True
 
 
 class Component(Counted):
@@ -228,20 +246,10 @@ class Component(Counted):
         # TODO: set __eq__ with this method?
         return next(self.isomorphisms(other), None) is not None
 
-    def isomorphisms(self, other: Self) -> Iterator[dict[Agent, Agent]]:
-        """
-        Checks for bijections which respect links in the site graph,
-        ensuring that any internal site state specified in one compononent
-        exists and is the same in the other.
-
-        NOTE: This is trying to handle things more general than just isomorphisms between
-        instantiated components in a mixture, so that we can also potentially check
-        isomorphism between rule patterns. See the cases in `test_component_isomorphism`
-        (in tests/test_pattern.py) for some usage examples between component patterns and
-        their expected behavior.
-        """
-        if len(self.agents) != len(other.agents):
-            return
+    def embeddings(
+        self, other: Self | "Mixture", exact: bool = False
+    ) -> Iterator[dict[Agent, Agent]]:
+        """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
 
         a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
         # Narrow the search by mapping `a_root` to agents in `other` of the same type
@@ -255,25 +263,42 @@ class Component(Counted):
                 a = frontier.pop()
                 b = agent_map[a]
 
-                if not a.same_site_states(b):
+                match_func = a.isomorphic if exact else a.embeds_in
+                if not match_func(b):
                     root_failed = True
                     break
 
                 for a_site in a:
                     b_site = b[a_site.label]
-                    if a_site.coupled and b_site.coupled:
+                    if a_site.coupled:
                         if a_site.partner.agent not in agent_map:
                             frontier.add(a_site.partner.agent)
                             agent_map[a_site.partner.agent] = b_site.partner.agent
                         elif agent_map[a_site.partner.agent] != b_site.partner.agent:
                             root_failed = True
                             break
-                    elif a_site.partner != b_site.partner:
+                    elif exact and a_site.partner != b_site.partner:
                         root_failed = True
                         break
 
             if not root_failed:
                 yield agent_map  # A valid bijection
+
+    def isomorphisms(self, other: Self | "Mixture") -> Iterator[dict[Agent, Agent]]:
+        """
+        Checks for bijections which respect links in the site graph,
+        ensuring that any internal site state specified in one compononent
+        exists and is the same in the other.
+
+        NOTE: This is trying to handle things more general than just isomorphisms between
+        instantiated components in a mixture, so that we can also potentially check
+        isomorphism between rule patterns. See the cases in `test_component_isomorphism`
+        (in tests/test_pattern.py) for some usage examples between component patterns and
+        their expected behavior.
+        """
+        if len(self.agents) != len(other.agents):
+            return
+        yield from self.embeddings(other, exact=True)
 
 
 class Pattern:
