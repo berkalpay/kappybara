@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
-from typing import Optional, Iterator, Iterable
+from typing import Optional, Iterable
 
 from kappybara.pattern import Site, Agent, Component, Pattern
 
@@ -17,7 +17,7 @@ class Edge:
             self.site1 == other.site2 and self.site2 == other.site1
         )
 
-    def __hash__(self):  # TODO: cache?
+    def __hash__(self):
         return hash(frozenset((self.site1, self.site2)))
 
 
@@ -48,8 +48,6 @@ class Mixture:
         assert (
             not pattern.underspecified
         ), "Pattern isn't specific enough to instantiate."
-
-        # TODO: handle `n_copies` differently when implementing isomorphic component tracking
         for _ in range(n_copies):
             for component in pattern.components:
                 self._instantiate_component(component, 1)
@@ -62,29 +60,18 @@ class Mixture:
             # Duplicate the proper link structure
             for site in agent:
                 if site.coupled:
-                    partner: Site = site.partner
-                    i_partner: int = component.agents.index(partner.agent)
+                    partner = site.partner
+                    i_partner = component.agents.index(partner.agent)
 
-                    new_site: Site = new_agents[i][site.label]
-                    new_partner: Site = new_agents[i_partner][partner.label]
-
-                    # Explicitly enumerate edges in the new component to give to `MixtureUpdate`
-                    # We don't actually link the agents here, that's handled by `apply_update`
+                    new_site = new_agents[i][site.label]
+                    new_partner = new_agents[i_partner][partner.label]
                     new_edges.add(Edge(new_site, new_partner))
-
-        new_component = Component(new_agents, n_copies)
 
         update = MixtureUpdate(agents_to_add=new_agents, edges_to_add=new_edges)
         self.apply_update(update)
-
         # TODO: Update APSP
 
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
-        """
-        TODO: Take advantage of isomorphism redundancies
-
-        NOTE: This depends on the _embeddings cache being up to date
-        """
         assert (
             component in self._embeddings
         ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
@@ -106,48 +93,23 @@ class Mixture:
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
-        In this first implementation, we will just apply the update and then
-        naively recompute all of our indexes from scratch, without taking advantage
-        of any of the incremental properties of our computation. However, the reason
-        that we separate out the work of determining an update (i.e. the logic in the
-        `select` method of `Rule`), as opposed to actually applying it (the logic in
-        this method), is so that we can do something better here that actually recomputes
-        indexes based on `update` itself, rather than recomputing on the entire mixture.
+        Apply the update and (naively) recompute embeddings from scratch.
         """
-
-        # Order will be important later, i.e. doing all removals before any additions
-        # Also removing edges before agents, so that agents aren't removed until all their
-        # associated edges are removed already. Right now we are assuming that the
-        # `MixtureUpdate` is constructed with this in mind already so we don't have to check
-        # for dangling edges here.
+        # Order will be important, i.e. doing all removals before any additions..
         for edge in update.edges_to_remove:
             self._remove_edge(edge)
-
         for agent in update.agents_to_remove:
             self._remove_agent(agent)
-
         for agent in update.agents_to_add:
             self._add_agent(agent)
-
         for edge in update.edges_to_add:
             self._add_edge(edge)
-
         for agent in update.agents_changed:
-            # For incremental approaches it'll be important to know the agents
-            # who haven't been removed/added but whose internal states have changed.
-            pass
+            pass  # TODO: for incremental approaches
 
         self._update_embeddings()
 
     def _update_embeddings(self) -> None:
-        # TODO: Update APSP. This is imo the best thing to do to support horizon conditions.
-        # In an incremental version the APSP should be updated at every agent/edge addition/removal
-        # in the delegated calls above.
-
-        # 3. Update embeddings
-        #    TODO: Only update embeddings of affected `Component`s. This requires a pre-simulation step
-        #    where we build a dependency graph of rules at the level of either `Rule`s or `Component`s
-        # We might want to do this incrementally on every edge/agent removal/addition.
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
         for component in self._embeddings:
             embeddings = list(component.embeddings(self))
@@ -159,21 +121,19 @@ class Mixture:
 
     def _add_agent(self, agent: Agent) -> None:
         """
-        Calling any of these private functions which modify the mixture is *not*
-        guaranteed to keep any of our indexes up to date, which is why they should
-        not be used externally.
+        NOTE: Calling these private functions that modify the mixture isn't
+        guaranteed to keep our indexes up to date, which is why they shouldn't
+        be used externally.
 
         NOTE: The provided `agent` should not have any bound sites. Add those
         afterwards using `self._add_edge`
         """
-        # Assert all sites are unbound
-        assert all(site.partner == "." for site in agent)
+        assert all(site.partner == "." for site in agent)  # Check all sites are unbound
         assert agent.instantiable
 
         self.agents.add(agent)
         self.agents_by_type[agent.type].append(agent)
 
-        # if self.enable_component_tracking: # TODO: Add this kind of thing anywhere we manage component indexes
         component = Component([agent])
         self.components.add(component)
         self.component_index[agent] = component
@@ -183,13 +143,11 @@ class Mixture:
         NOTE: Any bonds associated with `agent` must be removed as well
         before trying to use this method call.
         """
-        # Assert all sites are unbound
-        assert all(site.partner == "." for site in agent)
+        assert all(site.partner == "." for site in agent)  # Check all sites are unbound
 
         self.agents.remove(agent)
         self.agents_by_type[agent.type].remove(agent)
 
-        # TODO: if self.enable_component_tracking:
         component = self.component_index[agent]
         assert len(component.agents) == 1
         self.components.remove(component)
@@ -203,7 +161,6 @@ class Mixture:
         edge.site2.partner = edge.site1
 
         # If the agents are in different components, merge the components
-        # TODO: if self.enable_component_tracking
         # TODO: incremental mincut
         component1 = self.component_index[edge.site1.agent]
         component2 = self.component_index[edge.site2.agent]
@@ -227,7 +184,6 @@ class Mixture:
         assert old_component == self.component_index[agent2]
 
         # Create a new component if the old one got disconnected
-        # TODO: don't do component indexing if not required by the rules?
         # TODO: improve efficiency with incremental min-cut?
         maybe_new_component = Component(agent1.depth_first_traversal)
         if agent2 not in maybe_new_component.agents:
@@ -235,22 +191,6 @@ class Mixture:
             for agent in maybe_new_component:
                 old_component.agents.remove(agent)
                 self.component_index[agent] = maybe_new_component
-
-    # def update_components(self, update: MixtureUpdate):
-    #     raise NotImplementedError
-
-    # def update_shortest_paths(self, update: MixtureUpdate):
-    #     """
-    #     TODO: Maintain an all pairs shortest paths (APSP) index
-    #     """
-    #     raise NotImplementedError
-
-    # def update_matches(self, pattern: Pattern, update: MixtureUpdate):
-    #     # Account for invalidated matches
-    #     #  - Matches invalidated by removal of edges or nodes
-    #     #  - Matches invalidated by *addition* of edges. This is rather unique to Kappa.
-    #     #    TODO: double-check that invalidation by edge addition can only happen when there's an Empty predicate in the pattern
-    #     raise NotImplementedError
 
 
 @dataclass
