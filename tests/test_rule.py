@@ -297,6 +297,14 @@ def test_simple_bimolecular_rule_application(n_copies):
         assert system.count_observable(observables[0]) == i
 
 
+# TODO: for unimolecular rules, assert all selected agents are in the same component
+# component = mixture.component_index[next(iter(selection_map.values()))]
+# for agent in selection_map.values():
+#     assert component == mixture.component_index[agent]
+
+# TODO: for bimolecular rules, assert selected agents aren't in the same component
+
+
 def debug_mixture(mixture: Mixture):
     print(
         "====================================================================================="

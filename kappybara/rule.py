@@ -65,37 +65,31 @@ class KappaRule(Rule):
 
     def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
-        This function is not quite pure since internal states of agents in the
-        mixture can be changed by this method. Everything else however (edge/bond
-        insertions/removals, agent insertions/removals) is just recorded in the
-        returned `MixtureUpdate` without actually occurring in the mixture. I would
-        rather this function just not touch the actual mixture at all, but would have
-        to rework the `MixtureUpdate` class to be able to accomodate specific internal
-        state changes.
+        NOTE: Can change the internal states of agents in the mixture but
+        records everything else in the `MixtureUpdate`.
+        TODO: Rework `MixtureUpdate` to accomodate the internal state changes.
         """
-        # A map from the agents in the left hand side of a rule
-        # to chosen instances of agents in the mixture.
-        selection_map: dict[Agent, Pattern] = {}
+        # Maps agents on the left hand side of a rule to agents in the mixture
+        rule_embedding: dict[Agent, Agent] = {}
 
         for component in self.left.components:
-            choices = mixture.embeddings(component)
+            component_embeddings = mixture.embeddings(component)
             assert (
-                len(choices) > 0
+                len(component_embeddings) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
-            component_selection = random.choice(mixture.embeddings(component))
+            component_embedding = random.choice(component_embeddings)
 
-            for agent in component_selection:
-                if component_selection[agent] in selection_map.values():
-                    # This means two selected components have intersecting
-                    # sets of mixture agents, so this is an invalid match.
-                    return None
+            for rule_agent in component_embedding:
+                mixture_agent = component_embedding[rule_agent]
+                if mixture_agent in rule_embedding.values():
+                    return None  # Invalid match: two selected components intersect
                 else:
-                    selection_map[agent] = component_selection[agent]
+                    rule_embedding[rule_agent] = mixture_agent
 
-        return self._produce_update(selection_map, mixture)
+        return self._produce_update(rule_embedding, mixture)
 
     def _produce_update(
-        self, selection_map: dict[Agent, Pattern], mixture: Mixture
+        self, selection_map: dict[Agent, Agent], mixture: Mixture
     ) -> MixtureUpdate:
         """
         Takes the agents that have been chosen to be transformed by this rule,
@@ -111,7 +105,7 @@ class KappaRule(Rule):
         ]  # Select agents in the mixture matching the rule, in order
         new_selection: list[Optional[Agent]] = [None] * len(
             selection
-        )  # The new/modified agents used to make the appropriate edges.
+        )  # The new/modified agents used to make the appropriate edges
         update = MixtureUpdate()
 
         # Manage agents
@@ -144,7 +138,6 @@ class KappaRule(Rule):
         for i, r_agent in enumerate(self.right.agents):
             if r_agent is None:
                 continue
-
             agent = new_selection[i]
             for r_site in r_agent:
                 site = agent[r_site.label]
@@ -157,7 +150,7 @@ class KappaRule(Rule):
                         update.disconnect_site(site)
                     case x if x != "?":
                         raise TypeError(
-                            f"Link states of type {type(x)} are unsupported for right-hand rule patterns."
+                            f"Site partners of type {x} are unsupported for right-hand rule patterns."
                         )
 
         return update
@@ -165,34 +158,21 @@ class KappaRule(Rule):
 
 @dataclass
 class KappaRuleUnimolecular(KappaRule):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
+        super().__post_init__()
         self.component_weights: dict[Component, int] = {}
 
     def n_embeddings(self, mixture: Mixture) -> int:
-        """
-        TODO: if a component gets removed from the mixture, its entry
-        in `self.component_weights` will remain unless we remake it from
-        scratch like we do here. So for an incremental version the logic
-        would have to be more complicated or we'd have to rethink things a bit.
-        """
         count = 0
-
-        # Reset the index from scratch. Removes some tricky considerations from now,
-        # but obviously not desirable performance wise. Doesn't matter as long as we're
-        # recomputing every weight anyways below, though.
+        # TODO: incrementally update counts (also accounting for component removal)
         self.component_weights = {}
-
         for component in mixture.components:
             weight = prod(
                 len(mixture.embeddings_in_component(match_component, component))
                 for match_component in self.left.components
             )
-
             self.component_weights[component] = weight
-
             count += weight
-
         return count
 
     def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
@@ -200,13 +180,11 @@ class KappaRuleUnimolecular(KappaRule):
         NOTE: `self.n_embeddings` must be called before this method so that the
         `component_weights` cache is up-to-date.
         """
-        components_ordered = list(self.component_weights.keys())
+        components_ordered = list(self.component_weights)
         weights = [self.component_weights[c] for c in components_ordered]
-
         selected_component = random.choices(components_ordered, weights)[0]
 
-        selection_map: dict[Agent, Pattern] = {}
-
+        selection_map: dict[Agent, Agent] = {}
         for component in self.left.components:
             choices = mixture.embeddings_in_component(component, selected_component)
             assert (
@@ -222,51 +200,35 @@ class KappaRuleUnimolecular(KappaRule):
                 else:
                     selection_map[agent] = component_selection[agent]
 
-        # TODO: Remove this sanity check
-        # Assert that all agents are in the same mixture Component
-        component = mixture.component_index[next(iter(selection_map.values()))]
-        for agent in selection_map.values():
-            assert component == mixture.component_index[agent]
-
         return self._produce_update(selection_map, mixture)
 
 
 @dataclass
 class KappaRuleBimolecular(KappaRule):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __post_init__(self):
+        super().__post_init__()
         self.component_weights: dict[Component, int] = {}
-
         assert (
             len(self.left.components) == 2
-        ), "Bimolecular rules patterns must consist of exactly 2 components."
+        ), "Bimolecular rule patterns must consist of exactly 2 components."
 
     def n_embeddings(self, mixture: Mixture) -> int:
-        res = 0
-        self.component_weights = (
-            {}
-        )  # Again, we're just doing this from scratch from now
+        count = 0
+        self.component_weights = {}  # TODO: incrementally update
 
         for component in mixture.components:
-            match1: Component = self.left.components[0]
-            match2: Component = self.left.components[1]
-
-            # Number of times the first component in the left Pattern of this rule
-            # embeds into `component`
-            n_match1 = len(mixture.embeddings_in_component(match1, component))
-
-            # Number of times the second component in the left Pattern of this rule
-            # embeds anywhere *outside of* `component`
-            n_match2 = len(mixture.embeddings(match2)) - len(
-                mixture.embeddings_in_component(match2, component)
+            n_match1 = len(
+                mixture.embeddings_in_component(self.left.components[0], component)
             )
+            n_match2 = len(mixture.embeddings(self.left.components[1])) - len(
+                mixture.embeddings_in_component(self.left.components[1], component)
+            )  # Embed this part of the rule outside the component
 
             weight = n_match1 * n_match2
-
             self.component_weights[component] = weight
-            res += weight
+            count += weight
 
-        return res
+        return count
 
     def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
         """
@@ -280,19 +242,11 @@ class KappaRuleBimolecular(KappaRule):
         match1 = random.choice(
             mixture.embeddings_in_component(self.left.components[0], selected_component)
         )
-
-        # Sample from all embeddings of the second component in `self.left` in `mixture`,
-        # excluding the embeddings found in the same component as `match1`
         match2 = rejection_sample(
             mixture.embeddings(self.left.components[1]),
             mixture.embeddings_in_component(
                 self.left.components[1], selected_component
             ),
-        )
+        )  # Embed this part of the rule outside the component
 
-        # TODO: Assert that the two chosen components are not in the same
-        # connected component as a sanity check
-
-        selection_map: dict[Agent, Pattern] = match1 | match2
-
-        return self._produce_update(selection_map, mixture)
+        return self._produce_update(match1 | match2, mixture)
