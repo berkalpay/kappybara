@@ -56,6 +56,28 @@ def test_component_isomorphism(test_case):
     assert a.isomorphic(b) == b.isomorphic(a)
     assert expected_result == a.isomorphic(b)
 
+@pytest.mark.parametrize(
+    "test_case",
+    [
+        # ("A(a[.]{u})", "A(a{u}[.])", 1),
+        # ("A(a[1]{u}, b[2]), A(a[1]{u}, b[2])", "A(a[#]{u}, b[1]), A(a[#]{u}, b[1])", 2),
+        ("A(a[_]{u}, b[1]), A(a[_]{u}, b[1])", "A(a[.]{u}, b[2]), A(a[.]{u}, b[2])", 0),
+        ("A(a[#]{u}, b[1]), A(a[#]{u}, b[1])", "A(a[.]{u}, b[2]), A(a[.]{u}, b[2])", 2),
+        ("A(a[#]{u}, b[1]), A(a[#]{u}, b[1])", "A(a[.]{u}, b[2]), A(a[.]{u}, b[2])", 2),
+        # ("A(a[1]{p}), A(a[1]{u})", "A(a[#]{p}), A(a[#]{u})", 1),
+    ],
+)
+def test_component_embedding(test_case):
+    """
+    Test various cases of isomorphism between connected components.
+    """
+    concrete_str, pattern_str, n_expected_embeddings = test_case
+
+    concrete = kappa.component(concrete_str)
+    pattern = kappa.component(pattern_str)
+
+    embeddings = list(concrete.embeddings(pattern))
+    assert len(embeddings) == n_expected_embeddings
 
 def test_component_id_uniqueness():
     a = kappa.component("A(a[.]{u})")

@@ -24,6 +24,8 @@ class Edge:
 @dataclass
 class Mixture:
     agents: set[Agent]
+    # counters: set[Counter]
+    # counter_index: set[Component, Counter]
     components: set[Component]
     component_index: dict[Agent, Component]  # Maps agents to their components
     agents_by_type: defaultdict[str, list[Agent]]
