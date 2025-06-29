@@ -56,6 +56,7 @@ def test_component_isomorphism(test_case):
     assert a.isomorphic(b) == b.isomorphic(a)
     assert expected_result == a.isomorphic(b)
 
+
 @pytest.mark.parametrize(
     "test_case",
     [
@@ -78,6 +79,7 @@ def test_component_embedding(test_case):
 
     embeddings = list(concrete.embeddings(pattern))
     assert len(embeddings) == n_expected_embeddings
+
 
 def test_component_id_uniqueness():
     a = kappa.component("A(a[.]{u})")

@@ -181,20 +181,6 @@ class Agent(Counted):
         return True
 
 
-class Counter:
-    """
-    A collection of isomorphic components of a mixture.
-
-    All are
-    """
-    rep: Component
-    copies: list[Component]
-
-    def __init__(self, rep: Component):
-        self.rep = rep
-        self.copies = []
-
-
 class Component(Counted):
     """
     A set of agents that are all in the same connected component (this is
@@ -313,6 +299,21 @@ class Component(Counted):
         if len(self.agents) != len(other.agents):
             return
         yield from self.embeddings(other, exact=True)
+
+
+class Counter:
+    """
+    A collection of isomorphic components of a mixture.
+
+    All are
+    """
+
+    rep: Component
+    copies: list[Component]
+
+    def __init__(self, rep: Component):
+        self.rep = rep
+        self.copies = []
 
 
 class Pattern:
