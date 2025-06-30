@@ -2,7 +2,11 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 from typing import Optional, Iterable
 
-from kappybara.pattern import Site, Agent, Component, Pattern
+from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
+from kappybara.indexed_set import SetProperty, Property, IndexedSet
+
+type ComponentPattern = Component
+type AgentPattern = Agent
 
 
 @dataclass(frozen=True)
@@ -23,22 +27,23 @@ class Edge:
 
 @dataclass
 class Mixture:
-    agents: set[Agent]
-    components: set[Component]
-    component_index: dict[Agent, Component]  # Maps agents to their components
-    agents_by_type: defaultdict[str, list[Agent]]
+    agents: IndexedSet[Agent]
+    components: IndexedSet[Component]
 
     # An index of the matches for each component in any rule or observable pattern
-    _embeddings: dict[Component, list[dict[Agent, Agent]]]
-    _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
+    _embeddings: dict[ComponentPattern, IndexedSet[Embedding]]
+    # _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
-        self.agents = set()
-        self.components = set()
-        self.component_index = {}
-        self.agents_by_type = defaultdict(list)
-        self._embeddings = defaultdict(list)
-        self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
+        self.agents = IndexedSet()
+        self.components = IndexedSet()
+        self._embeddings = {}
+
+        self.agents.create_index("type", Property(lambda a: a.type))
+
+        self.components.create_index(
+            "agent", SetProperty(lambda c: c.agents, is_unique=True)
+        )
 
         if patterns is not None:
             for pattern in patterns:
@@ -52,16 +57,19 @@ class Mixture:
             for component in pattern.components:
                 self._instantiate_component(component, 1)
 
-    def _instantiate_component(self, component: Component, n_copies: int) -> None:
-        new_agents = [agent.detached() for agent in component]
+    def _instantiate_component(
+        self, component: ComponentPattern, n_copies: int
+    ) -> None:
+        component_ordered = list(component.agents)
+        new_agents = [agent.detached() for agent in component_ordered]
         new_edges = set()
 
-        for i, agent in enumerate(component):
+        for i, agent in enumerate(component_ordered):
             # Duplicate the proper link structure
             for site in agent:
                 if site.coupled:
                     partner = site.partner
-                    i_partner = component.agents.index(partner.agent)
+                    i_partner = component_ordered.index(partner.agent)
 
                     new_site = new_agents[i][site.label]
                     new_partner = new_agents[i_partner][partner.label]
@@ -69,27 +77,26 @@ class Mixture:
 
         update = MixtureUpdate(agents_to_add=new_agents, edges_to_add=new_edges)
         self.apply_update(update)
-        # TODO: Update APSP
 
-    def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
+    def embeddings(self, component: ComponentPattern) -> IndexedSet[Embedding]:
         assert (
             component in self._embeddings
         ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
         return self._embeddings[component]
 
     def embeddings_in_component(
-        self, match_pattern: Component, mixture_component: Component
+        self, match_pattern: ComponentPattern, mixture_component: Component
     ) -> list[dict[Agent, Agent]]:
-        return self._embeddings_by_component[mixture_component][match_pattern]
+        return self._embeddings[match_pattern].lookup("component", mixture_component)
 
-    def track_component(self, component: Component):
-        embeddings = list(component.embeddings(self))
+    def track_component(self, component: ComponentPattern):
+        embeddings = IndexedSet(component.embeddings(self))
+        embeddings.create_index(
+            "component",
+            Property(lambda e: self.components.lookup("agent", next(iter(e.values())))),
+        )
+
         self._embeddings[component] = embeddings
-
-        for embedding in embeddings:
-            self._embeddings_by_component[
-                self.component_index[next(iter(embedding.values()))]
-            ][component].append(embedding)
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
@@ -110,14 +117,8 @@ class Mixture:
         self._update_embeddings()
 
     def _update_embeddings(self) -> None:
-        self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
-        for component in self._embeddings:
-            embeddings = list(component.embeddings(self))
-            self._embeddings[component] = embeddings
-            for embedding in embeddings:
-                self._embeddings_by_component[
-                    self.component_index[next(iter(embedding.values()))]
-                ][component].append(embedding)
+        for component_pattern in self._embeddings:
+            self.track_component(component_pattern)
 
     def _add_agent(self, agent: Agent) -> None:
         """
@@ -132,11 +133,9 @@ class Mixture:
         assert agent.instantiable
 
         self.agents.add(agent)
-        self.agents_by_type[agent.type].append(agent)
 
         component = Component([agent])
         self.components.add(component)
-        self.component_index[agent] = component
 
     def _remove_agent(self, agent: Agent) -> None:
         """
@@ -146,12 +145,10 @@ class Mixture:
         assert all(site.partner == "." for site in agent)  # Check all sites are unbound
 
         self.agents.remove(agent)
-        self.agents_by_type[agent.type].remove(agent)
 
-        component = self.component_index[agent]
+        component = self.components.lookup("agent", agent)
         assert len(component.agents) == 1
         self.components.remove(component)
-        del self.component_index[agent]
 
     def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
@@ -162,14 +159,21 @@ class Mixture:
 
         # If the agents are in different components, merge the components
         # TODO: incremental mincut
-        component1 = self.component_index[edge.site1.agent]
-        component2 = self.component_index[edge.site2.agent]
+        component1 = self.components.lookup("agent", edge.site1.agent)
+        component2 = self.components.lookup("agent", edge.site2.agent)
         if component1 == component2:
             return
+
+        self.components.remove(
+            component2
+        )  # NOTE: This invokes a redundant linear time pass
         for agent in component2:
             component1.add(agent)
-            self.component_index[agent] = component1
-        self.components.remove(component2)
+            # self.component_index[agent] = component1
+            # TODO: better semantics for this type of operation
+            #       Operate on diffs to set property.. ?
+            # NOTE: tricky part
+            self.components.indices["agent"][agent] = [component1]
 
     def _remove_edge(self, edge: Edge) -> None:
         assert edge.site1.partner == edge.site2
@@ -180,17 +184,23 @@ class Mixture:
 
         agent1: Agent = edge.site1.agent
         agent2: Agent = edge.site2.agent
-        old_component = self.component_index[agent1]
-        assert old_component == self.component_index[agent2]
+        old_component = self.components.lookup("agent", agent1)
+        assert old_component == self.components.lookup("agent", agent2)
 
         # Create a new component if the old one got disconnected
-        # TODO: improve efficiency with incremental min-cut?
         maybe_new_component = Component(agent1.depth_first_traversal)
         if agent2 not in maybe_new_component.agents:
-            self.components.add(maybe_new_component)
-            for agent in maybe_new_component:
-                old_component.agents.remove(agent)
-                self.component_index[agent] = maybe_new_component
+            new_component1 = maybe_new_component
+            new_component2 = Component(agent2.depth_first_traversal)
+
+            # TODO: A lot of redundancy here for the sake of keeping the
+            # code simple for now. We could save a lot here by only
+            # creating one new component and making the necessary
+            # deletions, but this requires manual updates to the indices
+            # in `components`.
+            self.components.remove(old_component)
+            self.components.add(new_component1)
+            self.components.add(new_component2)
 
 
 @dataclass
