@@ -25,7 +25,6 @@ class Edge:
 class Mixture:
     agents: set[Agent]
     components: set[Component]
-    component_index: dict[Agent, Component]  # Maps agents to their components
     agents_by_type: defaultdict[str, list[Agent]]
 
     # An index of the matches for each component in any rule or observable pattern
@@ -35,7 +34,6 @@ class Mixture:
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = set()
         self.components = set()
-        self.component_index = {}
         self.agents_by_type = defaultdict(list)
         self._embeddings = defaultdict(list)
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
@@ -87,9 +85,9 @@ class Mixture:
         self._embeddings[component] = embeddings
 
         for embedding in embeddings:
-            self._embeddings_by_component[
-                self.component_index[next(iter(embedding.values()))]
-            ][component].append(embedding)
+            self._embeddings_by_component[next(iter(embedding.values())).component][
+                component
+            ].append(embedding)
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
@@ -115,9 +113,9 @@ class Mixture:
             embeddings = list(component.embeddings(self))
             self._embeddings[component] = embeddings
             for embedding in embeddings:
-                self._embeddings_by_component[
-                    self.component_index[next(iter(embedding.values()))]
-                ][component].append(embedding)
+                self._embeddings_by_component[next(iter(embedding.values())).component][
+                    component
+                ].append(embedding)
 
     def _add_agent(self, agent: Agent) -> None:
         """
@@ -136,7 +134,7 @@ class Mixture:
 
         component = Component([agent])
         self.components.add(component)
-        self.component_index[agent] = component
+        agent.component = component
 
     def _remove_agent(self, agent: Agent) -> None:
         """
@@ -148,10 +146,8 @@ class Mixture:
         self.agents.remove(agent)
         self.agents_by_type[agent.type].remove(agent)
 
-        component = self.component_index[agent]
-        assert len(component.agents) == 1
-        self.components.remove(component)
-        del self.component_index[agent]
+        assert len(agent.component.agents) == 1
+        self.components.remove(agent.component)
 
     def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
@@ -162,13 +158,13 @@ class Mixture:
 
         # If the agents are in different components, merge the components
         # TODO: incremental mincut
-        component1 = self.component_index[edge.site1.agent]
-        component2 = self.component_index[edge.site2.agent]
+        component1 = edge.site1.agent.component
+        component2 = edge.site2.agent.component
         if component1 == component2:
             return
         for agent in component2:
             component1.add(agent)
-            self.component_index[agent] = component1
+            agent.component = component1
         self.components.remove(component2)
 
     def _remove_edge(self, edge: Edge) -> None:
@@ -180,8 +176,8 @@ class Mixture:
 
         agent1: Agent = edge.site1.agent
         agent2: Agent = edge.site2.agent
-        old_component = self.component_index[agent1]
-        assert old_component == self.component_index[agent2]
+        old_component = agent1.component
+        assert old_component == agent2.component
 
         # Create a new component if the old one got disconnected
         # TODO: improve efficiency with incremental min-cut?
@@ -190,7 +186,7 @@ class Mixture:
             self.components.add(maybe_new_component)
             for agent in maybe_new_component:
                 old_component.agents.remove(agent)
-                self.component_index[agent] = maybe_new_component
+                agent.component = maybe_new_component
 
 
 @dataclass

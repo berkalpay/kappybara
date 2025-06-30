@@ -88,6 +88,8 @@ class Site(Counted):
 
 
 class Agent(Counted):
+    component: "Component"  # Abstract agents may not set this
+
     def __init__(self, type: str, sites: Iterable[Site]):
         super().__init__()
         self.type = type
