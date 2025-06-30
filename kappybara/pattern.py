@@ -3,6 +3,8 @@ from functools import cached_property
 from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
 from kappybara.utils import Counted
+from kappybara.indexed_set import IndexedSet, Property
+
 
 if TYPE_CHECKING:
     from kappybara.mixture import Mixture
@@ -181,6 +183,11 @@ class Agent(Counted):
         return True
 
 
+class Embedding(dict[Agent, Agent]):
+    def __hash__(self):
+        return id(self)
+
+
 class Component(Counted):
     """
     A set of agents that are all in the same connected component (this is
@@ -192,8 +199,7 @@ class Component(Counted):
     - Cost of detailed structs when it comes to FFI conversions
     """
 
-    agents: list[Agent]
-    agents_by_type: dict[str, set[Agent]]
+    agents: IndexedSet[Agent]
     n_copies: int
 
     def __init__(self, agents: list[Agent], n_copies: int = 1):
@@ -206,10 +212,10 @@ class Component(Counted):
                 "Simulations won't handle n_copies correctly in counting embeddings."
             )
 
-        self.agents = agents  # TODO: I want this to be ordered by graph traversal
-        self.agents_by_type = defaultdict(set)  # Reverse index on agent type
-        for agent in agents:
-            self.agents_by_type[agent.type].add(agent)
+        self.agents = IndexedSet(
+            agents
+        )  # TODO: I want this to be ordered by graph traversal
+        self.agents.create_index("type", Property(lambda a: a.type))
         self.n_copies = n_copies
 
     def __iter__(self):
@@ -239,8 +245,7 @@ class Component(Counted):
         return ", ".join(agent_strs)
 
     def add(self, agent: Agent):
-        self.agents.append(agent)
-        self.agents_by_type[agent.type].add(agent)
+        self.agents.add(agent)
 
     def isomorphic(self, other: Self) -> bool:
         # TODO: set __eq__ with this method?
@@ -248,14 +253,14 @@ class Component(Counted):
 
     def embeddings(
         self, other: Self | "Mixture", exact: bool = False
-    ) -> Iterator[dict[Agent, Agent]]:
+    ) -> Iterator[Embedding]:
         """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
 
-        a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
+        a_root = next(iter(self.agents))  # "a" refers to `self` and "b" to `other`
         # Narrow the search by mapping `a_root` to agents in `other` of the same type
-        for b_root in other.agents_by_type[a_root.type]:
+        for b_root in other.agents.lookup("type", a_root.type):
 
-            agent_map = {a_root: b_root}  # The potential bijection
+            agent_map = Embedding({a_root: b_root})  # The potential bijection
             frontier = {a_root}
             root_failed = False
 
