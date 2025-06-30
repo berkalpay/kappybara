@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from collections import defaultdict
 from collections.abc import Callable, Hashable
-from typing import Optional, Iterable, Generic, TypeVar, Any
+from typing import Optional, Iterable, Generic, TypeVar, Any, Self
 
 T = TypeVar("T")  # Member type of `IndexedSet`
 
@@ -24,7 +24,7 @@ class Property(SetProperty):
         return [self.fn(item)]
 
 
-class IndexedSet(set[T]):
+class IndexedSet(set[T], Generic[T]):
     """
     A subclass of the built-in `set`, with support for indexing
     by arbitrary properties of set members, as well as integer
@@ -42,7 +42,7 @@ class IndexedSet(set[T]):
     """
 
     properties: dict[str, SetProperty]
-    indices: dict[str, defaultdict[Hashable, set[T]]]
+    indices: dict[str, defaultdict[Hashable, Self]]
 
     _item_to_pos: dict[T, int]
     _item_list: list[T]
@@ -121,7 +121,7 @@ class IndexedSet(set[T]):
         assert name not in self.properties
 
         self.properties[name] = prop
-        self.indices[name] = defaultdict(set)
+        self.indices[name] = defaultdict(IndexedSet)
 
         for el in self:
             for val in prop(el):
