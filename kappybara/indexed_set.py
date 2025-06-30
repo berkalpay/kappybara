@@ -27,48 +27,71 @@ class Property(SetProperty):
 class IndexedSet(set[T]):
     """
     A subclass of the built-in `set`, with support for indexing
-    by arbitrary properties of set members.
+    by arbitrary properties of set members, as well as integer
+    indexing to allow for random sampling.
+
+    Credit https://stackoverflow.com/a/15993515 for the integer indexing logic.
 
     If you know for some property that you should only get a single
     set member back when using `lookup`, mark that property as unique
     when you create it.
 
-    TODO: How to distinguish when we know that a lookup will always yield
-    a single set member, versus a collection? I'm going to call the former
-    "uniqueness" of a property, which formally means that for such a unique
-    property, the evaluations of two different set members will never intersect.
+    NOTE: although this class is indexable due to the implementation
+    of `__getitem__`, member ordering is not stable across insertions
+    and deletions.
     """
 
     properties: dict[str, SetProperty]
     indices: dict[str, defaultdict[Hashable, set[T]]]
 
+    _item_to_pos: dict[T, int]
+    _item_list: list[T]
+
     def __init__(self, iterable: Iterable[T] = []):
-        self.properties = {}
-        self.indices = {}
+        iterable = list(iterable)
 
         super().__init__(iterable)
 
-    def add(self, el: T):
-        assert el not in self
+        self._item_list = iterable
+        self._item_to_pos = {item: i for (i, item) in enumerate(iterable)}
 
-        super().add(el)
+        self.properties = {}
+        self.indices = {}
 
+    def add(self, item: T):
+        assert item not in self
+        super().add(item)
+
+        # Update integer index
+        self._item_list.append(item)
+        self._item_to_pos[item] = len(self._item_list) - 1
+
+        # Update property indices
         for prop_name in self.properties:
             prop = self.properties[prop_name]
 
-            for val in prop(el):
+            for val in prop(item):
                 if prop.is_unique:
                     assert not self.indices[prop_name][val]
-                self.indices[prop_name][val].add(el)
+                self.indices[prop_name][val].add(item)
 
-    def remove(self, el: T):
-        super().remove(el)
+    def remove(self, item: T):
+        assert item in self
+        super().remove(item)
 
+        # Update integer index
+        pos = self._item_to_pos.pop(item)
+        last_item = self._item_list.pop()
+        if pos != len(self._item_list):
+            self._item_list[pos] = last_item
+            self._item_to_pos[last_item] = pos
+
+        # Update property indices
         for prop_name in self.properties:
             prop = self.properties[prop_name]
 
-            for val in prop(el):
-                self.indices[prop_name][val].remove(el)
+            for val in prop(item):
+                self.indices[prop_name][val].remove(item)
 
                 # If the index entry is now empty, delete it
                 if not self.indices[prop_name][val]:
@@ -105,3 +128,7 @@ class IndexedSet(set[T]):
                 if prop.is_unique:
                     assert not self.indices[name][val]
                 self.indices[name][val].add(el)
+
+    def __getitem__(self, i):
+        assert 0 <= i < len(self)
+        return self._item_list[i]
