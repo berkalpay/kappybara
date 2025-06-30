@@ -306,21 +306,6 @@ class Component(Counted):
         yield from self.embeddings(other, exact=True)
 
 
-class Counter:
-    """
-    A collection of isomorphic components of a mixture.
-
-    All are
-    """
-
-    rep: Component
-    copies: list[Component]
-
-    def __init__(self, rep: Component):
-        self.rep = rep
-        self.copies = []
-
-
 class Pattern:
     agents: list[Optional[Agent]]
 
