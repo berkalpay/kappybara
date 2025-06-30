@@ -91,7 +91,8 @@ class KappaRule(Rule):
             assert (
                 len(component_embeddings) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
-            component_embedding = random.choice(component_embeddings)
+            # TODO: case where we have to serialize set to sample
+            component_embedding = random.choice(list(component_embeddings))
 
             for rule_agent in component_embedding:
                 mixture_agent = component_embedding[rule_agent]
@@ -204,7 +205,7 @@ class KappaRuleUnimolecular(KappaRule):
             assert (
                 len(choices) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
-            component_selection = random.choice(choices)
+            component_selection = random.choice(list(choices))
 
             for agent in component_selection:
                 if component_selection[agent] in selection_map.values():
@@ -254,7 +255,7 @@ class KappaRuleBimolecular(KappaRule):
         selected_component = random.choices(components_ordered, weights)[0]
 
         match1 = random.choice(
-            mixture.embeddings_in_component(self.left.components[0], selected_component)
+            list(mixture.embeddings_in_component(self.left.components[0], selected_component))
         )
         match2 = rejection_sample(
             mixture.embeddings(self.left.components[1]),
