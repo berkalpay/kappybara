@@ -2,8 +2,8 @@ import random
 from functools import cached_property
 from typing import Optional, Iterable
 
-from kappybara.mixture import Mixture
-from kappybara.rule import Rule, KappaRule
+from kappybara.mixture import Mixture, ComponentMixture
+from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
 from kappybara.alg_exp import AlgExp
 
@@ -60,6 +60,7 @@ class System:
     def act(self) -> None:
         # TODO: warn after many consecutive null events?
         rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
+        # print(rule.left.components)
         update = rule.select(self.mixture)
         if update is not None:
             self.mixture.apply_update(update)
@@ -81,11 +82,22 @@ class KappaSystem(System):
 
     def __init__(
         self,
-        mixture: Optional[Mixture] = None,
+        mixture: Optional[ComponentMixture] = None,
         rules: Optional[Iterable[Rule]] = None,
         alg_exp_observables: Optional[dict[str, AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
     ):
+
+        if mixture is None:
+            if any(type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular] for r in rules):
+                mixture = ComponentMixture()
+                print("Created ComponentMixture")
+            else:
+                mixture = Mixture()
+                print("Created Mixture")
+
+        self.mixture = mixture
+
         super().__init__(mixture, rules, None)
 
         if alg_exp_observables:

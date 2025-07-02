@@ -125,7 +125,6 @@ def test_system_from_kappa():
     n = system.eval_variable("n")
     assert n == 300
     assert system.eval_variable("g_on") == 0.003
-    assert len(system.mixture.components) == n
     assert system.eval_observable("A_total") == n
 
     for i in range(1, n):

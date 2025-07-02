@@ -1,6 +1,6 @@
 import pytest
 
-from kappybara.mixture import Mixture
+from kappybara.mixture import ComponentMixture
 from kappybara.system import System
 import kappybara.kappa as kappa
 from kappybara.examples import heterodimerization_system
@@ -21,7 +21,7 @@ def test_basic_system():
         ]
     ]
 
-    mixture = Mixture()
+    mixture = ComponentMixture()
     for pair in init_patterns:
         pattern_str, count = pair
         pattern = kappa.pattern(pattern_str)
