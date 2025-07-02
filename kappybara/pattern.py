@@ -7,7 +7,7 @@ from kappybara.indexed_set import IndexedSet, Property
 
 
 if TYPE_CHECKING:
-    from kappybara.mixture import Mixture
+    from kappybara.mixture import ComponentMixture
 
 
 # String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
@@ -251,7 +251,7 @@ class Component(Counted):
         # TODO: set __eq__ with this method?
         return next(self.isomorphisms(other), None) is not None
 
-    def embeddings(
+    def embeddings(  # TODO: rename this to `embed_in` or `embeddings_in`
         self, other: Self | "Mixture", exact: bool = False
     ) -> Iterator[Embedding]:
         """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""

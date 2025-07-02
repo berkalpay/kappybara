@@ -1,6 +1,6 @@
 from kappybara.indexed_set import SetProperty, Property, IndexedSet
 from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
-from kappybara.mixture import Mixture, MixtureUpdate
+from kappybara.mixture import ComponentMixture, MixtureUpdate
 
 
 class Counter:
@@ -36,7 +36,7 @@ class Counter:
         self.copies.remove(component)
 
 
-class CounterMixture(Mixture):
+class CounterMixture(ComponentMixture):
     counters: IndexedSet[Counter]
     counter_size_limit: int
 

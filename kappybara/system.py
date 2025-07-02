@@ -2,7 +2,7 @@ import random
 from functools import cached_property
 from typing import Optional, Iterable
 
-from kappybara.mixture import Mixture
+from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule
 from kappybara.pattern import Component
 from kappybara.alg_exp import AlgExp
@@ -81,11 +81,13 @@ class KappaSystem(System):
 
     def __init__(
         self,
-        mixture: Optional[Mixture] = None,
+        mixture: Optional[ComponentMixture] = None,
         rules: Optional[Iterable[Rule]] = None,
         alg_exp_observables: Optional[dict[str, AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
     ):
+
+        mixture = ComponentMixture() if mixture is None else mixture
         super().__init__(mixture, rules, None)
 
         if alg_exp_observables:

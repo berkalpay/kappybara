@@ -1,4 +1,4 @@
-from kappybara.mixture import Mixture
+from kappybara.mixture import ComponentMixture
 from kappybara.system import System
 import kappybara.kappa as kappa
 
@@ -9,7 +9,7 @@ if __name__ == "__main__":
         "A(u[.]), A(d[.]) <-> A(u[1]), A(d[1]) @ 25.0 {25.0}, 25.0",
     ]
 
-    mixture = Mixture()
+    mixture = ComponentMixture()
     for pair in init_patterns:
         pattern_str, count = pair
         pattern = kappa.pattern(pattern_str)
