@@ -1,7 +1,7 @@
 import pytest
 from math import comb
 
-from kappybara.mixture import Mixture
+from kappybara.mixture import ComponentMixture
 from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.system import System
 import kappybara.kappa as kappa

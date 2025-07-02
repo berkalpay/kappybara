@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from typing import Optional, TYPE_CHECKING
 
 from kappybara.pattern import Pattern, Component, Agent, Site
-from kappybara.mixture import Mixture, MixtureUpdate
+from kappybara.mixture import Mixture, ComponentMixture, MixtureUpdate
 from kappybara.alg_exp import AlgExp
 from kappybara.utils import rejection_sample
 
@@ -77,7 +77,7 @@ class KappaRule(Rule):
             len(mixture.embeddings(component)) for component in self.left.components
         )
 
-    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
+    def select(self, mixture: ComponentMixture) -> Optional[MixtureUpdate]:
         """
         NOTE: Can change the internal states of agents in the mixture but
         records everything else in the `MixtureUpdate`.
@@ -104,7 +104,7 @@ class KappaRule(Rule):
         return self._produce_update(rule_embedding, mixture)
 
     def _produce_update(
-        self, selection_map: dict[Agent, Agent], mixture: Mixture
+        self, selection_map: dict[Agent, Agent], mixture: ComponentMixture
     ) -> MixtureUpdate:
         """
         Takes the agents that have been chosen to be transformed by this rule,
@@ -177,7 +177,7 @@ class KappaRuleUnimolecular(KappaRule):
         super().__post_init__()
         self.component_weights: dict[Component, int] = {}
 
-    def n_embeddings(self, mixture: Mixture) -> int:
+    def n_embeddings(self, mixture: ComponentMixture) -> int:
         count = 0
         # TODO: incrementally update counts (also accounting for component removal)
         self.component_weights = {}
@@ -190,7 +190,7 @@ class KappaRuleUnimolecular(KappaRule):
             count += weight
         return count
 
-    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
+    def select(self, mixture: ComponentMixture) -> Optional[MixtureUpdate]:
         """
         NOTE: `self.n_embeddings` must be called before this method so that the
         `component_weights` cache is up-to-date.
@@ -227,7 +227,7 @@ class KappaRuleBimolecular(KappaRule):
             len(self.left.components) == 2
         ), "Bimolecular rule patterns must consist of exactly 2 components."
 
-    def n_embeddings(self, mixture: Mixture) -> int:
+    def n_embeddings(self, mixture: ComponentMixture) -> int:
         count = 0
         self.component_weights = {}  # TODO: incrementally update
 
@@ -245,7 +245,7 @@ class KappaRuleBimolecular(KappaRule):
 
         return count
 
-    def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
+    def select(self, mixture: ComponentMixture) -> Optional[MixtureUpdate]:
         """
         NOTE: `self.n_embeddings` must be called before this method so that the
         `component_weights` cache is up-to-date.
