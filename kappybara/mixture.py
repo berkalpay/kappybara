@@ -28,25 +28,19 @@ class Edge:
 @dataclass
 class Mixture:
     agents: IndexedSet[Agent]
-    components: IndexedSet[Component]
-
-    # An index of the matches for each component in any rule or observable pattern
     _embeddings: dict[ComponentPattern, IndexedSet[Embedding]]
-    # _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = IndexedSet()
-        self.components = IndexedSet()
         self._embeddings = {}
 
         self.agents.create_index("type", Property(lambda a: a.type))
 
-        self.components.create_index(
-            "agent", SetProperty(lambda c: c.agents, is_unique=True)
-        )
-
         if patterns is not None:
             for pattern in patterns:
+                # If `instantiate` has an overriding definition in a subclass,
+                # then when that subclass calls this `__init__` method, its
+                # override will be the one called here.
                 self.instantiate(pattern)
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
@@ -84,17 +78,8 @@ class Mixture:
         ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
         return self._embeddings[component]
 
-    def embeddings_in_component(
-        self, match_pattern: ComponentPattern, mixture_component: Component
-    ) -> list[dict[Agent, Agent]]:
-        return self._embeddings[match_pattern].lookup("component", mixture_component)
-
     def track_component(self, component: ComponentPattern):
         embeddings = IndexedSet(component.embeddings(self))
-        embeddings.create_index(
-            "component",
-            Property(lambda e: self.components.lookup("agent", next(iter(e.values())))),
-        )
 
         self._embeddings[component] = embeddings
 
@@ -102,7 +87,6 @@ class Mixture:
         """
         Apply the update and (naively) recompute embeddings from scratch.
         """
-        # Order will be important, i.e. doing all removals before any additions..
         for edge in update.edges_to_remove:
             self._remove_edge(edge)
         for agent in update.agents_to_remove:
@@ -134,9 +118,6 @@ class Mixture:
 
         self.agents.add(agent)
 
-        component = Component([agent])
-        self.components.add(component)
-
     def _remove_agent(self, agent: Agent) -> None:
         """
         NOTE: Any bonds associated with `agent` must be removed as well
@@ -146,16 +127,68 @@ class Mixture:
 
         self.agents.remove(agent)
 
-        component = self.components.lookup("agent", agent)
-        assert len(component.agents) == 1
-        self.components.remove(component)
-
     def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
         assert edge.site2.agent in self.agents
 
         edge.site1.partner = edge.site2
         edge.site2.partner = edge.site1
+
+    def _remove_edge(self, edge: Edge) -> None:
+        assert edge.site1.partner == edge.site2
+        assert edge.site2.partner == edge.site1
+
+        edge.site1.partner = "."
+        edge.site2.partner = "."
+
+
+@dataclass
+class ComponentMixture(Mixture):
+    components: IndexedSet[Component]
+
+    def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
+        self.components = IndexedSet()
+        self.components.create_index(
+            "agent", SetProperty(lambda c: c.agents, is_unique=True)
+        )
+
+        super().__init__(patterns)
+
+    def embeddings_in_component(
+        self, match_pattern: ComponentPattern, mixture_component: Component
+    ) -> list[dict[Agent, Agent]]:
+        return self._embeddings[match_pattern].lookup("component", mixture_component)
+
+    def track_component(self, component: ComponentPattern):
+        super().track_component(component)
+
+        self._embeddings[component].create_index(
+            "component",
+            Property(lambda e: self.components.lookup("agent", next(iter(e.values())))),
+        )
+
+    def apply_update(self, update: "MixtureUpdate") -> None:
+        super().apply_update(update)
+
+    def _update_embeddings(self) -> None:
+        for component_pattern in self._embeddings:
+            self.track_component(component_pattern)
+
+    def _add_agent(self, agent: Agent) -> None:
+        super()._add_agent(agent)
+
+        component = Component([agent])
+        self.components.add(component)
+
+    def _remove_agent(self, agent: Agent) -> None:
+        super()._remove_agent(agent)
+
+        component = self.components.lookup("agent", agent)
+        assert len(component.agents) == 1
+        self.components.remove(component)
+
+    def _add_edge(self, edge: Edge) -> None:
+        super()._add_edge(edge)
 
         # If the agents are in different components, merge the components
         # TODO: incremental mincut
@@ -176,11 +209,7 @@ class Mixture:
             self.components.indices["agent"][agent] = [component1]
 
     def _remove_edge(self, edge: Edge) -> None:
-        assert edge.site1.partner == edge.site2
-        assert edge.site2.partner == edge.site1
-
-        edge.site1.partner = "."
-        edge.site2.partner = "."
+        super()._remove_edge(edge)
 
         agent1: Agent = edge.site1.agent
         agent2: Agent = edge.site2.agent

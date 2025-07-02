@@ -1,5 +1,5 @@
 from kappybara.system import KappaSystem
-from kappybara.mixture import Mixture
+from kappybara.mixture import ComponentMixture
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
 from kappybara.alg_exp import AlgExp
@@ -152,7 +152,7 @@ def system(kappa_str: str) -> KappaSystem:
         else:
             raise TypeError(f"Unsupported input type: {tag}")
 
-    system = KappaSystem(Mixture(), rules, observables, variables)
+    system = KappaSystem(None, rules, observables, variables)
 
     for init in inits:
         amount = init[0].evaluate(system)
