@@ -39,12 +39,21 @@ jobs:
 
       - name: Push results to perf-data branch
         run: |
+            PERF_DATA_BRANCH=perf-data
             SHA_COMMIT=$(git rev-parse --short HEAD)
             RESULTS_DIR="$(date +"%Y_%m_%d")_commit_$SHA_COMMIT"
 
-            # Fetch perf-data branch or create new
-            git checkout --orphan perf-data 2>/dev/null || git checkout perf-data
-            git reset --hard
+            # Checkout perf-data branch or create new
+            if git ls-remote --exit-code --heads origin $PERF_DATA_BRANCH >/dev/null; then
+                echo "Branch $PERF_DATA_BRANCH exists"
+                git fetch origin perf-data
+                git checkout -b perf-data origin/perf-data
+            else
+                echo "Branch $PERF_DATA_BRANCH does not exist"
+                git checkout --orphan perf-data
+                git reset --hard
+                git push origin $PERF_DATA_BRANCH --force
+            fi
 
             cp -r tests/cpu-profiles/results $RESULTS_DIR
             git add $RESULTS_DIR
@@ -53,4 +62,4 @@ jobs:
             git config --global user.email 'amber227@users.noreply.github.com'
             git commit -am "Commit $SHA_COMMIT: automated report"
 
-            git push origin perf-data --force
+            git push origin $PERF_DATA_BRANCH
