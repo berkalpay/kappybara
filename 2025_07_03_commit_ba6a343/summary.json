@@ -1,0 +1,18 @@
+{
+    "profile_dummy": {
+        "timestamp": 1751521628.3779056,
+        "runtime (s)": 1.011500597000122,
+        "peak_memory (MB)": 23.15625,
+        "flamegraph": "profile_dummy_flamegraph.svg",
+        "memplot": "profile_dummy_memplot.png",
+        "memprofile": "profile_dummy_memprofile.dat"
+    },
+    "profile_systems": {
+        "timestamp": 1751521731.079161,
+        "runtime (s)": 51.76368308067322,
+        "peak_memory (MB)": 33.84375,
+        "flamegraph": "profile_systems_flamegraph.svg",
+        "memplot": "profile_systems_memplot.png",
+        "memprofile": "profile_systems_memprofile.dat"
+    }
+}
