@@ -240,9 +240,13 @@ class Component(Counted):
             agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
         return ", ".join(agent_strs)
 
-    def add(self, agent: Agent):
+    def add(self, agent: Agent) -> None:
         self.agents.append(agent)
         self.agents_by_type[agent.type].add(agent)
+
+    def remove(self, agent: Agent) -> None:
+        self.agents.remove(agent)
+        self.agents_by_type[agent.type].remove(agent)
 
     def isomorphic(self, other: Self) -> bool:
         # TODO: set __eq__ with this method?
