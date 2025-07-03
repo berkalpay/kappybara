@@ -91,7 +91,8 @@ if __name__ == "__main__":
                 "connectgaps": False,
                 "text": short_hashes,
                 "customdata": [
-                    f"{base_url}/raw/{PERF_DATA_BRANCH}/{commit_dirs[h]}/profile_{name}_flamegraph.svg"
+                    # f"{base_url}/raw/{PERF_DATA_BRANCH}/{commit_dirs[h]}/profile_{name}_flamegraph.svg"
+                    f"{commit_dirs[h]}/profile_{name}_flamegraph.svg"
                     for h in profiled_commits
                 ],
                 "hovertemplate": f"<b>%{{text}}</b><br><b>Runtime: %{{y:.4f}}s</b><br>(Click to open flamegraph)",
@@ -112,10 +113,10 @@ if __name__ == "__main__":
                 "connectgaps": False,
                 "text": short_hashes,
                 "customdata": [
-                    f"{base_url}/raw/{PERF_DATA_BRANCH}/{commit_dirs[h]}/profile_{name}_memplot.png"
+                    f"{commit_dirs[h]}/profile_{name}_memplot.png"
                     for h in profiled_commits
                 ],
-                "hovertemplate": f"<b>%{{text}}</b><br><b>Memory: %{{y:.2f}} MB</b><br>(Click to open memory usage plot)",
+                "hovertemplate": f"<b>%{{text}}</b><br><b>Peak Memory: %{{y:.2f}} MB</b><br>(Click to open memory usage plot)",
                 "marker": {"size": 12},
             }
         )
