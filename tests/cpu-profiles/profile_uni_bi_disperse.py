@@ -23,5 +23,4 @@ if __name__ == "__main__":
     system = System(mixture, rules)
 
     while system.time < 0.05:
-        print(len(mixture.components))
         system.update()
