@@ -1,6 +1,9 @@
 name: cpu-profiles
 on: [push, workflow_dispatch]
 
+permissions:
+  contents: write
+
 jobs:
   uv-example:
     name: python
@@ -34,8 +37,20 @@ jobs:
              cd tests/cpu-profiles
              uv run bash run_profiler.sh
 
-      - name: Export profiler artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: cpu-profiles
-            path: "tests/cpu-profiles/results/*"
+      - name: Push results to perf-data branch
+        run: |
+            SHA_COMMIT=$(git rev-parse --short HEAD)
+            RESULTS_DIR="$(date +"%Y_%m_%d")_commit_$SHA_COMMIT"
+
+            # Fetch perf-data branch or create new
+            git checkout --orphan perf-data 2>/dev/null || git checkout perf-data
+            git reset --hard
+
+            cp -r tests/cpu-profiles/results $RESULTS_DIR
+            git add $RESULTS_DIR
+
+            git config --global user.name 'amber227'
+            git config --global user.email 'amber227@users.noreply.github.com'
+            git commit -am "Commit $SHA_COMMIT: automated report"
+
+            git push origin perf-data --force
