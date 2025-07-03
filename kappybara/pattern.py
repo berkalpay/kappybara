@@ -183,6 +183,9 @@ class Agent(Counted):
         return True
 
 
+Embedding = dict[Agent, Agent]
+
+
 class Component(Counted):
     """
     A set of agents that are all in the same connected component (this is
@@ -254,7 +257,7 @@ class Component(Counted):
 
     def embeddings(
         self, other: Self | "Mixture", exact: bool = False
-    ) -> Iterator[dict[Agent, Agent]]:
+    ) -> Iterator[Embedding]:
         """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
 
         a_root = self.agents[0]  # "a" refers to `self` and "b" to `other`
@@ -290,7 +293,7 @@ class Component(Counted):
             if not root_failed:
                 yield agent_map  # A valid bijection
 
-    def isomorphisms(self, other: Self | "Mixture") -> Iterator[dict[Agent, Agent]]:
+    def isomorphisms(self, other: Self | "Mixture") -> Iterator[Embedding]:
         """
         Checks for bijections which respect links in the site graph,
         ensuring that any internal site state specified in one compononent
