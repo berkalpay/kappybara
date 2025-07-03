@@ -77,10 +77,7 @@ class Mixture:
     def _remove_embeddings(self, component: Component) -> None:
         for match_pattern in self.match_patterns:
             for embedding in self._embeddings_by_component[component][match_pattern]:
-                try:  # TODO: it's strange that this is required to pass test_basic_system
-                    self._embeddings[match_pattern].remove(embedding)
-                except ValueError:
-                    pass
+                self._embeddings[match_pattern].remove(embedding)
         if component in self._embeddings_by_component:
             del self._embeddings_by_component[component]
 
@@ -97,14 +94,15 @@ class Mixture:
     ) -> list[Embedding]:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
-    def track_component(self, component: Component):
-        self.match_patterns.add(component)
-        embeddings = list(component.embeddings(self))
-        for embedding in embeddings:
-            self._embeddings_by_component[next(iter(embedding.values())).component][
-                component
-            ].append(embedding)
-        self._embeddings[component] = embeddings
+    def track_component(self, component: Component) -> None:
+        if component not in self.match_patterns:
+            self.match_patterns.add(component)
+            embeddings = list(component.embeddings(self))
+            for embedding in embeddings:
+                self._embeddings_by_component[next(iter(embedding.values())).component][
+                    component
+                ].append(embedding)
+            self._embeddings[component] = embeddings
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
