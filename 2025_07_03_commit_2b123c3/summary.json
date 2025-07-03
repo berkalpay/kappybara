@@ -1,0 +1,18 @@
+{
+    "profile_dummy": {
+        "timestamp": 1751577548.1482954,
+        "runtime (s)": 0.9908483028411865,
+        "peak_memory (MB)": 23.15625,
+        "flamegraph": "profile_dummy_flamegraph.svg",
+        "memplot": "profile_dummy_memplot.png",
+        "memprofile": "profile_dummy_memprofile.dat"
+    },
+    "profile_heterodimerization_small": {
+        "timestamp": 1751577645.527223,
+        "runtime (s)": 48.98871946334839,
+        "peak_memory (MB)": 33.753906,
+        "flamegraph": "profile_heterodimerization_small_flamegraph.svg",
+        "memplot": "profile_heterodimerization_small_memplot.png",
+        "memprofile": "profile_heterodimerization_small_memprofile.dat"
+    }
+}
