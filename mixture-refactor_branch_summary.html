@@ -1,0 +1,91 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>mixture-refactor performance log</title>
+        <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .plot-container { width: 100%; height: 600px; margin-bottom: 40px; }
+            /* Change cursor to pointer for plot points */
+            .cursor-pointer .nsewdrag, .cursor-pointer .nsewdrag drag {
+                cursor: pointer !important;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Performance log, branch <a href="https://github.com/berkalpay/kappybara/tree/mixture-refactor">mixture-refactor</a></h1>
+
+        <div class="plot-container" id="runtimePlot"></div>
+        <div class="plot-container" id="memoryPlot"></div>
+
+        <script>
+            // Shared configuration
+            const commitHashes = ["082fe0d"];
+            const shortHashes = ["<a href=\"https://github.com/berkalpay/kappybara/commit/082fe0d\">082fe0d</a>"];
+            const plotConfig = {responsive: true};
+
+            // Runtime data and plot
+            const runtimeData = [{"x": ["082fe0d"], "y": [0.9992377758026123], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["082fe0d"], "customdata": ["2025_07_03_commit_082fe0d/profile_dummy_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br><b>Runtime: %{y:.4f}s</b><br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["082fe0d"], "y": [46.46968913078308], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["082fe0d"], "customdata": ["2025_07_03_commit_082fe0d/profile_heterodimerization_small_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br><b>Runtime: %{y:.4f}s</b><br>(Click to open flamegraph)", "marker": {"size": 12}}];
+
+            Plotly.newPlot('runtimePlot', runtimeData, {
+                title: 'Runtime (seconds)',
+                titlefont: { size: 30, weight: 'bold' },
+                xaxis: {
+                    title: 'Commit Hash',
+                    type: 'category',
+                    tickangle: -45,
+                    tickmode: 'array',
+                    tickvals: commitHashes,
+                    ticktext: shortHashes,
+                },
+                yaxis: { title: 'Runtime (s)',
+                        rangemode: 'tozero'},
+                hovermode: 'closest',
+                showlegend: true
+            }, plotConfig);
+
+            // Memory data and plot
+            const memoryData = [{"x": ["082fe0d"], "y": [22.851562], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["082fe0d"], "customdata": ["2025_07_03_commit_082fe0d/profile_dummy_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["082fe0d"], "y": [32.566406], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["082fe0d"], "customdata": ["2025_07_03_commit_082fe0d/profile_heterodimerization_small_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}];
+            memoryData.forEach(trace => trace.marker = {size: 12});
+
+            Plotly.newPlot('memoryPlot', memoryData, {
+                title: 'Peak Memory Usage (MB)',
+                titlefont: { size: 30, weight: 'bold' },
+                xaxis: {
+                    title: 'Commit Hash',
+                    type: 'category',
+                    tickangle: -45,
+                    tickmode: 'array',
+                    tickvals: commitHashes,
+                    ticktext: shortHashes,
+                },
+                yaxis: { title: 'Peak Memory (MB)',
+                        rangemode: 'tozero'},
+                hovermode: 'closest',
+                showlegend: true
+            }, plotConfig);
+
+            ['runtimePlot', 'memoryPlot'].forEach(plotId => {
+                const plot = document.getElementById(plotId);
+
+                // Change cursor on hover
+                plot.on('plotly_hover', function(data) {
+                    plot.classList.add('cursor-pointer');
+                });
+
+                // Revert cursor when not hovering
+                plot.on('plotly_unhover', function(data) {
+                    plot.classList.remove('cursor-pointer');
+                });
+
+                // Click handler
+                plot.on('plotly_click', function(data) {
+                    const url = data.points[0].customdata;
+                    if (url) window.open(url, '_blank');
+                });
+            });
+        </script>
+    </body>
+    </html>
+    
