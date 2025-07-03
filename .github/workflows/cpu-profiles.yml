@@ -9,6 +9,9 @@ on:
   # Manual trigger
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   uv-example:
     name: python
@@ -16,6 +19,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -37,13 +42,44 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run profiler
-        continue-on-error: true
         run: |
              cd tests/cpu-profiles
              uv run bash run_profiler.sh
 
-      - name: Export profiler artifacts
-        uses: actions/upload-artifact@v4
-        with:
-            name: cpu-profiles
-            path: "tests/cpu-profiles/results/*"
+      - name: Push results to perf-data branch
+        run: |
+            BRANCH=$(git branch --show-current)
+            PERF_DATA_BRANCH=perf-data
+            SHA_COMMIT=$(git rev-parse --short HEAD)
+            RESULTS_DIR="$(date +"%Y_%m_%d")_commit_$SHA_COMMIT"
+
+            git config --global user.name 'amber227'
+            git config --global user.email 'amber227@users.noreply.github.com'
+
+            # Checkout perf-data branch or create new
+            if git ls-remote --exit-code --heads origin $PERF_DATA_BRANCH >/dev/null; then
+                echo "Branch $PERF_DATA_BRANCH exists"
+                git fetch origin $PERF_DATA_BRANCH
+                git switch $PERF_DATA_BRANCH
+            else
+                echo "Branch $PERF_DATA_BRANCH does not exist"
+                git checkout --orphan perf-data
+                git reset --hard
+                echo "perf data" >> README.md
+                git add README.md
+                git commit -m "Initial commit"
+                git push -u origin $PERF_DATA_BRANCH --force
+            fi
+
+            cp -r tests/cpu-profiles/results $RESULTS_DIR
+            git add $RESULTS_DIR
+
+            git commit -am "Commit $SHA_COMMIT: automated report"
+
+            git switch $BRANCH
+
+            python tests/cpu-profiles/generate_summary.py
+            git add *.html
+            git commit --amend --no-edit
+
+            git push origin $PERF_DATA_BRANCH
