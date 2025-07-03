@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from collections import defaultdict
 from typing import Optional, Iterable
 
-from kappybara.pattern import Site, Agent, Component, Pattern
+from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
 
 
 @dataclass(frozen=True)
@@ -28,23 +28,20 @@ class Mixture:
     agents_by_type: defaultdict[str, list[Agent]]
     match_patterns: set[Component]
 
-    # An index of the matches for each component in any rule or observable pattern
-    _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
+    _embeddings: dict[Component, list[Embedding]]
+    _embeddings_by_component: dict[Component, dict[Component, list[Embedding]]]
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = set()
         self.components = set()
         self.agents_by_type = defaultdict(list)
         self.match_patterns = set()
+        self._embeddings = defaultdict(list)
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
 
         if patterns is not None:
             for pattern in patterns:
                 self.instantiate(pattern)
-
-    def _embeddings(self, match_pattern: Component) -> Iterable[dict[Agent, Agent]]:
-        for mixture_component in self._embeddings_by_component:
-            yield from self._embeddings_by_component[mixture_component][match_pattern]
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
         assert (
@@ -73,9 +70,23 @@ class Mixture:
         self.apply_update(update)
         # TODO: Update APSP
 
-    def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
+    def remove(self, component: Component) -> None:
+        self.components.remove(component)
+        self._remove_embeddings(component)
+
+    def _remove_embeddings(self, component: Component) -> None:
+        for match_pattern in self.match_patterns:
+            for embedding in self._embeddings_by_component[component][match_pattern]:
+                try:  # TODO: it's strange that this is required to pass test_basic_system
+                    self._embeddings[match_pattern].remove(embedding)
+                except ValueError:
+                    pass
+        if component in self._embeddings_by_component:
+            del self._embeddings_by_component[component]
+
+    def embeddings(self, component: Component) -> list[Embedding]:
         try:
-            return list(self._embeddings(component))
+            return list(self._embeddings[component])
         except KeyError:
             assert (
                 False
@@ -83,7 +94,7 @@ class Mixture:
 
     def embeddings_in_component(
         self, match_pattern: Component, mixture_component: Component
-    ) -> list[dict[Agent, Agent]]:
+    ) -> list[Embedding]:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
@@ -93,6 +104,7 @@ class Mixture:
             self._embeddings_by_component[next(iter(embedding.values())).component][
                 component
             ].append(embedding)
+        self._embeddings[component] = embeddings
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
@@ -111,13 +123,17 @@ class Mixture:
             self._change_agent(agent)
 
     def _update_embeddings(self, mixture_component: Component) -> None:
-        self._embeddings_by_component[mixture_component] = defaultdict(
+        self._remove_embeddings(mixture_component)
+        new_embeddings = defaultdict(
             list,
             {
                 match_pattern: list(match_pattern.embeddings(mixture_component))
                 for match_pattern in self.match_patterns
             },
         )
+        self._embeddings_by_component[mixture_component] = new_embeddings
+        for match_pattern in self.match_patterns:
+            self._embeddings[match_pattern].extend(new_embeddings[match_pattern])
 
     def _add_agent(self, agent: Agent) -> None:
         """
@@ -150,8 +166,7 @@ class Mixture:
         self.agents_by_type[agent.type].remove(agent)
 
         assert len(agent.component.agents) == 1
-        self.components.remove(agent.component)
-        del self._embeddings_by_component[agent.component]
+        self.remove(agent.component)
 
     def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
@@ -168,8 +183,7 @@ class Mixture:
             for agent in component2:
                 component1.add(agent)
                 agent.component = component1
-            self.components.remove(component2)
-            del self._embeddings_by_component[component2]
+            self.remove(component2)
         self._update_embeddings(component1)
 
     def _remove_edge(self, edge: Edge) -> None:
