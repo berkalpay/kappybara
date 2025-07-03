@@ -26,21 +26,25 @@ class Mixture:
     agents: set[Agent]
     components: set[Component]
     agents_by_type: defaultdict[str, list[Agent]]
+    match_patterns: set[Component]
 
     # An index of the matches for each component in any rule or observable pattern
-    _embeddings: dict[Component, list[dict[Agent, Agent]]]
     _embeddings_by_component: dict[Component, dict[Component, list[dict[Agent, Agent]]]]
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = set()
         self.components = set()
         self.agents_by_type = defaultdict(list)
-        self._embeddings = defaultdict(list)
+        self.match_patterns = set()
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
 
         if patterns is not None:
             for pattern in patterns:
                 self.instantiate(pattern)
+
+    def _embeddings(self, match_pattern: Component) -> Iterable[dict[Agent, Agent]]:
+        for mixture_component in self._embeddings_by_component:
+            yield from self._embeddings_by_component[mixture_component][match_pattern]
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
         assert (
@@ -70,10 +74,12 @@ class Mixture:
         # TODO: Update APSP
 
     def embeddings(self, component: Component) -> list[dict[Agent, Agent]]:
-        assert (
-            component in self._embeddings
-        ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
-        return self._embeddings[component]
+        try:
+            return list(self._embeddings(component))
+        except KeyError:
+            assert (
+                False
+            ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
 
     def embeddings_in_component(
         self, match_pattern: Component, mixture_component: Component
@@ -81,9 +87,8 @@ class Mixture:
         return self._embeddings_by_component[mixture_component][match_pattern]
 
     def track_component(self, component: Component):
+        self.match_patterns.add(component)
         embeddings = list(component.embeddings(self))
-        self._embeddings[component] = embeddings
-
         for embedding in embeddings:
             self._embeddings_by_component[next(iter(embedding.values())).component][
                 component
@@ -103,19 +108,16 @@ class Mixture:
         for edge in update.edges_to_add:
             self._add_edge(edge)
         for agent in update.agents_changed:
-            pass  # TODO: for incremental approaches
+            self._change_agent(agent)
 
-        self._update_embeddings()
-
-    def _update_embeddings(self) -> None:
-        self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
-        for component in self._embeddings:
-            embeddings = list(component.embeddings(self))
-            self._embeddings[component] = embeddings
-            for embedding in embeddings:
-                self._embeddings_by_component[next(iter(embedding.values())).component][
-                    component
-                ].append(embedding)
+    def _update_embeddings(self, mixture_component: Component) -> None:
+        self._embeddings_by_component[mixture_component] = defaultdict(
+            list,
+            {
+                match_pattern: list(match_pattern.embeddings(mixture_component))
+                for match_pattern in self.match_patterns
+            },
+        )
 
     def _add_agent(self, agent: Agent) -> None:
         """
@@ -135,6 +137,7 @@ class Mixture:
         component = Component([agent])
         self.components.add(component)
         agent.component = component
+        self._update_embeddings(component)
 
     def _remove_agent(self, agent: Agent) -> None:
         """
@@ -148,6 +151,7 @@ class Mixture:
 
         assert len(agent.component.agents) == 1
         self.components.remove(agent.component)
+        del self._embeddings_by_component[agent.component]
 
     def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
@@ -160,12 +164,13 @@ class Mixture:
         # TODO: incremental mincut
         component1 = edge.site1.agent.component
         component2 = edge.site2.agent.component
-        if component1 == component2:
-            return
-        for agent in component2:
-            component1.add(agent)
-            agent.component = component1
-        self.components.remove(component2)
+        if component1 != component2:
+            for agent in component2:
+                component1.add(agent)
+                agent.component = component1
+            self.components.remove(component2)
+            del self._embeddings_by_component[component2]
+        self._update_embeddings(component1)
 
     def _remove_edge(self, edge: Edge) -> None:
         assert edge.site1.partner == edge.site2
@@ -185,8 +190,13 @@ class Mixture:
         if agent2 not in maybe_new_component.agents:
             self.components.add(maybe_new_component)
             for agent in maybe_new_component:
-                old_component.agents.remove(agent)
+                old_component.remove(agent)
                 agent.component = maybe_new_component
+            self._update_embeddings(maybe_new_component)
+        self._update_embeddings(old_component)
+
+    def _change_agent(self, agent: Agent) -> None:
+        self._update_embeddings(agent.component)
 
 
 @dataclass
@@ -229,5 +239,5 @@ class MixtureUpdate:
         if site.coupled:
             self.edges_to_remove.add(Edge(site, site.partner))
 
-    def register_changed_agent(self, agent: Agent) -> None:
+    def change_agent(self, agent: Agent) -> None:
         self.agents_changed.add(agent)

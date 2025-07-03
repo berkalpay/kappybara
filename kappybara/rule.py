@@ -127,7 +127,7 @@ class KappaRule(Rule):
                         if r_site.stated:
                             agent[r_site.label].state = r_site.state
                             if r_site.state != l_agent[r_site.label].state:
-                                update.register_changed_agent(agent)
+                                update.change_agent(agent)
                     new_selection[i] = agent
                 case _:
                     pass
