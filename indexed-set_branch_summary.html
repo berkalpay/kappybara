@@ -21,12 +21,12 @@
 
         <script>
             // Shared configuration
-            const commitHashes = ["ccabeef"];
-            const shortHashes = ["<a href=\"https://github.com/berkalpay/kappybara/commit/ccabeef\">ccabeef</a>"];
+            const commitHashes = ["122a398"];
+            const shortHashes = ["<a href=\"https://github.com/berkalpay/kappybara/commit/122a398\">122a398</a>"];
             const plotConfig = {responsive: true};
 
             // Runtime data and plot
-            const runtimeData = [{"x": ["ccabeef"], "y": [1.0363686084747314], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["ccabeef"], "customdata": ["2025_07_03_commit_ccabeef/profile_dummy_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br><b>Runtime: %{y:.4f}s</b><br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["ccabeef"], "y": [81.29489207267761], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["ccabeef"], "customdata": ["2025_07_03_commit_ccabeef/profile_heterodimerization_small_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br><b>Runtime: %{y:.4f}s</b><br>(Click to open flamegraph)", "marker": {"size": 12}}];
+            const runtimeData = [{"x": ["122a398"], "y": [1.0048387050628662], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["122a398"], "customdata": ["2025_07_03_commit_122a398/profile_dummy_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br><b>Runtime: %{y:.4f}s</b><br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["122a398"], "y": [77.80863332748413], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["122a398"], "customdata": ["2025_07_03_commit_122a398/profile_heterodimerization_small_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br><b>Runtime: %{y:.4f}s</b><br>(Click to open flamegraph)", "marker": {"size": 12}}];
 
             Plotly.newPlot('runtimePlot', runtimeData, {
                 title: 'Runtime (seconds)',
@@ -46,7 +46,7 @@
             }, plotConfig);
 
             // Memory data and plot
-            const memoryData = [{"x": ["ccabeef"], "y": [22.988281], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["ccabeef"], "customdata": ["2025_07_03_commit_ccabeef/profile_dummy_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["ccabeef"], "y": [43.355469], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["ccabeef"], "customdata": ["2025_07_03_commit_ccabeef/profile_heterodimerization_small_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}];
+            const memoryData = [{"x": ["122a398"], "y": [23.152344], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["122a398"], "customdata": ["2025_07_03_commit_122a398/profile_dummy_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["122a398"], "y": [43.066406], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["122a398"], "customdata": ["2025_07_03_commit_122a398/profile_heterodimerization_small_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}];
             memoryData.forEach(trace => trace.marker = {size: 12});
 
             Plotly.newPlot('memoryPlot', memoryData, {
