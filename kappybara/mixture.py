@@ -274,3 +274,66 @@ class MixtureUpdate:
 
     def register_changed_agent(self, agent: Agent) -> None:
         self.agents_changed.add(agent)
+
+    @property
+    def touched_after(self) -> set[Agent]:
+        """
+        Return the agents that will/have been changed or added after this
+        update is applied.
+        """
+        touched = self.agents_changed | set(self.agents_to_add)
+
+        for edge in self.edges_to_add:
+            touched.add(edge.site1.agent)
+            touched.add(edge.site2.agent)
+
+        for edge in self.edges_to_remove:
+            a, b = edge.site1.agent, edge.site2.agent
+            if a not in self.agents_to_remove: # TODO make agents_to_remove a set
+                touched.add(a)
+            if b not in self.agents_to_remove:
+                touched.add(b)
+
+        return touched
+
+    @property
+    def touched_before(self) -> set[Agent]:
+        """
+        Lots of code redundancy, but deduplicating here would make what's
+        happening in either case a lot less clear. There's also a good chance
+        this version won't be needed in an improved incremental impl.
+        """
+        touched = self.agents_changed | set(self.agents_to_remove)
+
+        for edge in self.edges_to_remove:
+            touched.add(edge.site1.agent)
+            touched.add(edge.site2.agent)
+
+        for edge in self.edges_to_add:
+            a, b = edge.site1.agent, edge.site2.agent
+            if a not in self.agents_to_add: # TODO make agents_to_add a set
+                touched.add(a)
+            if b not in self.agents_to_add:
+                touched.add(b)
+
+        return touched
+
+    def neighborhood(self, radius: int) -> set[Agent]:
+        """
+        Return the set of all agents within a distance of `radius`
+        of any agent affected by this update.
+
+        NOTE: You must fully apply the update before using this.
+        """
+        frontier = self.touched
+        seen = set(frontier)
+
+        for _ in range(radius):
+            new_frontier = set()
+            for cur in frontier:
+                for n in cur.neighbors:
+                    seen.add(n)
+                    if n not in seen:
+                        new_frontier.add(n)
+
+        return seen
