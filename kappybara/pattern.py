@@ -305,6 +305,31 @@ class Component(Counted):
             return
         yield from self.embeddings(other, exact=True)
 
+    @property
+    def diameter(self) -> int:
+        """
+        Return the maximum minimum shortest path between any two agents.
+        """
+        def bfs_depth(root) -> int:
+            frontier = set([root])
+            seen = set()
+            depth = -1
+
+            while frontier:
+                depth += 1
+                new_frontier = set()
+                seen = seen | frontier
+                for cur in frontier:
+                    for n in cur.neighbors:
+                        if n not in seen:
+                            new_frontier.add(n)
+
+                frontier = new_frontier
+
+            return depth
+
+        return max(bfs_depth(a) for a in self.agents)
+
 
 class Pattern:
     agents: list[Optional[Agent]]
