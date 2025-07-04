@@ -1,0 +1,26 @@
+{
+    "profile_dummy": {
+        "timestamp": 1751601374.1747532,
+        "runtime (s)": 0.989321231842041,
+        "peak_memory (MB)": 23.128906,
+        "flamegraph": "profile_dummy_flamegraph.svg",
+        "memplot": "profile_dummy_memplot.png",
+        "memprofile": "profile_dummy_memprofile.dat"
+    },
+    "profile_heterodimerization_small": {
+        "timestamp": 1751601471.4078135,
+        "runtime (s)": 48.81653428077698,
+        "peak_memory (MB)": 33.8125,
+        "flamegraph": "profile_heterodimerization_small_flamegraph.svg",
+        "memplot": "profile_heterodimerization_small_memplot.png",
+        "memprofile": "profile_heterodimerization_small_memprofile.dat"
+    },
+    "profile_uni_bi_small": {
+        "timestamp": 1751601642.939195,
+        "runtime (s)": 85.79313802719116,
+        "peak_memory (MB)": 30.925781,
+        "flamegraph": "profile_uni_bi_small_flamegraph.svg",
+        "memplot": "profile_uni_bi_small_memplot.png",
+        "memprofile": "profile_uni_bi_small_memprofile.dat"
+    }
+}
