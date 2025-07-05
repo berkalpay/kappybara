@@ -252,13 +252,17 @@ class Component(Counted):
         return next(self.isomorphisms(other), None) is not None
 
     def embeddings(  # TODO: rename this to `embed_in` or `embeddings_in`
-        self, other: Self | "Mixture", exact: bool = False
+        self, other: Self | "Mixture" | Iterable[Agent], exact: bool = False
     ) -> Iterator[Embedding]:
         """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
+        if hasattr(other, "agents"):
+            other: IndexedSet[Agent] = other.agents
+
+        assert "type" in other.properties
 
         a_root = next(iter(self.agents))  # "a" refers to `self` and "b" to `other`
         # Narrow the search by mapping `a_root` to agents in `other` of the same type
-        for b_root in other.agents.lookup("type", a_root.type):
+        for b_root in other.lookup("type", a_root.type):
 
             agent_map = Embedding({a_root: b_root})  # The potential bijection
             frontier = {a_root}
@@ -275,10 +279,19 @@ class Component(Counted):
 
                 for a_site in a:
                     b_site = b[a_site.label]
+
                     if a_site.coupled:
-                        if a_site.partner.agent not in agent_map:
-                            frontier.add(a_site.partner.agent)
-                            agent_map[a_site.partner.agent] = b_site.partner.agent
+                        a_partner = a_site.partner.agent
+                        b_partner = b_site.partner.agent
+
+                        if b_partner not in other:
+                            # The embedding must be enclosed within the set of agents
+                            # provided.
+                            root_failed = True
+                            break
+                        elif a_partner not in agent_map:
+                            frontier.add(a_partner)
+                            agent_map[a_partner] = b_partner
                         elif agent_map[a_site.partner.agent] != b_site.partner.agent:
                             root_failed = True
                             break
