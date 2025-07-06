@@ -29,10 +29,12 @@ class Edge:
 class Mixture:
     agents: IndexedSet[Agent]
     _embeddings: dict[ComponentPattern, IndexedSet[Embedding]]
+    _max_embedding_width: int
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = IndexedSet()
         self._embeddings = {}
+        self._max_embedding_width = 0
 
         self.agents.create_index("type", Property(lambda a: a.type))
 
@@ -79,14 +81,20 @@ class Mixture:
         return self._embeddings[component]
 
     def track_component(self, component: ComponentPattern):
+        self._max_embedding_width = max(component.diameter, self._max_embedding_width)
         embeddings = IndexedSet(component.embeddings(self))
+        embeddings.create_index("agent", SetProperty(lambda e: iter(e.values())))
 
         self._embeddings[component] = embeddings
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
-        Apply the update and (naively) recompute embeddings from scratch.
+        Apply the update while keeping indices up to date
         """
+        for agent in update.touched_before:
+            for tracked in self._embeddings:
+                self._embeddings[tracked].remove_by("agent", agent)
+
         for edge in update.edges_to_remove:
             self._remove_edge(edge)
         for agent in update.agents_to_remove:
@@ -98,7 +106,17 @@ class Mixture:
         for agent in update.agents_changed:
             pass  # TODO: for incremental approaches
 
-        self._update_embeddings()
+        update_region = neighborhood(
+            update.touched_after,
+            self._max_embedding_width
+        )
+
+        update_region = IndexedSet(update_region)
+        update_region.create_index("type", Property(lambda a: a.type))
+        for component_pattern in self._embeddings:
+            new_embeddings = component_pattern.embeddings(update_region)
+            for e in new_embeddings:
+                self._embeddings[component_pattern].add(e)
 
     def _update_embeddings(self) -> None:
         for component_pattern in self._embeddings:
@@ -318,22 +336,24 @@ class MixtureUpdate:
 
         return touched
 
-    def neighborhood(self, radius: int) -> set[Agent]:
-        """
-        Return the set of all agents within a distance of `radius`
-        of any agent affected by this update.
+def neighborhood(agents: Iterable[Agent], radius: int) -> set[Agent]:
+    """
+    Return the set of all agents within a distance of `radius`
+    of any agent affected by this update.
 
-        NOTE: You must fully apply the update before using this.
-        """
-        frontier = self.touched
-        seen = set(frontier)
+    NOTE: You must fully apply the update before using this.
+    """
+    frontier = agents
+    seen = set(frontier)
 
-        for _ in range(radius):
-            new_frontier = set()
-            for cur in frontier:
-                for n in cur.neighbors:
-                    seen.add(n)
-                    if n not in seen:
-                        new_frontier.add(n)
+    for _ in range(radius):
+        new_frontier = set()
+        for cur in frontier:
+            for n in cur.neighbors:
+                seen.add(n)
+                if n not in seen:
+                    new_frontier.add(n)
 
-        return seen
+        frontier = new_frontier
+
+    return seen

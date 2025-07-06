@@ -107,6 +107,24 @@ class IndexedSet(set[T], Generic[T]):
         else:
             return matches
 
+    def remove_by(self, prop_name: str, value: Any):
+        """
+        Remove all set members whose property `prop_name` matches
+        or contains `value`.
+        """
+        if value not in self.indices[prop_name]:
+            return
+
+        # It's important that this is a separate copy, since the
+        # index entry itself will get mutated as we delete items.
+        matches = list(self.indices[prop_name][value])
+
+        for m in matches:
+            # print(f"Removing: {id(m)}, {m}")
+            # print(f"From : {[id(x) for x in self]}")
+            assert m in self
+            self.remove(m)
+
     def create_index(self, name: str, prop: SetProperty):
         """
         Given a function which maps a set member to an `Any`-typed value, create
