@@ -127,7 +127,9 @@ class IndexedSet(set[T], Generic[T]):
         self.indices = {}
 
     def add(self, item: T):
-        assert item not in self
+        if item in self:
+            return
+
         super().add(item)
 
         # Update integer index
@@ -174,6 +176,24 @@ class IndexedSet(set[T], Generic[T]):
             return next(iter(matches))
         else:
             return matches
+
+    def remove_by(self, prop_name: str, value: Any):
+        """
+        Remove all set members whose property `prop_name` matches
+        or contains `value`.
+        """
+        if value not in self.indices[prop_name]:
+            return
+
+        # It's important that this is a separate copy, since the
+        # index entry itself will get mutated as we delete items.
+        matches = list(self.indices[prop_name][value])
+
+        for m in matches:
+            # print(f"Removing: {id(m)}, {m}")
+            # print(f"From : {[id(x) for x in self]}")
+            assert m in self
+            self.remove(m)
 
     def create_index(self, name: str, prop: SetProperty):
         """
