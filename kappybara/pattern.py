@@ -326,6 +326,7 @@ class Component(Counted):
         """
         Return the maximum minimum shortest path between any two agents.
         """
+
         def bfs_depth(root) -> int:
             frontier = set([root])
             seen = set()

@@ -106,10 +106,7 @@ class Mixture:
         for agent in update.agents_changed:
             pass  # TODO: for incremental approaches
 
-        update_region = neighborhood(
-            update.touched_after,
-            self._max_embedding_width
-        )
+        update_region = neighborhood(update.touched_after, self._max_embedding_width)
 
         update_region = IndexedSet(update_region)
         update_region.create_index("type", Property(lambda a: a.type))
@@ -215,6 +212,18 @@ class ComponentMixture(Mixture):
         if component1 == component2:
             return
 
+        # Ensure `component2` is the smaller of the 2
+        if len(component2.agents) > len(component1.agents):
+            component1, component2 = component2, component1
+
+        relocated: dict[ComponentPattern, list[Embedding]] = {}
+        for tracked in self._embeddings:
+            relocated[tracked] = list(
+                self._embeddings[tracked].lookup("component", component2)
+            )
+            for e in relocated[tracked]:
+                self._embeddings[tracked].remove(e)
+
         self.components.remove(
             component2
         )  # NOTE: This invokes a redundant linear time pass
@@ -226,6 +235,17 @@ class ComponentMixture(Mixture):
             # NOTE: tricky part
             self.components.indices["agent"][agent] = [component1]
 
+        for tracked in self._embeddings:
+            # TODO: come back to refactor this when we have something
+            # for registering IndexedSet item updates, including cached
+            # property evaluations.
+            for e in relocated[tracked]:
+                assert (
+                    self.components.lookup("agent", next(iter(e.values())))
+                    == component1
+                )
+                self._embeddings[tracked].add(e)
+
     def _remove_edge(self, edge: Edge) -> None:
         super()._remove_edge(edge)
 
@@ -236,18 +256,40 @@ class ComponentMixture(Mixture):
 
         # Create a new component if the old one got disconnected
         maybe_new_component = Component(agent1.depth_first_traversal)
-        if agent2 not in maybe_new_component.agents:
-            new_component1 = maybe_new_component
-            new_component2 = Component(agent2.depth_first_traversal)
 
-            # TODO: A lot of redundancy here for the sake of keeping the
-            # code simple for now. We could save a lot here by only
-            # creating one new component and making the necessary
-            # deletions, but this requires manual updates to the indices
-            # in `components`.
-            self.components.remove(old_component)
-            self.components.add(new_component1)
-            self.components.add(new_component2)
+        if agent2 in maybe_new_component:
+            return  # The old component is still connected, do nothing
+
+        new_component1 = maybe_new_component
+        new_component2 = Component(agent2.depth_first_traversal)
+
+        relocated: dict[ComponentPattern, list[Embedding]] = {}
+        for tracked in self._embeddings:
+            relocated[tracked] = list(
+                self._embeddings[tracked].lookup("component", old_component)
+            )
+            for e in relocated[tracked]:
+                self._embeddings[tracked].remove(e)
+
+        # TODO: A lot of redundancy here for the sake of keeping the
+        # code simple for now. We could save a lot here by only
+        # creating one new component and making the necessary
+        # deletions, but this requires manual updates to the indices
+        # in `components`.
+        self.components.remove(old_component)
+        self.components.add(new_component1)
+        self.components.add(new_component2)
+
+        for tracked in self._embeddings:
+            # TODO: come back to refactor this when we have something
+            # for registering IndexedSet item updates, including cached
+            # property evaluations.
+            for e in relocated[tracked]:
+                assert self.components.lookup("agent", next(iter(e.values()))) in [
+                    new_component1,
+                    new_component2,
+                ]
+                self._embeddings[tracked].add(e)
 
 
 @dataclass
@@ -307,7 +349,7 @@ class MixtureUpdate:
 
         for edge in self.edges_to_remove:
             a, b = edge.site1.agent, edge.site2.agent
-            if a not in self.agents_to_remove: # TODO make agents_to_remove a set
+            if a not in self.agents_to_remove:  # TODO make agents_to_remove a set
                 touched.add(a)
             if b not in self.agents_to_remove:
                 touched.add(b)
@@ -329,12 +371,13 @@ class MixtureUpdate:
 
         for edge in self.edges_to_add:
             a, b = edge.site1.agent, edge.site2.agent
-            if a not in self.agents_to_add: # TODO make agents_to_add a set
+            if a not in self.agents_to_add:  # TODO make agents_to_add a set
                 touched.add(a)
             if b not in self.agents_to_add:
                 touched.add(b)
 
         return touched
+
 
 def neighborhood(agents: Iterable[Agent], radius: int) -> set[Agent]:
     """
