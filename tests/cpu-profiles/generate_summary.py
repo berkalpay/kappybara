@@ -17,9 +17,13 @@ if __name__ == "__main__":
     )
 
     # 1. Get ordered commit history from Git
-    git_log = subprocess.check_output(
-        ["git", "log", "--reverse", "--pretty=format:%h"], text=True
+    git_log_raw = subprocess.check_output(
+        ["git", "log", "--reverse", "--pretty=format:%h %s"], text=True
     ).splitlines()
+
+    git_log_raw = [l.split(" ", 1) for l in git_log_raw]
+    git_log = [l[0] for l in git_log_raw]
+    git_log_msgs = {l[0]: l[1] for l in git_log_raw}
 
     branch_name = subprocess.check_output(
         ["git", "branch", "--show-current"], text=True
@@ -78,6 +82,7 @@ if __name__ == "__main__":
     linked_hashes = [
         f'<a href="{base_url}/commit/{h}">{h[:7]}</a>' for h in profiled_commits
     ]
+    commit_msgs_json = json.dumps([git_log_msgs[c] for c in profiled_commits])
 
     # Prepare runtime data
     runtime_data = []
@@ -89,13 +94,13 @@ if __name__ == "__main__":
                 "name": name,
                 "mode": "lines+markers",
                 "connectgaps": False,
-                "text": short_hashes,
+                "text": [f"{h}, {git_log_msgs[h]}" for h in short_hashes],
                 "customdata": [
                     # f"{base_url}/raw/{PERF_DATA_BRANCH}/{commit_dirs[h]}/profile_{name}_flamegraph.svg"
                     f"{commit_dirs[h]}/profile_{name}_flamegraph.svg"
                     for h in profiled_commits
                 ],
-                "hovertemplate": f"<b>%{{text}}</b><br><b>Runtime: %{{y:.4f}}s</b><br>(Click to open flamegraph)",
+                "hovertemplate": f"<b>%{{text}}</b><br>Runtime: %{{y:.4f}}s<br>(Click to open flamegraph)",
                 "marker": {"size": 12},
             }
         )
@@ -111,7 +116,7 @@ if __name__ == "__main__":
                 "name": name,
                 "mode": "lines+markers",
                 "connectgaps": False,
-                "text": short_hashes,
+                "text": [f"{h}, {git_log_msgs[h]}" for h in short_hashes],
                 "customdata": [
                     f"{commit_dirs[h]}/profile_{name}_memplot.png"
                     for h in profiled_commits
@@ -148,6 +153,7 @@ if __name__ == "__main__":
             // Shared configuration
             const commitHashes = {commit_hashes_json};
             const shortHashes = {json.dumps(linked_hashes)};
+            const commitMsgs = {commit_msgs_json};
             const plotConfig = {{responsive: true}};
 
             // Runtime data and plot
@@ -163,6 +169,8 @@ if __name__ == "__main__":
                     tickmode: 'array',
                     tickvals: commitHashes,
                     ticktext: shortHashes,
+                    hoverformat: '%{{text}}',
+                    hovertext: commitMsgs,
                 }},
                 yaxis: {{ title: 'Runtime (s)',
                         rangemode: 'tozero'}},
