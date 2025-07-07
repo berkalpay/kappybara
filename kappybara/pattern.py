@@ -185,7 +185,7 @@ class Agent(Counted):
 
 class Embedding(dict[Agent, Agent]):
     def __hash__(self):
-        return id(self)
+        return hash(frozenset(self.items()))
 
     def __repr__(self):
         return f"Embedding({', '.join(f"{a.id}: {self[a].id}" for a in self)})"

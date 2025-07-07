@@ -59,7 +59,9 @@ class IndexedSet(set[T], Generic[T]):
         self.indices = {}
 
     def add(self, item: T):
-        assert item not in self
+        if item in self:
+            return
+
         super().add(item)
 
         # Update integer index
