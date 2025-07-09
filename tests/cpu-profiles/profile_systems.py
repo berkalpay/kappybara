@@ -4,5 +4,5 @@ from kappybara.examples import heterodimerization_system
 
 if __name__ == "__main__":
     system = heterodimerization_system(2.5e9, kappa.component("A(x[1]),B(x[1])"))
-    while system.time < 100:
+    while system.time < 2:
         system.update()
