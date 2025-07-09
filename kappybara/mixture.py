@@ -28,7 +28,7 @@ class Mixture:
     agents_by_type: defaultdict[str, list[Agent]]
     match_patterns: set[Component]
 
-    _embeddings: dict[Component, list[Embedding]]
+    _embeddings: dict[Component, set[Embedding]]
     _embeddings_by_component: dict[Component, dict[Component, list[Embedding]]]
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
@@ -36,7 +36,7 @@ class Mixture:
         self.components = set()
         self.agents_by_type = defaultdict(list)
         self.match_patterns = set()
-        self._embeddings = defaultdict(list)
+        self._embeddings = defaultdict(set)
         self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
 
         if patterns is not None:
@@ -77,7 +77,9 @@ class Mixture:
     def _remove_embeddings(self, component: Component) -> None:
         for match_pattern in self.match_patterns:
             for embedding in self._embeddings_by_component[component][match_pattern]:
-                self._embeddings[match_pattern].remove(embedding)
+                self._embeddings[match_pattern].discard(
+                    embedding
+                )  # TODO: should be remove
         if component in self._embeddings_by_component:
             del self._embeddings_by_component[component]
 
@@ -102,7 +104,7 @@ class Mixture:
                 self._embeddings_by_component[next(iter(embedding.values())).component][
                     component
                 ].append(embedding)
-            self._embeddings[component] = embeddings
+            self._embeddings[component].update(embeddings)
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
@@ -131,7 +133,7 @@ class Mixture:
         )
         self._embeddings_by_component[mixture_component] = new_embeddings
         for match_pattern in self.match_patterns:
-            self._embeddings[match_pattern].extend(new_embeddings[match_pattern])
+            self._embeddings[match_pattern].update(new_embeddings[match_pattern])
 
     def _add_agent(self, agent: Agent) -> None:
         """
