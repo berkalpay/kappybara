@@ -77,7 +77,7 @@ class KappaRule(Rule):
             assert (
                 len(component_embeddings) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
-            component_embedding = random.choice(component_embeddings)
+            component_embedding = random.choice(tuple(component_embeddings))
 
             for rule_agent in component_embedding:
                 mixture_agent = component_embedding[rule_agent]
