@@ -70,6 +70,16 @@ class Mixture:
         self.apply_update(update)
         # TODO: Update APSP
 
+    def track_component(self, component: Component) -> None:
+        if component not in self.match_patterns:
+            self.match_patterns.add(component)
+            embeddings = list(component.embeddings(self))
+            for embedding in embeddings:
+                self.embeddings_in_component[next(iter(embedding.values())).component][
+                    component
+                ].append(embedding)
+            self.embeddings[component].update(embeddings)
+
     def remove(self, component: Component) -> None:
         self.components.remove(component)
         self._remove_embeddings(component)
@@ -83,15 +93,18 @@ class Mixture:
         if component in self.embeddings_in_component:
             del self.embeddings_in_component[component]
 
-    def track_component(self, component: Component) -> None:
-        if component not in self.match_patterns:
-            self.match_patterns.add(component)
-            embeddings = list(component.embeddings(self))
-            for embedding in embeddings:
-                self.embeddings_in_component[next(iter(embedding.values())).component][
-                    component
-                ].append(embedding)
-            self.embeddings[component].update(embeddings)
+    def _update_embeddings(self, mixture_component: Component) -> None:
+        self._remove_embeddings(mixture_component)
+        new_embeddings = defaultdict(
+            list,
+            {
+                match_pattern: list(match_pattern.embeddings(mixture_component))
+                for match_pattern in self.match_patterns
+            },
+        )
+        self.embeddings_in_component[mixture_component] = new_embeddings
+        for match_pattern in self.match_patterns:
+            self.embeddings[match_pattern].update(new_embeddings[match_pattern])
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
@@ -108,19 +121,6 @@ class Mixture:
             self._add_edge(edge)
         for agent in update.agents_changed:
             self._change_agent(agent)
-
-    def _update_embeddings(self, mixture_component: Component) -> None:
-        self._remove_embeddings(mixture_component)
-        new_embeddings = defaultdict(
-            list,
-            {
-                match_pattern: list(match_pattern.embeddings(mixture_component))
-                for match_pattern in self.match_patterns
-            },
-        )
-        self.embeddings_in_component[mixture_component] = new_embeddings
-        for match_pattern in self.match_patterns:
-            self.embeddings[match_pattern].update(new_embeddings[match_pattern])
 
     def _add_agent(self, agent: Agent) -> None:
         """
