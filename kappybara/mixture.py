@@ -87,9 +87,7 @@ class Mixture:
     def _remove_embeddings(self, component: Component) -> None:
         for match_pattern in self.match_patterns:
             for embedding in self.embeddings_in_component[component][match_pattern]:
-                self.embeddings[match_pattern].discard(
-                    embedding
-                )  # TODO: should be remove
+                self.embeddings[match_pattern].remove(embedding)
         if component in self.embeddings_in_component:
             del self.embeddings_in_component[component]
 
@@ -193,8 +191,10 @@ class Mixture:
             for agent in maybe_new_component:
                 old_component.remove(agent)
                 agent.component = maybe_new_component
+            self._update_embeddings(old_component)
             self._update_embeddings(maybe_new_component)
-        self._update_embeddings(old_component)
+        else:
+            self._update_embeddings(old_component)
 
     def _change_agent(self, agent: Agent) -> None:
         self._update_embeddings(agent.component)
