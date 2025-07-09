@@ -44,7 +44,7 @@ class System:
         Ismorphic components aren't recognized.
         """
         assert type(obs) is Component
-        return len(self.mixture.embeddings(obs))
+        return len(self.mixture.embeddings[obs])
 
     @cached_property
     def rule_reactivities(self) -> list[float]:

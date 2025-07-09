@@ -60,7 +60,7 @@ class KappaRule(Rule):
 
     def n_embeddings(self, mixture: Mixture) -> int:
         return prod(
-            len(mixture.embeddings(component)) for component in self.left.components
+            len(mixture.embeddings[component]) for component in self.left.components
         )
 
     def select(self, mixture: Mixture) -> Optional[MixtureUpdate]:
@@ -73,7 +73,7 @@ class KappaRule(Rule):
         rule_embedding: dict[Agent, Agent] = {}
 
         for component in self.left.components:
-            component_embeddings = mixture.embeddings(component)
+            component_embeddings = mixture.embeddings[component]
             assert (
                 len(component_embeddings) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
@@ -168,7 +168,7 @@ class KappaRuleUnimolecular(KappaRule):
         self.component_weights = {}
         for component in mixture.components:
             weight = prod(
-                len(mixture.embeddings_in_component(match_component, component))
+                len(mixture.embeddings_in_component[component][match_component])
                 for match_component in self.left.components
             )
             self.component_weights[component] = weight
@@ -186,7 +186,7 @@ class KappaRuleUnimolecular(KappaRule):
 
         selection_map: dict[Agent, Agent] = {}
         for component in self.left.components:
-            choices = mixture.embeddings_in_component(component, selected_component)
+            choices = mixture.embeddings_in_component[selected_component][component]
             assert (
                 len(choices) > 0
             ), f"A rule with no valid embeddings was selected: {self}"
@@ -218,10 +218,10 @@ class KappaRuleBimolecular(KappaRule):
 
         for component in mixture.components:
             n_match1 = len(
-                mixture.embeddings_in_component(self.left.components[0], component)
+                mixture.embeddings_in_component[component][self.left.components[0]]
             )
-            n_match2 = len(mixture.embeddings(self.left.components[1])) - len(
-                mixture.embeddings_in_component(self.left.components[1], component)
+            n_match2 = len(mixture.embeddings[self.left.components[1]]) - len(
+                mixture.embeddings_in_component[component][self.left.components[1]]
             )  # Embed this part of the rule outside the component
 
             weight = n_match1 * n_match2
@@ -240,13 +240,13 @@ class KappaRuleBimolecular(KappaRule):
         selected_component = random.choices(components_ordered, weights)[0]
 
         match1 = random.choice(
-            mixture.embeddings_in_component(self.left.components[0], selected_component)
+            mixture.embeddings_in_component[selected_component][self.left.components[0]]
         )
         match2 = rejection_sample(
-            mixture.embeddings(self.left.components[1]),
-            mixture.embeddings_in_component(
-                self.left.components[1], selected_component
-            ),
+            mixture.embeddings[self.left.components[1]],
+            mixture.embeddings_in_component[selected_component][
+                self.left.components[1]
+            ],
         )  # Embed this part of the rule outside the component
 
         return self._produce_update(match1 | match2, mixture)

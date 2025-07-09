@@ -28,16 +28,16 @@ class Mixture:
     agents_by_type: defaultdict[str, list[Agent]]
     match_patterns: set[Component]
 
-    _embeddings: dict[Component, set[Embedding]]
-    _embeddings_by_component: dict[Component, dict[Component, list[Embedding]]]
+    embeddings: dict[Component, set[Embedding]]
+    embeddings_in_component: dict[Component, dict[Component, list[Embedding]]]
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = set()
         self.components = set()
         self.agents_by_type = defaultdict(list)
         self.match_patterns = set()
-        self._embeddings = defaultdict(set)
-        self._embeddings_by_component = defaultdict(lambda: defaultdict(list))
+        self.embeddings = defaultdict(set)
+        self.embeddings_in_component = defaultdict(lambda: defaultdict(list))
 
         if patterns is not None:
             for pattern in patterns:
@@ -76,35 +76,22 @@ class Mixture:
 
     def _remove_embeddings(self, component: Component) -> None:
         for match_pattern in self.match_patterns:
-            for embedding in self._embeddings_by_component[component][match_pattern]:
-                self._embeddings[match_pattern].discard(
+            for embedding in self.embeddings_in_component[component][match_pattern]:
+                self.embeddings[match_pattern].discard(
                     embedding
                 )  # TODO: should be remove
-        if component in self._embeddings_by_component:
-            del self._embeddings_by_component[component]
-
-    def embeddings(self, component: Component) -> set[Embedding]:
-        try:
-            return self._embeddings[component]
-        except KeyError:
-            assert (
-                False
-            ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
-
-    def embeddings_in_component(
-        self, match_pattern: Component, mixture_component: Component
-    ) -> list[Embedding]:
-        return self._embeddings_by_component[mixture_component][match_pattern]
+        if component in self.embeddings_in_component:
+            del self.embeddings_in_component[component]
 
     def track_component(self, component: Component) -> None:
         if component not in self.match_patterns:
             self.match_patterns.add(component)
             embeddings = list(component.embeddings(self))
             for embedding in embeddings:
-                self._embeddings_by_component[next(iter(embedding.values())).component][
+                self.embeddings_in_component[next(iter(embedding.values())).component][
                     component
                 ].append(embedding)
-            self._embeddings[component].update(embeddings)
+            self.embeddings[component].update(embeddings)
 
     def apply_update(self, update: "MixtureUpdate") -> None:
         """
@@ -131,9 +118,9 @@ class Mixture:
                 for match_pattern in self.match_patterns
             },
         )
-        self._embeddings_by_component[mixture_component] = new_embeddings
+        self.embeddings_in_component[mixture_component] = new_embeddings
         for match_pattern in self.match_patterns:
-            self._embeddings[match_pattern].update(new_embeddings[match_pattern])
+            self.embeddings[match_pattern].update(new_embeddings[match_pattern])
 
     def _add_agent(self, agent: Agent) -> None:
         """
