@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, UserDict
 from functools import cached_property
 from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
@@ -183,7 +183,18 @@ class Agent(Counted):
         return True
 
 
-Embedding = dict[Agent, Agent]
+class Embedding(dict):
+    @cached_property
+    def as_tuple(self) -> tuple:
+        return tuple(self.items())
+
+    def __setitem__(self, key, new):
+        if "as_tuple" in self.__dict__:
+            assert False
+        super().__setitem__(key, new)
+
+    def __hash__(self):
+        return hash(self.as_tuple)
 
 
 class Component(Counted):
@@ -264,7 +275,7 @@ class Component(Counted):
         # Narrow the search by mapping `a_root` to agents in `other` of the same type
         for b_root in other.agents_by_type[a_root.type]:
 
-            agent_map = {a_root: b_root}  # The potential bijection
+            agent_map = Embedding({a_root: b_root})  # The potential bijection
             frontier = {a_root}
             root_failed = False
 
