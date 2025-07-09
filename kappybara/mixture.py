@@ -83,9 +83,9 @@ class Mixture:
         if component in self._embeddings_by_component:
             del self._embeddings_by_component[component]
 
-    def embeddings(self, component: Component) -> list[Embedding]:
+    def embeddings(self, component: Component) -> set[Embedding]:
         try:
-            return list(self._embeddings[component])
+            return self._embeddings[component]
         except KeyError:
             assert (
                 False
