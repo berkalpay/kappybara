@@ -1,4 +1,4 @@
-from collections import defaultdict, UserDict
+from collections import defaultdict
 from functools import cached_property
 from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
@@ -190,7 +190,9 @@ class Embedding(dict):
 
     def __setitem__(self, key, new):
         if "as_tuple" in self.__dict__:
-            assert False
+            assert TypeError(
+                "The embedding has been accessed as a tuple and should not be mutated"
+            )
         super().__setitem__(key, new)
 
     def __hash__(self):
