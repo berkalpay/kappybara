@@ -173,23 +173,3 @@ def test_simple_bimolecular_rule_application(n_copies):
         system.mixture.apply_update(update)
         assert rule1.n_embeddings(mixture) == 2 * comb(n_copies - 2 * i, 2)
         assert system.count_observable(observables[0]) == i
-
-
-def debug_mixture(mixture: Mixture):
-    print(
-        "====================================================================================="
-    )
-    print("Mixture agents:")
-    print(system.mixture.agents)
-
-    print("\n Mixture components: ", system.mixture.components, "\n")
-    for component in system.mixture._embeddings_by_component:
-        cache = system.mixture._embeddings_by_component[component]
-        print("Mixture component: ", component)
-        for p in cache:
-            print("Pattern component: ", p, " with matches:")
-            print(cache[p])
-        print()
-    print(
-        "====================================================================================="
-    )
