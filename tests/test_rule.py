@@ -87,10 +87,6 @@ def test_rule_application():
     """
     Test selection/application of a slightly more involved KappaRule in a mixture.
 
-    TODO: Checks on statistical uniformity of rule.select over valid embeddings (i.e. sample
-    rule.select a bunch of times and check that the distribution is properly uniform over all
-    possible embeddings).
-
     TODO: Support for empty slots (".") in pattern strings when instantiating from Lark.
     TODO: Supporting agent interfaces so we know a master list of sites for agents to be able to initialize defaults.
     """
@@ -177,14 +173,6 @@ def test_simple_bimolecular_rule_application(n_copies):
         system.mixture.apply_update(update)
         assert rule1.n_embeddings(mixture) == 2 * comb(n_copies - 2 * i, 2)
         assert system.count_observable(observables[0]) == i
-
-
-# TODO: for unimolecular rules, assert all selected agents are in the same component
-# component = mixture.component_index[next(iter(selection_map.values()))]
-# for agent in selection_map.values():
-#     assert component == mixture.component_index[agent]
-
-# TODO: for bimolecular rules, assert selected agents aren't in the same component
 
 
 def debug_mixture(mixture: Mixture):
