@@ -10,82 +10,32 @@ import kappybara.kappa as kappa
 @pytest.mark.parametrize(
     "test_case",
     [
-        ("A(), B()", 10, "B(), A()", 100),
-        ("A()", 10, "A(), A()", 100),  # No automorphism checks currently
-        ("A(a[1]), B(b[1]), C()", 10, "A(a[1]), B(b[1]), C()", 100),
-        ("A(a[1]), B(b[1]), C()", 10, "A(), B(), C()", 1000),
+        ("A(), B()", 10, KappaRule, "B(), A()", 100),
+        ("A(), B()", 10, KappaRuleUnimolecular, "B(), A()", 0),
+        ("A(), B()", 10, KappaRuleBimolecular, "B(), A()", 100),
+        ("A()", 10, KappaRule, "A(), A()", 100),  # No automorphism checks currently
+        ("A(a[1]), B(b[1]), C()", 10, KappaRule, "A(a[1]), B(b[1]), C()", 100),
+        ("A(a[1]), B(b[1]), C()", 10, KappaRule, "A(), B(), C()", 1000),
+        ("A(a[1]), B(b[1])", 10, KappaRuleUnimolecular, "B(), A()", 10),
+        ("A(a[1]), B(b[1])", 10, KappaRuleBimolecular, "B(), A()", 90),
+        (
+            "A(a1[1]), B(b1[1], b2[2]), B(b1[2], b2[3]) A(a2[3])",
+            10,
+            KappaRuleUnimolecular,
+            "B(), A()",
+            40,
+        ),
     ],
 )
-def test_basic_rule_n_embeddings(test_case):
-    """
-    Test embeddings of a basic KappaRule into a mixture
-    """
-
-    mixture_pattern_str, n_copies, rule_pattern_str, n_embeddings_expected = test_case
-    mixture_pattern = kappa.pattern(mixture_pattern_str)
-
-    mixture = Mixture([mixture_pattern] * n_copies)
-    # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
-
+def test_rule_n_embeddings_at_system_initialiation(test_case):
+    (mixture_pattern_str, n_copies, rule_class, rule_pattern_str, n_embeddings) = (
+        test_case
+    )
+    mixture = Mixture([kappa.pattern(mixture_pattern_str)] * n_copies)
     rule_pattern = kappa.pattern(rule_pattern_str)
-    rule = KappaRule(rule_pattern, rule_pattern, 1.0)
-
+    rule = rule_class(rule_pattern, rule_pattern, 1.0)
     system = System(mixture, [rule])
-
-    assert rule.n_embeddings(system.mixture) == n_embeddings_expected
-
-
-@pytest.mark.parametrize(
-    "test_case",
-    [
-        ("A(), B()", 10, "B(), A()", 0),
-        ("A(a[1]), B(b[1])", 10, "B(), A()", 10),
-        ("A(a1[1]), B(b1[1], b2[2]), B(b1[2], b2[3]) A(a2[3])", 10, "B(), A()", 40),
-    ],
-)
-def test_unimolecular_rule_n_embeddings(test_case):
-    """
-    Test embeddings of a basic KappaRule into a mixture
-    """
-
-    mixture_pattern_str, n_copies, rule_pattern_str, n_embeddings_expected = test_case
-    mixture_pattern = kappa.pattern(mixture_pattern_str)
-
-    mixture = Mixture([mixture_pattern] * n_copies)
-    # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
-
-    rule_pattern = kappa.pattern(rule_pattern_str)
-    rule = KappaRuleUnimolecular(rule_pattern, rule_pattern, 1.0)
-
-    system = System(mixture, [rule])
-
-    assert rule.n_embeddings(system.mixture) == n_embeddings_expected
-
-
-@pytest.mark.parametrize(
-    "test_case",
-    [
-        ("A(), B()", 10, "B(), A()", 100),
-        ("A(a[1]), B(b[1])", 10, "B(), A()", 90),
-    ],
-)
-def test_bimolecular_rule_n_embeddings(test_case):
-    """
-    Test embeddings of a basic KappaRule into a mixture
-    """
-
-    mixture_pattern_str, n_copies, rule_pattern_str, n_embeddings_expected = test_case
-    mixture_pattern = kappa.pattern(mixture_pattern_str)
-
-    mixture = Mixture([mixture_pattern] * n_copies)
-    # mixture.instantiate(mixture_pattern, n_copies) # This call won't work as intended right now
-
-    rule_pattern = kappa.pattern(rule_pattern_str)
-    rule = KappaRuleBimolecular(rule_pattern, rule_pattern, 1.0)
-
-    system = System(mixture, [rule])
-
-    assert rule.n_embeddings(system.mixture) == n_embeddings_expected
+    assert rule.n_embeddings(system.mixture) == n_embeddings
 
 
 def test_simple_rule_application():
