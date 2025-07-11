@@ -1,0 +1,94 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>apply-update-refactor performance log</title>
+        <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            .plot-container { width: 100%; height: 600px; margin-bottom: 40px; }
+            /* Change cursor to pointer for plot points */
+            .cursor-pointer .nsewdrag, .cursor-pointer .nsewdrag drag {
+                cursor: pointer !important;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Performance log, branch <a href="https://github.com/berkalpay/kappybara/tree/apply-update-refactor">apply-update-refactor</a></h1>
+
+        <div class="plot-container" id="runtimePlot"></div>
+        <div class="plot-container" id="memoryPlot"></div>
+
+        <script>
+            // Shared configuration
+            const commitHashes = ["3a5d9d9", "668e3cc"];
+            const shortHashes = ["<a href=\"https://github.com/berkalpay/kappybara/commit/3a5d9d9\">3a5d9d9</a>", "<a href=\"https://github.com/berkalpay/kappybara/commit/668e3cc\">668e3cc</a>"];
+            const commitMsgs = ["ci: fix+refactor profiling", "mixture: fix component index update for embeddings"];
+            const plotConfig = {responsive: true};
+
+            // Runtime data and plot
+            const runtimeData = [{"x": ["3a5d9d9", "668e3cc"], "y": [48.461251974105835, 0.731487512588501], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_heterodimerization_small_flamegraph.svg", "2025_07_11_commit_668e3cc/profile_heterodimerization_small_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br>Runtime: %{y:.4f}s<br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [92.35904026031494, 8.24023151397705], "name": "ktam", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_ktam_flamegraph.svg", "2025_07_11_commit_668e3cc/profile_ktam_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br>Runtime: %{y:.4f}s<br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [96.64002466201782, 16.923946619033813], "name": "uni_bi_small", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_uni_bi_small_flamegraph.svg", "2025_07_11_commit_668e3cc/profile_uni_bi_small_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br>Runtime: %{y:.4f}s<br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [0.9942505359649658], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_dummy_flamegraph.svg", "2025_07_11_commit_668e3cc/profile_dummy_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br>Runtime: %{y:.4f}s<br>(Click to open flamegraph)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [2.1497840881347656], "name": "uni_bi_disperse", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_uni_bi_disperse_flamegraph.svg", "2025_07_11_commit_668e3cc/profile_uni_bi_disperse_flamegraph.svg"], "hovertemplate": "<b>%{text}</b><br>Runtime: %{y:.4f}s<br>(Click to open flamegraph)", "marker": {"size": 12}}];
+
+            Plotly.newPlot('runtimePlot', runtimeData, {
+                title: 'Runtime (seconds)',
+                titlefont: { size: 30, weight: 'bold' },
+                xaxis: {
+                    title: 'Commit Hash',
+                    type: 'category',
+                    tickangle: -45,
+                    tickmode: 'array',
+                    tickvals: commitHashes,
+                    ticktext: shortHashes,
+                    hoverformat: '%{text}',
+                    hovertext: commitMsgs,
+                },
+                yaxis: { title: 'Runtime (s)',
+                        rangemode: 'tozero'},
+                hovermode: 'closest',
+                showlegend: true
+            }, plotConfig);
+
+            // Memory data and plot
+            const memoryData = [{"x": ["3a5d9d9", "668e3cc"], "y": [33.746094, 34.617188], "name": "heterodimerization_small", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_heterodimerization_small_memplot.png", "2025_07_11_commit_668e3cc/profile_heterodimerization_small_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [29.207031, 29.882812], "name": "ktam", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_ktam_memplot.png", "2025_07_11_commit_668e3cc/profile_ktam_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [29.632812, 31.761719], "name": "uni_bi_small", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_uni_bi_small_memplot.png", "2025_07_11_commit_668e3cc/profile_uni_bi_small_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [22.96875], "name": "dummy", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_dummy_memplot.png", "2025_07_11_commit_668e3cc/profile_dummy_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}, {"x": ["3a5d9d9", "668e3cc"], "y": [128.863281], "name": "uni_bi_disperse", "mode": "lines+markers", "connectgaps": false, "text": ["3a5d9d9, ci: fix+refactor profiling", "668e3cc, mixture: fix component index update for embeddings"], "customdata": ["2025_07_07_commit_3a5d9d9/profile_uni_bi_disperse_memplot.png", "2025_07_11_commit_668e3cc/profile_uni_bi_disperse_memplot.png"], "hovertemplate": "<b>%{text}</b><br><b>Peak Memory: %{y:.2f} MB</b><br>(Click to open memory usage plot)", "marker": {"size": 12}}];
+            memoryData.forEach(trace => trace.marker = {size: 12});
+
+            Plotly.newPlot('memoryPlot', memoryData, {
+                title: 'Peak Memory Usage (MB)',
+                titlefont: { size: 30, weight: 'bold' },
+                xaxis: {
+                    title: 'Commit Hash',
+                    type: 'category',
+                    tickangle: -45,
+                    tickmode: 'array',
+                    tickvals: commitHashes,
+                    ticktext: shortHashes,
+                },
+                yaxis: { title: 'Peak Memory (MB)',
+                        rangemode: 'tozero'},
+                hovermode: 'closest',
+                showlegend: true
+            }, plotConfig);
+
+            ['runtimePlot', 'memoryPlot'].forEach(plotId => {
+                const plot = document.getElementById(plotId);
+
+                // Change cursor on hover
+                plot.on('plotly_hover', function(data) {
+                    plot.classList.add('cursor-pointer');
+                });
+
+                // Revert cursor when not hovering
+                plot.on('plotly_unhover', function(data) {
+                    plot.classList.remove('cursor-pointer');
+                });
+
+                // Click handler
+                plot.on('plotly_click', function(data) {
+                    const url = data.points[0].customdata;
+                    if (url) window.open(url, '_blank');
+                });
+            });
+        </script>
+    </body>
+    </html>
+    
