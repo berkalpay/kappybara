@@ -226,15 +226,23 @@ class RuleBuilder(Visitor):
             case "ambi_rule":
                 # TODO: check that the order of the rates is right
                 assert len(rates) == 2
-                if rates[0].evaluate() != 0:
+                try:
+                    assert rates[0].evaluate() == 0
+                except:
                     rules.append(KappaRuleBimolecular(left, right, rates[0]))
-                if rates[1].evaluate() != 0:
+                try:
+                    assert rates[1].evaluate() == 0
+                except:
                     rules.append(KappaRuleUnimolecular(left, right, rates[1]))
             case "ambi_fr_rule":
                 assert len(rates) == 3
-                if rates[0].evaluate() != 0:
+                try:
+                    assert rates[0].evaluate() == 0
+                except:
                     rules.append(KappaRuleBimolecular(left, right, rates[0]))
-                if rates[1].evaluate() != 0:
+                try:
+                    assert rates[1].evaluate() == 0
+                except:
                     rules.append(KappaRuleUnimolecular(left, right, rates[1]))
                 rules.append(KappaRule(right, left, rates[2]))
 
@@ -257,8 +265,12 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
 
     def algebraic_expression(self, children):
         children = [self.transform(c) for c in children]
-        assert len(children) == 1
-        return children[0]
+        if len(children) == 1:
+            return children[0]
+        elif len(children) == 3 and children[0] == "(" and children[2] == ")":
+            return children[1]
+        else:
+            raise Exception(f"Invalid algebraic expression: {children}")
 
     # --- Literals ---
     def SIGNED_FLOAT(self, token):
