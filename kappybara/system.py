@@ -89,7 +89,9 @@ class KappaSystem(System):
     ):
 
         if mixture is None:
-            if any(type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular] for r in rules):
+            if any(
+                type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular] for r in rules
+            ):
                 mixture = ComponentMixture()
                 print("Created ComponentMixture")
             else:

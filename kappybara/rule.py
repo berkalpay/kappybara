@@ -163,9 +163,13 @@ class KappaRule(Rule):
                         update.connect_sites(site, partner)
                     case ".":
                         update.disconnect_site(site)
-                    case x if x != "?":
+                    case x if (
+                        x != "?"
+                        and self.left.agents[i]
+                        and x != self.left.agents[i][r_site.label].partner
+                    ):
                         raise TypeError(
-                            f"Site partners of type {x} are unsupported for right-hand rule patterns."
+                            f"Site partners of type {x} are unsupported for right-hand rule patterns, unless they remain unchanged from the left-hand side."
                         )
 
         return update

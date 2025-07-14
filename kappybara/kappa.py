@@ -155,7 +155,7 @@ def system(kappa_str: str) -> KappaSystem:
     system = KappaSystem(None, rules, observables, variables)
 
     for init in inits:
-        amount = init[0].evaluate(system)
+        amount = int(init[0].evaluate(system))
         pattern = init[1]
         system.mixture.instantiate(pattern, amount)
 
