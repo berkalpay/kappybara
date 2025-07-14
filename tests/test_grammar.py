@@ -9,29 +9,17 @@ import kappybara.kappa as kappa
 # Parser
 
 
-def test_parse_file():
-    """
-    NOTE: This currently doesn't actually test anything besides
-    the parser not breaking on the first pass.
-    """
-    kappa_file_path = str(Path(__file__).parent / "wnt_v8.ka")
-
-    kappa_parser.parse_file(kappa_file_path)
-    n_rules_expected = 121
-    n_agents_expected = 10
+def test_parse_file_without_error():
+    kappa_parser.parse_file(
+        str(Path(__file__).parent / "wnt_v8.ka")
+    )  # 121 rules, 10 agents
 
 
-def test_parse():
-    test_kappa = """
-    A(s[.]), S(a[.]) -> A(s[1]), S(a[1])    @	1
-    """
-
-    test_kappa = """
-    A(s[.])
-    """
-
-    ka = kappa_parser.parse(test_kappa)
-    print(ka)
+@pytest.mark.parametrize(
+    "test_kappa", ["A(s[.]), S(a[.]) -> A(s[1]), S(a[1])    @	1", "A(s[.])"]
+)
+def test_parse_without_error(test_kappa):
+    kappa_parser.parse(test_kappa)
 
 
 # Patterns
@@ -46,42 +34,30 @@ def test_pattern_from_kappa():
         E()
     """
     pattern = kappa.pattern(test_kappa)
-
-    assert ["A", "B", "C", "D", "E"] == list(
-        map(lambda agent: agent.type, pattern.agents)
-    )
-    assert ["a", "b", "c", "d", "e"] == list(
-        map(lambda site: site.label, pattern.agents[0])
-    )
+    assert ["A", "B", "C", "D", "E"] == [agent.type for agent in pattern.agents]
+    assert ["a", "b", "c", "d", "e"] == [site.label for site in pattern.agents[0]]
     assert len(pattern.components) == 2
 
 
 # Rules
 
 
-def test_rule_from_kappa():
-    rule_str = "A(a{p}), B(), . -> A(a{u}), B(), C() @ 1.0"
-
-    rules = kappa.rules(rule_str)
-    assert len(rules) == 1
-
-
 @pytest.mark.parametrize(
-    "rule_str",
+    "rule_str,rule_len",
     [
-        "A(a{p}), B(), . <-> A(a{u}), B(), C() @ 1.0, 2.0",
-        "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 100.0, 1.0",
+        ("A(a{p}), B(), . -> A(a{u}), B(), C() @ 1.0", 1),
+        ("A(a{p}), B(), . <-> A(a{u}), B(), C() @ 1.0, 2.0", 2),
+        ("A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 100.0, 1.0", 2),
     ],
 )
-def test_fr_rule_from_kappa(rule_str):
-    rules = kappa.rules(rule_str)
-    assert len(rules) == 2
+def test_rule_len_from_kappa(rule_str, rule_len):
+    assert len(kappa.rules(rule_str)) == rule_len
 
 
 def test_ambi_rule_from_kappa():
-    rule_str = "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}"
-
-    rules = kappa.rules(rule_str)
+    rules = kappa.rules(
+        "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}"
+    )
     assert len(rules) == 2
     assert isinstance(rules[0], KappaRuleBimolecular)
     assert isinstance(rules[1], KappaRuleUnimolecular)
@@ -90,29 +66,27 @@ def test_ambi_rule_from_kappa():
 
 
 def test_uni_rule_from_kappa():
-    rule_str = "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 0.0 {2.0}"
-
-    rules = kappa.rules(rule_str)
+    rules = kappa.rules(
+        "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 0.0 {2.0}"
+    )
     assert len(rules) == 1
     assert isinstance(rules[0], KappaRuleUnimolecular)
     assert rules[0].stochastic_rate.evaluate() == 2.0
 
 
 def test_bi_rule_from_kappa():
-    rule_str = "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {0.0}"
-
-    rules = kappa.rules(rule_str)
+    rules = kappa.rules(
+        "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {0.0}"
+    )
     assert len(rules) == 1
     assert isinstance(rules[0], KappaRuleBimolecular)
     assert rules[0].stochastic_rate.evaluate() == 1.0
 
 
 def test_ambi_fr_rule_from_kappa():
-    rule_str = (
+    rules = kappa.rules(
         "A(a{p}), B(b[1]), C(c[1]) <-> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}, 3.0"
     )
-
-    rules = kappa.rules(rule_str)
     assert len(rules) == 3
     assert isinstance(rules[0], KappaRuleBimolecular)
     assert isinstance(rules[1], KappaRuleUnimolecular)
@@ -125,7 +99,8 @@ def test_ambi_fr_rule_from_kappa():
 
 
 def test_system_from_kappa():
-    system_str = """
+    system = kappa.system(
+        """
     %def: "maxConsecutiveClash" "20"
     %def: "seed" "365457"
 
@@ -146,20 +121,15 @@ def test_system_from_kappa():
 
     A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
     """
-
-    system: KappaSystem = kappa.system(system_str)
-
+    )
     n = system.eval_variable("n")
     assert n == 300
-
     assert system.eval_variable("g_on") == 0.003
     assert len(system.mixture.components) == n
     assert system.eval_observable("A_total") == n
 
     for i in range(1, n):
-        system.wait()
-        system.act()
-
+        system.update()
         assert system.eval_observable("A_total") == n
         assert system.eval_observable("A_u") == i
         assert system.eval_observable("B_u") == n
