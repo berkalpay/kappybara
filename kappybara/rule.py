@@ -22,9 +22,9 @@ ROOM_TEMPERATURE = 273.15 + 25
 
 
 def kinetic_to_stochastic_on_rate(
-    k_on: float = DIFFUSION_RATE, volume: float = 1, order: int = 2
+    k_on: float = DIFFUSION_RATE, volume: float = 1, molecularity: int = 2
 ) -> float:
-    return k_on / (AVOGADRO * volume ** (order - 1))
+    return k_on / (AVOGADRO * volume ** (molecularity - 1))
 
 
 class Rule(ABC):
