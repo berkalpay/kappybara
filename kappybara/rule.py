@@ -13,6 +13,20 @@ if TYPE_CHECKING:
     from kappybara.system import System
 
 
+# Useful constants
+AVOGADRO = 6.02214e23
+DIFFUSION_RATE = 1e9
+KDS = {"weak": 1e-6, "moderate": 1e-7, "strong": 1e-8}
+VOLUMES = {"fibro": 2.25e-12, "yeast": 4.2e-14}
+ROOM_TEMPERATURE = 273.15 + 25
+
+
+def kinetic_to_stochastic_on_rate(
+    k_on: float = DIFFUSION_RATE, volume: float = 1, order: int = 2
+) -> float:
+    return k_on / (AVOGADRO * volume ** (order - 1))
+
+
 class Rule(ABC):
     def reactivity(self, system: "System") -> float:
         return self.n_embeddings(system.mixture) * self.rate(system)
