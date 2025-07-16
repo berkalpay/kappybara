@@ -7,6 +7,28 @@ T = TypeVar("T")  # Member type of `IndexedSet`
 
 
 class SetProperty:
+    """
+    This class should be initialized with a function or lambda which
+    takes a set member as input, and returns a collection or iterable of
+    values associated with that member that you want to index by.
+
+    Example initialization:
+    ```
+    @dataclass
+    class SportsTeam:
+        name: str
+        members: list[str]
+
+    def get_members(team: SportsTeam):
+        return team.members
+
+    members = SetProperty(get_members, is_unique=False) # If someone can belong to multiple teams (default)
+    members_unique = SetProperty(get_members, is_unique=True) # If someone can belong to only one team
+
+    members_alt = SetProperty(lambda team: team.members) # Equivalent to `members`
+    ```
+    """
+
     def __init__(self, fn: Callable[[T], Iterable[Hashable]], is_unique=False):
         self.fn = fn
         self.is_unique = is_unique
@@ -16,6 +38,26 @@ class SetProperty:
 
 
 class Property(SetProperty):
+    """
+    This class should be initialized with a function or lambda which
+    takes a set member as input, and returns a single object which is
+    the corresponding property value of a set member.
+
+    Two alternative examples for initializing a `Property`
+    ```
+    @dataclass
+    class Fruit:
+        color: str
+
+    def get_color(f: Fruit):
+        return f.color
+
+    my_property = Property(get_color)
+
+    my_property_alt = Property(lambda fruit: fruit.color) # Equivalent using a lambda function
+    ```
+    """
+
     def __init__(self, fn: Callable[[T], Hashable], is_unique=False):
         self.fn = fn
         self.is_unique = is_unique
@@ -39,6 +81,32 @@ class IndexedSet(set[T], Generic[T]):
     NOTE: although this class is indexable due to the implementation
     of `__getitem__`, member ordering is not stable across insertions
     and deletions.
+
+    Example usage:
+    ```
+    @dataclass
+    class SportsTeam:
+        name: str
+        jersey_color: str
+        members: list[str]
+
+    def get_members(team: SportsTeam):
+        return team.members
+
+    members = SetProperty(get_members, is_unique=False) # If someone can belong to multiple teams (default)
+    members_unique = SetProperty(get_members, is_unique=True) # If someone can belong to only one team
+
+    teams: IndexedSet[SportsTeam] = IndexedSet()
+    teams.create_index("name", Property(lambda team: team.name, is_unique=True))
+    teams.create_index("members", members_prop)
+    teams.create_index("color", Property(lambda team: team.jersey_color))
+
+    [...] # populate the set with teams
+
+    teams.lookup("members", "Alice") # Returns all `SportsTeam`s that Alice belongs to
+    teams.lookup("color", "blue")    # Returns all teams with blue jerseys
+    teams.lookup("name", "Manchester") # Returns the team whose name is "Manchester"
+    ```
     """
 
     properties: dict[str, SetProperty]
