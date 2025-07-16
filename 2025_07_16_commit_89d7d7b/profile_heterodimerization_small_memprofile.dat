@@ -1,0 +1,5 @@
+CMDLINE /home/runner/work/kappybara/kappybara/.venv/bin/python profile_heterodimerization_small.py
+MEM 0.441406 1752704205.4687
+MEM 24.687500 1752704205.5697
+MEM 29.675781 1752704205.6700
+MEM 30.593750 1752704205.7703
