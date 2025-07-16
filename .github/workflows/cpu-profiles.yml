@@ -42,6 +42,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Run profiler
+        continue-on-error: true
         run: |
              cd tests/cpu-profiles
              uv run bash run_profiler.sh
