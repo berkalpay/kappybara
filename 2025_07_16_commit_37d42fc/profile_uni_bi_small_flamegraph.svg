@@ -1,0 +1,491 @@
+<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg version="1.1" width="1200" height="298" onload="init(evt)" viewBox="0 0 1200 298" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:fg="http://github.com/jonhoo/inferno"><!--Flame graph stack visualization. See https://github.com/brendangregg/FlameGraph for latest version, and http://www.brendangregg.com/flamegraphs.html for examples.--><!--NOTES: --><defs><linearGradient id="background" y1="0" y2="1" x1="0" x2="0"><stop stop-color="#eeeeee" offset="5%"/><stop stop-color="#eeeeb0" offset="95%"/></linearGradient></defs><style type="text/css">
+text { font-family:monospace; font-size:12px }
+#title { text-anchor:middle; font-size:17px; }
+#matched { text-anchor:end; }
+#search { text-anchor:end; opacity:0.1; cursor:pointer; }
+#search:hover, #search.show { opacity:1; }
+#subtitle { text-anchor:middle; font-color:rgb(160,160,160); }
+#unzoom { cursor:pointer; }
+#frames > *:hover { stroke:black; stroke-width:0.5; cursor:pointer; }
+.hide { display:none; }
+.parent { opacity:0.5; }
+</style><script type="text/ecmascript"><![CDATA[
+        var nametype = 'Function:';
+        var fontsize = 12;
+        var fontwidth = 0.59;
+        var xpad = 10;
+        var inverted = true;
+        var searchcolor = 'rgb(230,0,230)';
+        var fluiddrawing = true;
+        var truncate_text_right = false;
+    ]]><![CDATA["use strict";
+var details, searchbtn, unzoombtn, matchedtxt, svg, searching, frames, known_font_width;
+function init(evt) {
+    details = document.getElementById("details").firstChild;
+    searchbtn = document.getElementById("search");
+    unzoombtn = document.getElementById("unzoom");
+    matchedtxt = document.getElementById("matched");
+    svg = document.getElementsByTagName("svg")[0];
+    frames = document.getElementById("frames");
+    known_font_width = get_monospace_width(frames);
+    total_samples = parseInt(frames.attributes.total_samples.value);
+    searching = 0;
+
+    // Use GET parameters to restore a flamegraph's state.
+    var restore_state = function() {
+        var params = get_params();
+        if (params.x && params.y)
+            zoom(find_group(document.querySelector('[*|x="' + params.x + '"][y="' + params.y + '"]')));
+        if (params.s)
+            search(params.s);
+    };
+
+    if (fluiddrawing) {
+        // Make width dynamic so the SVG fits its parent's width.
+        svg.removeAttribute("width");
+        // Edge requires us to have a viewBox that gets updated with size changes.
+        var isEdge = /Edge\/\d./i.test(navigator.userAgent);
+        if (!isEdge) {
+            svg.removeAttribute("viewBox");
+        }
+        var update_for_width_change = function() {
+            if (isEdge) {
+                svg.attributes.viewBox.value = "0 0 " + svg.width.baseVal.value + " " + svg.height.baseVal.value;
+            }
+
+            // Keep consistent padding on left and right of frames container.
+            frames.attributes.width.value = svg.width.baseVal.value - xpad * 2;
+
+            // Text truncation needs to be adjusted for the current width.
+            update_text_for_elements(frames.children);
+
+            // Keep search elements at a fixed distance from right edge.
+            var svgWidth = svg.width.baseVal.value;
+            searchbtn.attributes.x.value = svgWidth - xpad;
+            matchedtxt.attributes.x.value = svgWidth - xpad;
+        };
+        window.addEventListener('resize', function() {
+            update_for_width_change();
+        });
+        // This needs to be done asynchronously for Safari to work.
+        setTimeout(function() {
+            unzoom();
+            update_for_width_change();
+            restore_state();
+        }, 0);
+    } else {
+        restore_state();
+    }
+}
+// event listeners
+window.addEventListener("click", function(e) {
+    var target = find_group(e.target);
+    if (target) {
+        if (target.nodeName == "a") {
+            if (e.ctrlKey === false) return;
+            e.preventDefault();
+        }
+        if (target.classList.contains("parent")) unzoom();
+        zoom(target);
+
+        // set parameters for zoom state
+        var el = target.querySelector("rect");
+        if (el && el.attributes && el.attributes.y && el.attributes["fg:x"]) {
+            var params = get_params()
+            params.x = el.attributes["fg:x"].value;
+            params.y = el.attributes.y.value;
+            history.replaceState(null, null, parse_params(params));
+        }
+    }
+    else if (e.target.id == "unzoom") {
+        unzoom();
+
+        // remove zoom state
+        var params = get_params();
+        if (params.x) delete params.x;
+        if (params.y) delete params.y;
+        history.replaceState(null, null, parse_params(params));
+    }
+    else if (e.target.id == "search") search_prompt();
+}, false)
+// mouse-over for info
+// show
+window.addEventListener("mouseover", function(e) {
+    var target = find_group(e.target);
+    if (target) details.nodeValue = nametype + " " + g_to_text(target);
+}, false)
+// clear
+window.addEventListener("mouseout", function(e) {
+    var target = find_group(e.target);
+    if (target) details.nodeValue = ' ';
+}, false)
+// ctrl-F for search
+window.addEventListener("keydown",function (e) {
+    if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+        e.preventDefault();
+        search_prompt();
+    }
+}, false)
+// functions
+function get_params() {
+    var params = {};
+    var paramsarr = window.location.search.substr(1).split('&');
+    for (var i = 0; i < paramsarr.length; ++i) {
+        var tmp = paramsarr[i].split("=");
+        if (!tmp[0] || !tmp[1]) continue;
+        params[tmp[0]]  = decodeURIComponent(tmp[1]);
+    }
+    return params;
+}
+function parse_params(params) {
+    var uri = "?";
+    for (var key in params) {
+        uri += key + '=' + encodeURIComponent(params[key]) + '&';
+    }
+    if (uri.slice(-1) == "&")
+        uri = uri.substring(0, uri.length - 1);
+    if (uri == '?')
+        uri = window.location.href.split('?')[0];
+    return uri;
+}
+function find_child(node, selector) {
+    var children = node.querySelectorAll(selector);
+    if (children.length) return children[0];
+    return;
+}
+function find_group(node) {
+    var parent = node.parentElement;
+    if (!parent) return;
+    if (parent.id == "frames") return node;
+    return find_group(parent);
+}
+function orig_save(e, attr, val) {
+    if (e.attributes["fg:orig_" + attr] != undefined) return;
+    if (e.attributes[attr] == undefined) return;
+    if (val == undefined) val = e.attributes[attr].value;
+    e.setAttribute("fg:orig_" + attr, val);
+}
+function orig_load(e, attr) {
+    if (e.attributes["fg:orig_"+attr] == undefined) return;
+    e.attributes[attr].value = e.attributes["fg:orig_" + attr].value;
+    e.removeAttribute("fg:orig_" + attr);
+}
+function g_to_text(e) {
+    var text = find_child(e, "title").firstChild.nodeValue;
+    return (text)
+}
+function g_to_func(e) {
+    var func = g_to_text(e);
+    // if there's any manipulation we want to do to the function
+    // name before it's searched, do it here before returning.
+    return (func);
+}
+function get_monospace_width(frames) {
+    // Given the id="frames" element, return the width of text characters if
+    // this is a monospace font, otherwise return 0.
+    text = find_child(frames.children[0], "text");
+    originalContent = text.textContent;
+    text.textContent = "!";
+    bangWidth = text.getComputedTextLength();
+    text.textContent = "W";
+    wWidth = text.getComputedTextLength();
+    text.textContent = originalContent;
+    if (bangWidth === wWidth) {
+        return bangWidth;
+    } else {
+        return 0;
+    }
+}
+function update_text_for_elements(elements) {
+    // In order to render quickly in the browser, you want to do one pass of
+    // reading attributes, and one pass of mutating attributes. See
+    // https://web.dev/avoid-large-complex-layouts-and-layout-thrashing/ for details.
+
+    // Fall back to inefficient calculation, if we're variable-width font.
+    // TODO This should be optimized somehow too.
+    if (known_font_width === 0) {
+        for (var i = 0; i < elements.length; i++) {
+            update_text(elements[i]);
+        }
+        return;
+    }
+
+    var textElemNewAttributes = [];
+    for (var i = 0; i < elements.length; i++) {
+        var e = elements[i];
+        var r = find_child(e, "rect");
+        var t = find_child(e, "text");
+        var w = parseFloat(r.attributes.width.value) * frames.attributes.width.value / 100 - 3;
+        var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+        var newX = format_percent((parseFloat(r.attributes.x.value) + (100 * 3 / frames.attributes.width.value)));
+
+        // Smaller than this size won't fit anything
+        if (w < 2 * known_font_width) {
+            textElemNewAttributes.push([newX, ""]);
+            continue;
+        }
+
+        // Fit in full text width
+        if (txt.length * known_font_width < w) {
+            textElemNewAttributes.push([newX, txt]);
+            continue;
+        }
+
+        var substringLength = Math.floor(w / known_font_width) - 2;
+        if (truncate_text_right) {
+            // Truncate the right side of the text.
+            textElemNewAttributes.push([newX, txt.substring(0, substringLength) + ".."]);
+            continue;
+        } else {
+            // Truncate the left side of the text.
+            textElemNewAttributes.push([newX, ".." + txt.substring(txt.length - substringLength, txt.length)]);
+            continue;
+        }
+    }
+
+    console.assert(textElemNewAttributes.length === elements.length, "Resize failed, please file a bug at https://github.com/jonhoo/inferno/");
+
+    // Now that we know new textContent, set it all in one go so we don't refresh a bazillion times.
+    for (var i = 0; i < elements.length; i++) {
+        var e = elements[i];
+        var values = textElemNewAttributes[i];
+        var t = find_child(e, "text");
+        t.attributes.x.value = values[0];
+        t.textContent = values[1];
+    }
+}
+
+function update_text(e) {
+    var r = find_child(e, "rect");
+    var t = find_child(e, "text");
+    var w = parseFloat(r.attributes.width.value) * frames.attributes.width.value / 100 - 3;
+    var txt = find_child(e, "title").textContent.replace(/\([^(]*\)$/,"");
+    t.attributes.x.value = format_percent((parseFloat(r.attributes.x.value) + (100 * 3 / frames.attributes.width.value)));
+
+    // Smaller than this size won't fit anything
+    if (w < 2 * fontsize * fontwidth) {
+        t.textContent = "";
+        return;
+    }
+    t.textContent = txt;
+    // Fit in full text width
+    if (t.getComputedTextLength() < w)
+        return;
+    if (truncate_text_right) {
+        // Truncate the right side of the text.
+        for (var x = txt.length - 2; x > 0; x--) {
+            if (t.getSubStringLength(0, x + 2) <= w) {
+                t.textContent = txt.substring(0, x) + "..";
+                return;
+            }
+        }
+    } else {
+        // Truncate the left side of the text.
+        for (var x = 2; x < txt.length; x++) {
+            if (t.getSubStringLength(x - 2, txt.length) <= w) {
+                t.textContent = ".." + txt.substring(x, txt.length);
+                return;
+            }
+        }
+    }
+    t.textContent = "";
+}
+// zoom
+function zoom_reset(e) {
+    if (e.tagName == "rect") {
+        e.attributes.x.value = format_percent(100 * parseInt(e.attributes["fg:x"].value) / total_samples);
+        e.attributes.width.value = format_percent(100 * parseInt(e.attributes["fg:w"].value) / total_samples);
+    }
+    if (e.childNodes == undefined) return;
+    for(var i = 0, c = e.childNodes; i < c.length; i++) {
+        zoom_reset(c[i]);
+    }
+}
+function zoom_child(e, x, zoomed_width_samples) {
+    if (e.tagName == "text") {
+        var parent_x = parseFloat(find_child(e.parentNode, "rect[x]").attributes.x.value);
+        e.attributes.x.value = format_percent(parent_x + (100 * 3 / frames.attributes.width.value));
+    } else if (e.tagName == "rect") {
+        e.attributes.x.value = format_percent(100 * (parseInt(e.attributes["fg:x"].value) - x) / zoomed_width_samples);
+        e.attributes.width.value = format_percent(100 * parseInt(e.attributes["fg:w"].value) / zoomed_width_samples);
+    }
+    if (e.childNodes == undefined) return;
+    for(var i = 0, c = e.childNodes; i < c.length; i++) {
+        zoom_child(c[i], x, zoomed_width_samples);
+    }
+}
+function zoom_parent(e) {
+    if (e.attributes) {
+        if (e.attributes.x != undefined) {
+            e.attributes.x.value = "0.0%";
+        }
+        if (e.attributes.width != undefined) {
+            e.attributes.width.value = "100.0%";
+        }
+    }
+    if (e.childNodes == undefined) return;
+    for(var i = 0, c = e.childNodes; i < c.length; i++) {
+        zoom_parent(c[i]);
+    }
+}
+function zoom(node) {
+    var attr = find_child(node, "rect").attributes;
+    var width = parseInt(attr["fg:w"].value);
+    var xmin = parseInt(attr["fg:x"].value);
+    var xmax = xmin + width;
+    var ymin = parseFloat(attr.y.value);
+    unzoombtn.classList.remove("hide");
+    var el = frames.children;
+    var to_update_text = [];
+    for (var i = 0; i < el.length; i++) {
+        var e = el[i];
+        var a = find_child(e, "rect").attributes;
+        var ex = parseInt(a["fg:x"].value);
+        var ew = parseInt(a["fg:w"].value);
+        // Is it an ancestor
+        if (!inverted) {
+            var upstack = parseFloat(a.y.value) > ymin;
+        } else {
+            var upstack = parseFloat(a.y.value) < ymin;
+        }
+        if (upstack) {
+            // Direct ancestor
+            if (ex <= xmin && (ex+ew) >= xmax) {
+                e.classList.add("parent");
+                zoom_parent(e);
+                to_update_text.push(e);
+            }
+            // not in current path
+            else
+                e.classList.add("hide");
+        }
+        // Children maybe
+        else {
+            // no common path
+            if (ex < xmin || ex >= xmax) {
+                e.classList.add("hide");
+            }
+            else {
+                zoom_child(e, xmin, width);
+                to_update_text.push(e);
+            }
+        }
+    }
+    update_text_for_elements(to_update_text);
+}
+function unzoom() {
+    unzoombtn.classList.add("hide");
+    var el = frames.children;
+    for(var i = 0; i < el.length; i++) {
+        el[i].classList.remove("parent");
+        el[i].classList.remove("hide");
+        zoom_reset(el[i]);
+    }
+    update_text_for_elements(el);
+}
+// search
+function reset_search() {
+    var el = document.querySelectorAll("#frames rect");
+    for (var i = 0; i < el.length; i++) {
+        orig_load(el[i], "fill")
+    }
+    var params = get_params();
+    delete params.s;
+    history.replaceState(null, null, parse_params(params));
+}
+function search_prompt() {
+    if (!searching) {
+        var term = prompt("Enter a search term (regexp " +
+            "allowed, eg: ^ext4_)", "");
+        if (term != null) {
+            search(term)
+        }
+    } else {
+        reset_search();
+        searching = 0;
+        searchbtn.classList.remove("show");
+        searchbtn.firstChild.nodeValue = "Search"
+        matchedtxt.classList.add("hide");
+        matchedtxt.firstChild.nodeValue = ""
+    }
+}
+function search(term) {
+    var re = new RegExp(term);
+    var el = frames.children;
+    var matches = new Object();
+    var maxwidth = 0;
+    for (var i = 0; i < el.length; i++) {
+        var e = el[i];
+        // Skip over frames which are either not visible, or below the zoomed-to frame
+        if (e.classList.contains("hide") || e.classList.contains("parent")) {
+            continue;
+        }
+        var func = g_to_func(e);
+        var rect = find_child(e, "rect");
+        if (func == null || rect == null)
+            continue;
+        // Save max width. Only works as we have a root frame
+        var w = parseInt(rect.attributes["fg:w"].value);
+        if (w > maxwidth)
+            maxwidth = w;
+        if (func.match(re)) {
+            // highlight
+            var x = parseInt(rect.attributes["fg:x"].value);
+            orig_save(rect, "fill");
+            rect.attributes.fill.value = searchcolor;
+            // remember matches
+            if (matches[x] == undefined) {
+                matches[x] = w;
+            } else {
+                if (w > matches[x]) {
+                    // overwrite with parent
+                    matches[x] = w;
+                }
+            }
+            searching = 1;
+        }
+    }
+    if (!searching)
+        return;
+    var params = get_params();
+    params.s = term;
+    history.replaceState(null, null, parse_params(params));
+
+    searchbtn.classList.add("show");
+    searchbtn.firstChild.nodeValue = "Reset Search";
+    // calculate percent matched, excluding vertical overlap
+    var count = 0;
+    var lastx = -1;
+    var lastw = 0;
+    var keys = Array();
+    for (k in matches) {
+        if (matches.hasOwnProperty(k))
+            keys.push(k);
+    }
+    // sort the matched frames by their x location
+    // ascending, then width descending
+    keys.sort(function(a, b){
+        return a - b;
+    });
+    // Step through frames saving only the biggest bottom-up frames
+    // thanks to the sort order. This relies on the tree property
+    // where children are always smaller than their parents.
+    for (var k in keys) {
+        var x = parseInt(keys[k]);
+        var w = matches[keys[k]];
+        if (x >= lastx + lastw) {
+            count += w;
+            lastx = x;
+            lastw = w;
+        }
+    }
+    // display matched percent
+    matchedtxt.classList.remove("hide");
+    var pct = 100 * count / maxwidth;
+    if (pct != 100) pct = pct.toFixed(1);
+    matchedtxt.firstChild.nodeValue = "Matched: " + pct + "%";
+}
+function format_percent(n) {
+    return n.toFixed(4) + "%";
+}
+]]></script><rect x="0" y="0" width="100%" height="298" fill="url(#background)"/><text id="title" fill="rgb(0,0,0)" x="50.0000%" y="24.00">py-spy record -o results/profile_uni_bi_small_flamegraph.svg -- python profile_uni_bi_small.py # commit 37d42fc</text><text id="details" fill="rgb(0,0,0)" x="10" y="40.00"> </text><text id="unzoom" class="hide" fill="rgb(0,0,0)" x="10" y="24.00">Reset Zoom</text><text id="search" fill="rgb(0,0,0)" x="1190" y="24.00">Search</text><text id="matched" fill="rgb(0,0,0)" x="1190" y="287.00"> </text><svg id="frames" x="10" width="1180" total_samples="11598"><g><title>update (kappybara/system.py:69) (43 samples, 0.37%)</title><rect x="0.1638%" y="84" width="0.3708%" height="15" fill="rgb(227,0,7)" fg:x="19" fg:w="43"/><text x="0.4138%" y="94.50"></text></g><g><title>wait (kappybara/system.py:58) (43 samples, 0.37%)</title><rect x="0.1638%" y="100" width="0.3708%" height="15" fill="rgb(217,0,24)" fg:x="19" fg:w="43"/><text x="0.4138%" y="110.50"></text></g><g><title>reactivity (kappybara/system.py:55) (41 samples, 0.35%)</title><rect x="0.1811%" y="116" width="0.3535%" height="15" fill="rgb(221,193,54)" fg:x="21" fg:w="41"/><text x="0.4311%" y="126.50"></text></g><g><title>__get__ (functools.py:998) (39 samples, 0.34%)</title><rect x="0.1983%" y="132" width="0.3363%" height="15" fill="rgb(248,212,6)" fg:x="23" fg:w="39"/><text x="0.4483%" y="142.50"></text></g><g><title>rule_reactivities (kappybara/system.py:51) (39 samples, 0.34%)</title><rect x="0.1983%" y="148" width="0.3363%" height="15" fill="rgb(208,68,35)" fg:x="23" fg:w="39"/><text x="0.4483%" y="158.50"></text></g><g><title>reactivity (kappybara/rule.py:32) (38 samples, 0.33%)</title><rect x="0.2069%" y="164" width="0.3276%" height="15" fill="rgb(232,128,0)" fg:x="24" fg:w="38"/><text x="0.4569%" y="174.50"></text></g><g><title>select (kappybara/rule.py:218) (19 samples, 0.16%)</title><rect x="0.7674%" y="116" width="0.1638%" height="15" fill="rgb(207,160,47)" fg:x="89" fg:w="19"/><text x="1.0174%" y="126.50"></text></g><g><title>act (kappybara/system.py:63) (37 samples, 0.32%)</title><rect x="0.6294%" y="100" width="0.3190%" height="15" fill="rgb(228,23,34)" fg:x="73" fg:w="37"/><text x="0.8794%" y="110.50"></text></g><g><title>__init__ (kappybara/pattern.py:216) (30 samples, 0.26%)</title><rect x="1.0347%" y="148" width="0.2587%" height="15" fill="rgb(218,30,26)" fg:x="120" fg:w="30"/><text x="1.2847%" y="158.50"></text></g><g><title>__init__ (kappybara/indexed_set.py:56) (19 samples, 0.16%)</title><rect x="1.1295%" y="164" width="0.1638%" height="15" fill="rgb(220,122,19)" fg:x="131" fg:w="19"/><text x="1.3795%" y="174.50"></text></g><g><title>create_index (kappybara/indexed_set.py:127) (50 samples, 0.43%)</title><rect x="1.3364%" y="164" width="0.4311%" height="15" fill="rgb(250,228,42)" fg:x="155" fg:w="50"/><text x="1.5864%" y="174.50"></text></g><g><title>__call__ (kappybara/indexed_set.py:24) (16 samples, 0.14%)</title><rect x="1.6296%" y="180" width="0.1380%" height="15" fill="rgb(240,193,28)" fg:x="189" fg:w="16"/><text x="1.8796%" y="190.50"></text></g><g><title>add (kappybara/indexed_set.py:62) (25 samples, 0.22%)</title><rect x="2.0521%" y="180" width="0.2156%" height="15" fill="rgb(216,20,37)" fg:x="238" fg:w="25"/><text x="2.3021%" y="190.50"></text></g><g><title>add (kappybara/indexed_set.py:63) (26 samples, 0.22%)</title><rect x="2.2676%" y="180" width="0.2242%" height="15" fill="rgb(206,188,39)" fg:x="263" fg:w="26"/><text x="2.5176%" y="190.50"></text></g><g><title>add (kappybara/indexed_set.py:67) (37 samples, 0.32%)</title><rect x="2.5608%" y="180" width="0.3190%" height="15" fill="rgb(217,207,13)" fg:x="297" fg:w="37"/><text x="2.8108%" y="190.50"></text></g><g><title>__init__ (kappybara/pattern.py:218) (199 samples, 1.72%)</title><rect x="1.2933%" y="148" width="1.7158%" height="15" fill="rgb(231,73,38)" fg:x="150" fg:w="199"/><text x="1.5433%" y="158.50"></text></g><g><title>create_index (kappybara/indexed_set.py:130) (143 samples, 1.23%)</title><rect x="1.7762%" y="164" width="1.2330%" height="15" fill="rgb(225,20,46)" fg:x="206" fg:w="143"/><text x="2.0262%" y="174.50"></text></g><g><title>add (kappybara/indexed_set.py:70) (15 samples, 0.13%)</title><rect x="2.8798%" y="180" width="0.1293%" height="15" fill="rgb(210,31,41)" fg:x="334" fg:w="15"/><text x="3.1298%" y="190.50"></text></g><g><title>depth_first_traversal (kappybara/pattern.py:131) (65 samples, 0.56%)</title><rect x="3.0523%" y="148" width="0.5604%" height="15" fill="rgb(221,200,47)" fg:x="354" fg:w="65"/><text x="3.3023%" y="158.50"></text></g><g><title>depth_first_traversal (kappybara/pattern.py:132) (18 samples, 0.16%)</title><rect x="3.6127%" y="148" width="0.1552%" height="15" fill="rgb(226,26,5)" fg:x="419" fg:w="18"/><text x="3.8627%" y="158.50"></text></g><g><title>__iter__ (kappybara/pattern.py:99) (71 samples, 0.61%)</title><rect x="4.7853%" y="180" width="0.6122%" height="15" fill="rgb(249,33,26)" fg:x="555" fg:w="71"/><text x="5.0353%" y="190.50"></text></g><g><title>sites (kappybara/pattern.py:113) (39 samples, 0.34%)</title><rect x="5.0612%" y="196" width="0.3363%" height="15" fill="rgb(235,183,28)" fg:x="587" fg:w="39"/><text x="5.3112%" y="206.50"></text></g><g><title>_remove_edge (kappybara/mixture.py:191) (536 samples, 4.62%)</title><rect x="1.0002%" y="132" width="4.6215%" height="15" fill="rgb(221,5,38)" fg:x="116" fg:w="536"/><text x="1.2502%" y="142.50">_remo..</text></g><g><title>depth_first_traversal (kappybara/pattern.py:134) (212 samples, 1.83%)</title><rect x="3.7938%" y="148" width="1.8279%" height="15" fill="rgb(247,18,42)" fg:x="440" fg:w="212"/><text x="4.0438%" y="158.50">d..</text></g><g><title>neighbors (kappybara/pattern.py:122) (180 samples, 1.55%)</title><rect x="4.0697%" y="164" width="1.5520%" height="15" fill="rgb(241,131,45)" fg:x="472" fg:w="180"/><text x="4.3197%" y="174.50"></text></g><g><title>coupled (kappybara/pattern.py:66) (25 samples, 0.22%)</title><rect x="5.4061%" y="180" width="0.2156%" height="15" fill="rgb(249,31,29)" fg:x="627" fg:w="25"/><text x="5.6561%" y="190.50"></text></g><g><title>apply_update (kappybara/mixture.py:107) (542 samples, 4.67%)</title><rect x="0.9657%" y="116" width="4.6732%" height="15" fill="rgb(225,111,53)" fg:x="112" fg:w="542"/><text x="1.2157%" y="126.50">apply..</text></g><g><title>embeddings (kappybara/pattern.py:261) (85 samples, 0.73%)</title><rect x="6.3632%" y="180" width="0.7329%" height="15" fill="rgb(238,160,17)" fg:x="738" fg:w="85"/><text x="6.6132%" y="190.50"></text></g><g><title>__hash__ (kappybara/utils.py:29) (19 samples, 0.16%)</title><rect x="14.7612%" y="196" width="0.1638%" height="15" fill="rgb(214,148,48)" fg:x="1712" fg:w="19"/><text x="15.0112%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:263) (944 samples, 8.14%)</title><rect x="7.0961%" y="180" width="8.1393%" height="15" fill="rgb(232,36,49)" fg:x="823" fg:w="944"/><text x="7.3461%" y="190.50">embeddings ..</text></g><g><title>__hash__ (kappybara/utils.py:30) (36 samples, 0.31%)</title><rect x="14.9250%" y="196" width="0.3104%" height="15" fill="rgb(209,103,24)" fg:x="1731" fg:w="36"/><text x="15.1750%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:264) (339 samples, 2.92%)</title><rect x="15.2354%" y="180" width="2.9229%" height="15" fill="rgb(229,88,8)" fg:x="1767" fg:w="339"/><text x="15.4854%" y="190.50">em..</text></g><g><title>__hash__ (kappybara/utils.py:30) (32 samples, 0.28%)</title><rect x="17.8824%" y="196" width="0.2759%" height="15" fill="rgb(213,181,19)" fg:x="2074" fg:w="32"/><text x="18.1324%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:267) (82 samples, 0.71%)</title><rect x="18.1842%" y="180" width="0.7070%" height="15" fill="rgb(254,191,54)" fg:x="2109" fg:w="82"/><text x="18.4342%" y="190.50"></text></g><g><title>embeddings (kappybara/pattern.py:268) (59 samples, 0.51%)</title><rect x="18.8912%" y="180" width="0.5087%" height="15" fill="rgb(241,83,37)" fg:x="2191" fg:w="59"/><text x="19.1412%" y="190.50"></text></g><g><title>__hash__ (kappybara/utils.py:29) (24 samples, 0.21%)</title><rect x="21.5641%" y="196" width="0.2069%" height="15" fill="rgb(233,36,39)" fg:x="2501" fg:w="24"/><text x="21.8141%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:269) (308 samples, 2.66%)</title><rect x="19.3999%" y="180" width="2.6556%" height="15" fill="rgb(226,3,54)" fg:x="2250" fg:w="308"/><text x="19.6499%" y="190.50">em..</text></g><g><title>__hash__ (kappybara/utils.py:30) (33 samples, 0.28%)</title><rect x="21.7710%" y="196" width="0.2845%" height="15" fill="rgb(245,192,40)" fg:x="2525" fg:w="33"/><text x="22.0210%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:271) (219 samples, 1.89%)</title><rect x="22.0555%" y="180" width="1.8883%" height="15" fill="rgb(238,167,29)" fg:x="2558" fg:w="219"/><text x="22.3055%" y="190.50">e..</text></g><g><title>embeds_in (kappybara/pattern.py:171) (15 samples, 0.13%)</title><rect x="25.7889%" y="196" width="0.1293%" height="15" fill="rgb(232,182,51)" fg:x="2991" fg:w="15"/><text x="26.0389%" y="206.50"></text></g><g><title>embeds_in (kappybara/pattern.py:173) (93 samples, 0.80%)</title><rect x="25.9183%" y="196" width="0.8019%" height="15" fill="rgb(231,60,39)" fg:x="3006" fg:w="93"/><text x="26.1683%" y="206.50"></text></g><g><title>__iter__ (kappybara/pattern.py:98) (129 samples, 1.11%)</title><rect x="28.2980%" y="212" width="1.1123%" height="15" fill="rgb(208,69,12)" fg:x="3282" fg:w="129"/><text x="28.5480%" y="222.50"></text></g><g><title>sites (kappybara/pattern.py:111) (93 samples, 0.80%)</title><rect x="31.1433%" y="228" width="0.8019%" height="15" fill="rgb(235,93,37)" fg:x="3612" fg:w="93"/><text x="31.3933%" y="238.50"></text></g><g><title>embeds_in (kappybara/pattern.py:176) (967 samples, 8.34%)</title><rect x="26.7460%" y="196" width="8.3376%" height="15" fill="rgb(213,116,39)" fg:x="3102" fg:w="967"/><text x="26.9960%" y="206.50">embeds_in (k..</text></g><g><title>__iter__ (kappybara/pattern.py:99) (658 samples, 5.67%)</title><rect x="29.4102%" y="212" width="5.6734%" height="15" fill="rgb(222,207,29)" fg:x="3411" fg:w="658"/><text x="29.6602%" y="222.50">__iter_..</text></g><g><title>sites (kappybara/pattern.py:113) (364 samples, 3.14%)</title><rect x="31.9452%" y="228" width="3.1385%" height="15" fill="rgb(206,96,30)" fg:x="3705" fg:w="364"/><text x="32.1952%" y="238.50">sit..</text></g><g><title>embeds_in (kappybara/pattern.py:177) (106 samples, 0.91%)</title><rect x="35.0836%" y="196" width="0.9140%" height="15" fill="rgb(218,138,4)" fg:x="4069" fg:w="106"/><text x="35.3336%" y="206.50"></text></g><g><title>__getitem__ (kappybara/pattern.py:101) (12 samples, 0.10%)</title><rect x="36.7563%" y="212" width="0.1035%" height="15" fill="rgb(250,191,14)" fg:x="4263" fg:w="12"/><text x="37.0063%" y="222.50"></text></g><g><title>embeds_in (kappybara/pattern.py:179) (155 samples, 1.34%)</title><rect x="36.0579%" y="196" width="1.3364%" height="15" fill="rgb(239,60,40)" fg:x="4182" fg:w="155"/><text x="36.3079%" y="206.50"></text></g><g><title>__getitem__ (kappybara/pattern.py:102) (62 samples, 0.53%)</title><rect x="36.8598%" y="212" width="0.5346%" height="15" fill="rgb(206,27,48)" fg:x="4275" fg:w="62"/><text x="37.1098%" y="222.50"></text></g><g><title>__iter__ (kappybara/pattern.py:99) (217 samples, 1.87%)</title><rect x="45.5596%" y="212" width="1.8710%" height="15" fill="rgb(225,35,8)" fg:x="5284" fg:w="217"/><text x="45.8096%" y="222.50">_..</text></g><g><title>embeds_in (kappybara/pattern.py:68) (12 samples, 0.10%)</title><rect x="47.4306%" y="212" width="0.1035%" height="15" fill="rgb(250,213,24)" fg:x="5501" fg:w="12"/><text x="47.6806%" y="222.50"></text></g><g><title>stated (kappybara/pattern.py:52) (19 samples, 0.16%)</title><rect x="47.9738%" y="228" width="0.1638%" height="15" fill="rgb(247,123,22)" fg:x="5564" fg:w="19"/><text x="48.2238%" y="238.50"></text></g><g><title>embeds_in (kappybara/pattern.py:70) (152 samples, 1.31%)</title><rect x="47.5341%" y="212" width="1.3106%" height="15" fill="rgb(231,138,38)" fg:x="5513" fg:w="152"/><text x="47.7841%" y="222.50"></text></g><g><title>stated (kappybara/pattern.py:54) (82 samples, 0.71%)</title><rect x="48.1376%" y="228" width="0.7070%" height="15" fill="rgb(231,145,46)" fg:x="5583" fg:w="82"/><text x="48.3876%" y="238.50"></text></g><g><title>bound (kappybara/pattern.py:56) (20 samples, 0.17%)</title><rect x="49.9741%" y="228" width="0.1724%" height="15" fill="rgb(251,118,11)" fg:x="5796" fg:w="20"/><text x="50.2241%" y="238.50"></text></g><g><title>__eq__ (kappybara/utils.py:32) (18 samples, 0.16%)</title><rect x="51.9917%" y="244" width="0.1552%" height="15" fill="rgb(217,147,25)" fg:x="6030" fg:w="18"/><text x="52.2417%" y="254.50"></text></g><g><title>__hash__ (kappybara/utils.py:29) (17 samples, 0.15%)</title><rect x="54.0869%" y="260" width="0.1466%" height="15" fill="rgb(247,81,37)" fg:x="6273" fg:w="17"/><text x="54.3369%" y="270.50"></text></g><g><title>bound (kappybara/pattern.py:59) (499 samples, 4.30%)</title><rect x="50.1466%" y="228" width="4.3025%" height="15" fill="rgb(209,12,38)" fg:x="5816" fg:w="499"/><text x="50.3966%" y="238.50">bound..</text></g><g><title>__eq__ (kappybara/utils.py:33) (267 samples, 2.30%)</title><rect x="52.1469%" y="244" width="2.3021%" height="15" fill="rgb(227,1,9)" fg:x="6048" fg:w="267"/><text x="52.3969%" y="254.50">_..</text></g><g><title>__hash__ (kappybara/utils.py:30) (25 samples, 0.22%)</title><rect x="54.2335%" y="260" width="0.2156%" height="15" fill="rgb(248,47,43)" fg:x="6290" fg:w="25"/><text x="54.4835%" y="270.50"></text></g><g><title>bound (kappybara/pattern.py:60) (250 samples, 2.16%)</title><rect x="54.4490%" y="228" width="2.1555%" height="15" fill="rgb(221,10,30)" fg:x="6315" fg:w="250"/><text x="54.6990%" y="238.50">b..</text></g><g><title>bound (kappybara/pattern.py:61) (86 samples, 0.74%)</title><rect x="56.6046%" y="228" width="0.7415%" height="15" fill="rgb(210,229,1)" fg:x="6565" fg:w="86"/><text x="56.8546%" y="238.50"></text></g><g><title>coupled (kappybara/pattern.py:64) (22 samples, 0.19%)</title><rect x="57.3461%" y="228" width="0.1897%" height="15" fill="rgb(222,148,37)" fg:x="6651" fg:w="22"/><text x="57.5961%" y="238.50"></text></g><g><title>embeds_in (kappybara/pattern.py:71) (1,041 samples, 8.98%)</title><rect x="48.8446%" y="212" width="8.9757%" height="15" fill="rgb(234,67,33)" fg:x="5665" fg:w="1041"/><text x="49.0946%" y="222.50">embeds_in (ka..</text></g><g><title>coupled (kappybara/pattern.py:66) (33 samples, 0.28%)</title><rect x="57.5358%" y="228" width="0.2845%" height="15" fill="rgb(247,98,35)" fg:x="6673" fg:w="33"/><text x="57.7858%" y="238.50"></text></g><g><title>embeds_in (kappybara/pattern.py:73) (14 samples, 0.12%)</title><rect x="57.8203%" y="212" width="0.1207%" height="15" fill="rgb(247,138,52)" fg:x="6706" fg:w="14"/><text x="58.0703%" y="222.50"></text></g><g><title>embeds_in (kappybara/pattern.py:75) (24 samples, 0.21%)</title><rect x="57.9410%" y="212" width="0.2069%" height="15" fill="rgb(213,79,30)" fg:x="6720" fg:w="24"/><text x="58.1910%" y="222.50"></text></g><g><title>__eq__ (kappybara/utils.py:32) (28 samples, 0.24%)</title><rect x="58.8808%" y="228" width="0.2414%" height="15" fill="rgb(246,177,23)" fg:x="6829" fg:w="28"/><text x="59.1308%" y="238.50"></text></g><g><title>embeds_in (kappybara/pattern.py:76) (256 samples, 2.21%)</title><rect x="58.1480%" y="212" width="2.2073%" height="15" fill="rgb(230,62,27)" fg:x="6744" fg:w="256"/><text x="58.3980%" y="222.50">e..</text></g><g><title>__eq__ (kappybara/utils.py:33) (143 samples, 1.23%)</title><rect x="59.1223%" y="228" width="1.2330%" height="15" fill="rgb(216,154,8)" fg:x="6857" fg:w="143"/><text x="59.3723%" y="238.50"></text></g><g><title>__hash__ (kappybara/utils.py:30) (20 samples, 0.17%)</title><rect x="60.1828%" y="244" width="0.1724%" height="15" fill="rgb(244,35,45)" fg:x="6980" fg:w="20"/><text x="60.4328%" y="254.50"></text></g><g><title>__eq__ (kappybara/utils.py:32) (22 samples, 0.19%)</title><rect x="61.6658%" y="228" width="0.1897%" height="15" fill="rgb(251,115,12)" fg:x="7152" fg:w="22"/><text x="61.9158%" y="238.50"></text></g><g><title>__hash__ (kappybara/utils.py:29) (16 samples, 0.14%)</title><rect x="63.7869%" y="244" width="0.1380%" height="15" fill="rgb(240,54,50)" fg:x="7398" fg:w="16"/><text x="64.0369%" y="254.50"></text></g><g><title>embeds_in (kappybara/pattern.py:77) (446 samples, 3.85%)</title><rect x="60.3552%" y="212" width="3.8455%" height="15" fill="rgb(233,84,52)" fg:x="7000" fg:w="446"/><text x="60.6052%" y="222.50">embe..</text></g><g><title>__eq__ (kappybara/utils.py:33) (272 samples, 2.35%)</title><rect x="61.8555%" y="228" width="2.3452%" height="15" fill="rgb(207,117,47)" fg:x="7174" fg:w="272"/><text x="62.1055%" y="238.50">_..</text></g><g><title>__hash__ (kappybara/utils.py:30) (32 samples, 0.28%)</title><rect x="63.9248%" y="244" width="0.2759%" height="15" fill="rgb(249,43,39)" fg:x="7414" fg:w="32"/><text x="64.1748%" y="254.50"></text></g><g><title>embeds_in (kappybara/pattern.py:78) (70 samples, 0.60%)</title><rect x="64.2007%" y="212" width="0.6036%" height="15" fill="rgb(209,38,44)" fg:x="7446" fg:w="70"/><text x="64.4507%" y="222.50"></text></g><g><title>embeds_in (kappybara/pattern.py:83) (156 samples, 1.35%)</title><rect x="64.8301%" y="212" width="1.3451%" height="15" fill="rgb(236,212,23)" fg:x="7519" fg:w="156"/><text x="65.0801%" y="222.50"></text></g><g><title>embeds_in (kappybara/pattern.py:85) (93 samples, 0.80%)</title><rect x="66.1752%" y="212" width="0.8019%" height="15" fill="rgb(242,79,21)" fg:x="7675" fg:w="93"/><text x="66.4252%" y="222.50"></text></g><g><title>embeds_in (kappybara/pattern.py:86) (21 samples, 0.18%)</title><rect x="66.9771%" y="212" width="0.1811%" height="15" fill="rgb(211,96,35)" fg:x="7768" fg:w="21"/><text x="67.2271%" y="222.50"></text></g><g><title>embeds_in (kappybara/pattern.py:180) (3,754 samples, 32.37%)</title><rect x="37.3944%" y="196" width="32.3676%" height="15" fill="rgb(253,215,40)" fg:x="4337" fg:w="3754"/><text x="37.6444%" y="206.50">embeds_in (kappybara/pattern.py:180)</text></g><g><title>sites (kappybara/pattern.py:113) (302 samples, 2.60%)</title><rect x="67.1581%" y="212" width="2.6039%" height="15" fill="rgb(211,81,21)" fg:x="7789" fg:w="302"/><text x="67.4081%" y="222.50">si..</text></g><g><title>embeddings (kappybara/pattern.py:272) (5,356 samples, 46.18%)</title><rect x="23.9438%" y="180" width="46.1804%" height="15" fill="rgb(208,190,38)" fg:x="2777" fg:w="5356"/><text x="24.1938%" y="190.50">embeddings (kappybara/pattern.py:272)</text></g><g><title>embeds_in (kappybara/pattern.py:181) (42 samples, 0.36%)</title><rect x="69.7620%" y="196" width="0.3621%" height="15" fill="rgb(235,213,38)" fg:x="8091" fg:w="42"/><text x="70.0120%" y="206.50"></text></g><g><title>__iter__ (kappybara/pattern.py:98) (81 samples, 0.70%)</title><rect x="71.0209%" y="196" width="0.6984%" height="15" fill="rgb(237,122,38)" fg:x="8237" fg:w="81"/><text x="71.2709%" y="206.50"></text></g><g><title>sites (kappybara/pattern.py:111) (52 samples, 0.45%)</title><rect x="72.7539%" y="212" width="0.4484%" height="15" fill="rgb(244,218,35)" fg:x="8438" fg:w="52"/><text x="73.0039%" y="222.50"></text></g><g><title>embeddings (kappybara/pattern.py:276) (573 samples, 4.94%)</title><rect x="70.1845%" y="180" width="4.9405%" height="15" fill="rgb(240,68,47)" fg:x="8140" fg:w="573"/><text x="70.4345%" y="190.50">embedd..</text></g><g><title>__iter__ (kappybara/pattern.py:99) (395 samples, 3.41%)</title><rect x="71.7193%" y="196" width="3.4058%" height="15" fill="rgb(210,16,53)" fg:x="8318" fg:w="395"/><text x="71.9693%" y="206.50">__i..</text></g><g><title>sites (kappybara/pattern.py:113) (223 samples, 1.92%)</title><rect x="73.2023%" y="212" width="1.9227%" height="15" fill="rgb(235,124,12)" fg:x="8490" fg:w="223"/><text x="73.4523%" y="222.50">s..</text></g><g><title>embeddings (kappybara/pattern.py:277) (108 samples, 0.93%)</title><rect x="75.1250%" y="180" width="0.9312%" height="15" fill="rgb(224,169,11)" fg:x="8713" fg:w="108"/><text x="75.3750%" y="190.50"></text></g><g><title>__getitem__ (kappybara/pattern.py:102) (47 samples, 0.41%)</title><rect x="75.6510%" y="196" width="0.4052%" height="15" fill="rgb(250,166,2)" fg:x="8774" fg:w="47"/><text x="75.9010%" y="206.50"></text></g><g><title>coupled (kappybara/pattern.py:64) (13 samples, 0.11%)</title><rect x="76.3494%" y="196" width="0.1121%" height="15" fill="rgb(242,216,29)" fg:x="8855" fg:w="13"/><text x="76.5994%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:278) (94 samples, 0.81%)</title><rect x="76.0562%" y="180" width="0.8105%" height="15" fill="rgb(230,116,27)" fg:x="8821" fg:w="94"/><text x="76.3062%" y="190.50"></text></g><g><title>coupled (kappybara/pattern.py:66) (47 samples, 0.41%)</title><rect x="76.4615%" y="196" width="0.4052%" height="15" fill="rgb(228,99,48)" fg:x="8868" fg:w="47"/><text x="76.7115%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:279) (173 samples, 1.49%)</title><rect x="76.8667%" y="180" width="1.4916%" height="15" fill="rgb(253,11,6)" fg:x="8915" fg:w="173"/><text x="77.1167%" y="190.50"></text></g><g><title>__hash__ (kappybara/utils.py:30) (20 samples, 0.17%)</title><rect x="78.1859%" y="196" width="0.1724%" height="15" fill="rgb(247,143,39)" fg:x="9068" fg:w="20"/><text x="78.4359%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:280) (55 samples, 0.47%)</title><rect x="78.3583%" y="180" width="0.4742%" height="15" fill="rgb(236,97,10)" fg:x="9088" fg:w="55"/><text x="78.6083%" y="190.50"></text></g><g><title>embeddings (kappybara/pattern.py:281) (70 samples, 0.60%)</title><rect x="78.8326%" y="180" width="0.6036%" height="15" fill="rgb(233,208,19)" fg:x="9143" fg:w="70"/><text x="79.0826%" y="190.50"></text></g><g><title>__hash__ (kappybara/utils.py:29) (13 samples, 0.11%)</title><rect x="81.9797%" y="212" width="0.1121%" height="15" fill="rgb(216,164,2)" fg:x="9508" fg:w="13"/><text x="82.2297%" y="222.50"></text></g><g><title>__eq__ (kappybara/utils.py:33) (124 samples, 1.07%)</title><rect x="81.1002%" y="196" width="1.0691%" height="15" fill="rgb(220,129,5)" fg:x="9406" fg:w="124"/><text x="81.3502%" y="206.50"></text></g><g><title>embeddings (kappybara/pattern.py:282) (330 samples, 2.85%)</title><rect x="79.4361%" y="180" width="2.8453%" height="15" fill="rgb(242,17,10)" fg:x="9213" fg:w="330"/><text x="79.6861%" y="190.50">em..</text></g><g><title>embeddings (kappybara/pattern.py:287) (34 samples, 0.29%)</title><rect x="82.2987%" y="180" width="0.2932%" height="15" fill="rgb(242,107,0)" fg:x="9545" fg:w="34"/><text x="82.5487%" y="190.50"></text></g><g><title>embeddings (kappybara/pattern.py:289) (12 samples, 0.10%)</title><rect x="82.5918%" y="180" width="0.1035%" height="15" fill="rgb(251,28,31)" fg:x="9579" fg:w="12"/><text x="82.8418%" y="190.50"></text></g><g><title>__init__ (kappybara/indexed_set.py:51) (8,925 samples, 76.95%)</title><rect x="5.8803%" y="164" width="76.9529%" height="15" fill="rgb(233,223,10)" fg:x="682" fg:w="8925"/><text x="6.1303%" y="174.50">__init__ (kappybara/indexed_set.py:51)</text></g><g><title>embeddings (kappybara/pattern.py:290) (16 samples, 0.14%)</title><rect x="82.6953%" y="180" width="0.1380%" height="15" fill="rgb(215,21,27)" fg:x="9591" fg:w="16"/><text x="82.9453%" y="190.50"></text></g><g><title>__hash__ (kappybara/pattern.py:187) (12 samples, 0.10%)</title><rect x="83.5489%" y="180" width="0.1035%" height="15" fill="rgb(232,23,21)" fg:x="9690" fg:w="12"/><text x="83.7989%" y="190.50"></text></g><g><title>__init__ (kappybara/indexed_set.py:53) (105 samples, 0.91%)</title><rect x="82.8332%" y="164" width="0.9053%" height="15" fill="rgb(244,5,23)" fg:x="9607" fg:w="105"/><text x="83.0832%" y="174.50"></text></g><g><title>__init__ (kappybara/indexed_set.py:56) (137 samples, 1.18%)</title><rect x="83.7558%" y="164" width="1.1812%" height="15" fill="rgb(226,81,46)" fg:x="9714" fg:w="137"/><text x="84.0058%" y="174.50"></text></g><g><title>track_component (kappybara/mixture.py:93) (9,182 samples, 79.17%)</title><rect x="5.7855%" y="148" width="79.1688%" height="15" fill="rgb(247,70,30)" fg:x="671" fg:w="9182"/><text x="6.0355%" y="158.50">track_component (kappybara/mixture.py:93)</text></g><g><title>create_index (kappybara/indexed_set.py:126) (18 samples, 0.16%)</title><rect x="85.0923%" y="164" width="0.1552%" height="15" fill="rgb(212,68,19)" fg:x="9869" fg:w="18"/><text x="85.3423%" y="174.50"></text></g><g><title>__call__ (kappybara/indexed_set.py:23) (12 samples, 0.10%)</title><rect x="86.7391%" y="180" width="0.1035%" height="15" fill="rgb(240,187,13)" fg:x="10060" fg:w="12"/><text x="86.9891%" y="190.50"></text></g><g><title>lookup (kappybara/indexed_set.py:101) (32 samples, 0.28%)</title><rect x="89.0671%" y="212" width="0.2759%" height="15" fill="rgb(223,113,26)" fg:x="10330" fg:w="32"/><text x="89.3171%" y="222.50"></text></g><g><title>lookup (kappybara/indexed_set.py:102) (157 samples, 1.35%)</title><rect x="89.3430%" y="212" width="1.3537%" height="15" fill="rgb(206,192,2)" fg:x="10362" fg:w="157"/><text x="89.5930%" y="222.50"></text></g><g><title>__hash__ (kappybara/utils.py:30) (18 samples, 0.16%)</title><rect x="90.5415%" y="228" width="0.1552%" height="15" fill="rgb(241,108,4)" fg:x="10501" fg:w="18"/><text x="90.7915%" y="238.50"></text></g><g><title>lookup (kappybara/indexed_set.py:105) (21 samples, 0.18%)</title><rect x="90.7656%" y="212" width="0.1811%" height="15" fill="rgb(247,173,49)" fg:x="10527" fg:w="21"/><text x="91.0156%" y="222.50"></text></g><g><title>create_index (kappybara/indexed_set.py:127) (695 samples, 5.99%)</title><rect x="85.2475%" y="164" width="5.9924%" height="15" fill="rgb(224,114,35)" fg:x="9887" fg:w="695"/><text x="85.4975%" y="174.50">create_i..</text></g><g><title>__call__ (kappybara/indexed_set.py:24) (510 samples, 4.40%)</title><rect x="86.8426%" y="180" width="4.3973%" height="15" fill="rgb(245,159,27)" fg:x="10072" fg:w="510"/><text x="87.0926%" y="190.50">__cal..</text></g><g><title>&lt;lambda&gt; (kappybara/mixture.py:96) (444 samples, 3.83%)</title><rect x="87.4116%" y="196" width="3.8282%" height="15" fill="rgb(245,172,44)" fg:x="10138" fg:w="444"/><text x="87.6616%" y="206.50">&lt;lam..</text></g><g><title>lookup (kappybara/indexed_set.py:106) (34 samples, 0.29%)</title><rect x="90.9467%" y="212" width="0.2932%" height="15" fill="rgb(236,23,11)" fg:x="10548" fg:w="34"/><text x="91.1967%" y="222.50"></text></g><g><title>__hash__ (kappybara/utils.py:30) (17 samples, 0.15%)</title><rect x="92.7315%" y="180" width="0.1466%" height="15" fill="rgb(205,117,38)" fg:x="10755" fg:w="17"/><text x="92.9815%" y="190.50"></text></g><g><title>add (kappybara/indexed_set.py:61) (14 samples, 0.12%)</title><rect x="93.1281%" y="180" width="0.1207%" height="15" fill="rgb(237,72,25)" fg:x="10801" fg:w="14"/><text x="93.3781%" y="190.50"></text></g><g><title>add (kappybara/indexed_set.py:62) (165 samples, 1.42%)</title><rect x="93.2488%" y="180" width="1.4227%" height="15" fill="rgb(244,70,9)" fg:x="10815" fg:w="165"/><text x="93.4988%" y="190.50"></text></g><g><title>__hash__ (kappybara/pattern.py:188) (30 samples, 0.26%)</title><rect x="94.4128%" y="196" width="0.2587%" height="15" fill="rgb(217,125,39)" fg:x="10950" fg:w="30"/><text x="94.6628%" y="206.50"></text></g><g><title>add (kappybara/indexed_set.py:63) (142 samples, 1.22%)</title><rect x="94.6715%" y="180" width="1.2243%" height="15" fill="rgb(235,36,10)" fg:x="10980" fg:w="142"/><text x="94.9215%" y="190.50"></text></g><g><title>__hash__ (kappybara/pattern.py:188) (18 samples, 0.16%)</title><rect x="95.7406%" y="196" width="0.1552%" height="15" fill="rgb(251,123,47)" fg:x="11104" fg:w="18"/><text x="95.9906%" y="206.50"></text></g><g><title>add (kappybara/indexed_set.py:66) (53 samples, 0.46%)</title><rect x="95.8958%" y="180" width="0.4570%" height="15" fill="rgb(221,13,13)" fg:x="11122" fg:w="53"/><text x="96.1458%" y="190.50"></text></g><g><title>add (kappybara/indexed_set.py:67) (172 samples, 1.48%)</title><rect x="96.3528%" y="180" width="1.4830%" height="15" fill="rgb(238,131,9)" fg:x="11175" fg:w="172"/><text x="96.6028%" y="190.50"></text></g><g><title>__hash__ (kappybara/pattern.py:188) (15 samples, 0.13%)</title><rect x="97.7065%" y="196" width="0.1293%" height="15" fill="rgb(211,50,8)" fg:x="11332" fg:w="15"/><text x="97.9565%" y="206.50"></text></g><g><title>track_component (kappybara/mixture.py:94) (1,568 samples, 13.52%)</title><rect x="84.9543%" y="148" width="13.5196%" height="15" fill="rgb(245,182,24)" fg:x="9853" fg:w="1568"/><text x="85.2043%" y="158.50">track_component (kap..</text></g><g><title>create_index (kappybara/indexed_set.py:130) (832 samples, 7.17%)</title><rect x="91.3002%" y="164" width="7.1737%" height="15" fill="rgb(242,14,37)" fg:x="10589" fg:w="832"/><text x="91.5502%" y="174.50">create_ind..</text></g><g><title>add (kappybara/indexed_set.py:70) (74 samples, 0.64%)</title><rect x="97.8358%" y="180" width="0.6380%" height="15" fill="rgb(246,228,12)" fg:x="11347" fg:w="74"/><text x="98.0858%" y="190.50"></text></g><g><title>track_component (kappybara/mixture.py:96) (14 samples, 0.12%)</title><rect x="98.4739%" y="148" width="0.1207%" height="15" fill="rgb(213,55,15)" fg:x="11421" fg:w="14"/><text x="98.7239%" y="158.50"></text></g><g><title>&lt;module&gt; (profile_uni_bi_small.py:23) (11,509 samples, 99.23%)</title><rect x="0.1552%" y="68" width="99.2326%" height="15" fill="rgb(209,9,3)" fg:x="18" fg:w="11509"/><text x="0.4052%" y="78.50">&lt;module&gt; (profile_uni_bi_small.py:23)</text></g><g><title>update (kappybara/system.py:70) (11,465 samples, 98.85%)</title><rect x="0.5346%" y="84" width="98.8533%" height="15" fill="rgb(230,59,30)" fg:x="62" fg:w="11465"/><text x="0.7846%" y="94.50">update (kappybara/system.py:70)</text></g><g><title>act (kappybara/system.py:65) (11,417 samples, 98.44%)</title><rect x="0.9484%" y="100" width="98.4394%" height="15" fill="rgb(209,121,21)" fg:x="110" fg:w="11417"/><text x="1.1984%" y="110.50">act (kappybara/system.py:65)</text></g><g><title>apply_update (kappybara/mixture.py:117) (10,862 samples, 93.65%)</title><rect x="5.7337%" y="116" width="93.6541%" height="15" fill="rgb(220,109,13)" fg:x="665" fg:w="10862"/><text x="5.9837%" y="126.50">apply_update (kappybara/mixture.py:117)</text></g><g><title>_update_embeddings (kappybara/mixture.py:121) (10,861 samples, 93.65%)</title><rect x="5.7424%" y="132" width="93.6455%" height="15" fill="rgb(232,18,1)" fg:x="666" fg:w="10861"/><text x="5.9924%" y="142.50">_update_embeddings (kappybara/mixture.py:121)</text></g><g><title>track_component (kappybara/mixture.py:99) (92 samples, 0.79%)</title><rect x="98.5946%" y="148" width="0.7932%" height="15" fill="rgb(215,41,42)" fg:x="11435" fg:w="92"/><text x="98.8446%" y="158.50"></text></g><g><title>__iter__ (kappybara/pattern.py:98) (13 samples, 0.11%)</title><rect x="99.4568%" y="68" width="0.1121%" height="15" fill="rgb(224,123,36)" fg:x="11535" fg:w="13"/><text x="99.7068%" y="78.50"></text></g><g><title>sites (kappybara/pattern.py:111) (24 samples, 0.21%)</title><rect x="99.6551%" y="68" width="0.2069%" height="15" fill="rgb(240,125,3)" fg:x="11558" fg:w="24"/><text x="99.9051%" y="78.50"></text></g><g><title>all (11,598 samples, 100%)</title><rect x="0.0000%" y="52" width="100.0000%" height="15" fill="rgb(205,98,50)" fg:x="0" fg:w="11598"/><text x="0.2500%" y="62.50"></text></g><g><title>sites (kappybara/pattern.py:113) (16 samples, 0.14%)</title><rect x="99.8620%" y="68" width="0.1380%" height="15" fill="rgb(205,185,37)" fg:x="11582" fg:w="16"/><text x="100.1120%" y="78.50"></text></g></svg></svg>
