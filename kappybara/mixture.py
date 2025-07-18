@@ -5,9 +5,6 @@ from typing import Optional, Iterable
 from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
 from kappybara.indexed_set import SetProperty, Property, IndexedSet
 
-type ComponentPattern = Component
-type AgentPattern = Agent
-
 
 @dataclass(frozen=True)
 class Edge:
@@ -28,7 +25,7 @@ class Edge:
 @dataclass
 class Mixture:
     agents: IndexedSet[Agent]
-    _embeddings: dict[ComponentPattern, IndexedSet[Embedding]]
+    _embeddings: dict[Pattern, IndexedSet[Embedding]]
     _max_embedding_width: int
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
@@ -53,9 +50,7 @@ class Mixture:
             for component in pattern.components:
                 self._instantiate_component(component, 1)
 
-    def _instantiate_component(
-        self, component: ComponentPattern, n_copies: int
-    ) -> None:
+    def _instantiate_component(self, component: Pattern, n_copies: int) -> None:
         component_ordered = list(component.agents)
         new_agents = [agent.detached() for agent in component_ordered]
         new_edges = set()
@@ -74,13 +69,13 @@ class Mixture:
         update = MixtureUpdate(agents_to_add=new_agents, edges_to_add=new_edges)
         self.apply_update(update)
 
-    def embeddings(self, component: ComponentPattern) -> IndexedSet[Embedding]:
+    def embeddings(self, component: Pattern) -> IndexedSet[Embedding]:
         assert (
             component in self._embeddings
         ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
         return self._embeddings[component]
 
-    def track_component(self, component: ComponentPattern):
+    def track_component(self, component: Pattern):
         self._max_embedding_width = max(component.diameter, self._max_embedding_width)
         embeddings = IndexedSet(component.embeddings(self))
         embeddings.create_index("agent", SetProperty(lambda e: iter(e.values())))
@@ -103,8 +98,15 @@ class Mixture:
             self._add_agent(agent)
         for edge in update.edges_to_add:
             self._add_edge(edge)
-        for agent in update.agents_changed:
-            pass  # TODO: for incremental approaches
+        # for agent in update.agents_changed:
+        #     # NOTE: the reason we don't account for anything here is that
+        #     # we never mutate agent type, and thus the "type" index of the
+        #     # agent set won't get invalidated even when agents have been mutated.
+        #     #
+        #     # If we start indexing other agent properties that can get altered by
+        #     # an update, we will have to account for that here by updating the indices
+        #     # in the agent set appropriately.
+        #     pass
 
         update_region = neighborhood(update.touched_after, self._max_embedding_width)
 
@@ -170,11 +172,11 @@ class ComponentMixture(Mixture):
         super().__init__(patterns)
 
     def embeddings_in_component(
-        self, match_pattern: ComponentPattern, mixture_component: Component
+        self, match_pattern: Pattern, mixture_component: Component
     ) -> list[dict[Agent, Agent]]:
         return self._embeddings[match_pattern].lookup("component", mixture_component)
 
-    def track_component(self, component: ComponentPattern):
+    def track_component(self, component: Pattern):
         super().track_component(component)
 
         self._embeddings[component].create_index(
@@ -216,7 +218,7 @@ class ComponentMixture(Mixture):
         if len(component2.agents) > len(component1.agents):
             component1, component2 = component2, component1
 
-        relocated: dict[ComponentPattern, list[Embedding]] = {}
+        relocated: dict[Pattern, list[Embedding]] = {}
         for tracked in self._embeddings:
             relocated[tracked] = list(
                 self._embeddings[tracked].lookup("component", component2)
@@ -263,7 +265,7 @@ class ComponentMixture(Mixture):
         new_component1 = maybe_new_component
         new_component2 = Component(agent2.depth_first_traversal)
 
-        relocated: dict[ComponentPattern, list[Embedding]] = {}
+        relocated: dict[Pattern, list[Embedding]] = {}
         for tracked in self._embeddings:
             relocated[tracked] = list(
                 self._embeddings[tracked].lookup("component", old_component)
@@ -338,7 +340,7 @@ class MixtureUpdate:
     @property
     def touched_after(self) -> set[Agent]:
         """
-        Return the agents that will/have been changed or added after this
+        Return the agents that will have been changed or added after this
         update is applied.
         """
         touched = self.agents_changed | set(self.agents_to_add)
@@ -359,6 +361,9 @@ class MixtureUpdate:
     @property
     def touched_before(self) -> set[Agent]:
         """
+        Return the agents that will be changed or removed by this update,
+        before the update has actually been applied.
+
         Lots of code redundancy, but deduplicating here would make what's
         happening in either case a lot less clear. There's also a good chance
         this version won't be needed in an improved incremental impl.
