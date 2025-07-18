@@ -190,7 +190,7 @@ class Embedding(dict):
 
     def __setitem__(self, key, new):
         if "as_tuple" in self.__dict__:
-            assert TypeError(
+            raise TypeError(
                 "The embedding has been accessed as a tuple and should not be mutated"
             )
         super().__setitem__(key, new)
