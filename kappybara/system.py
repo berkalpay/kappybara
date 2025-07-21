@@ -87,18 +87,17 @@ class KappaSystem(System):
         alg_exp_observables: Optional[dict[str, AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
     ):
-
         if mixture is None:
-            if any(
-                type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular] for r in rules
-            ):
-                mixture = ComponentMixture()
-                print("Created ComponentMixture")
-            else:
-                mixture = Mixture()
-                print("Created Mixture")
-
-        self.mixture = mixture
+            self.mixture = (
+                ComponentMixture()
+                if any(
+                    type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular]
+                    for r in rules
+                )
+                else Mixture()
+            )
+        else:
+            self.mixture = mixture
 
         super().__init__(mixture, rules, None)
 
