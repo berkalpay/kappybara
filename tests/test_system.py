@@ -1,8 +1,10 @@
 import pytest
+import itertools
 
 from kappybara.mixture import ComponentMixture
 from kappybara.system import System
 import kappybara.kappa as kappa
+from kappybara.rule import AVOGADRO, DIFFUSION_RATE, kinetic_to_stochastic_on_rate
 from kappybara.examples import heterodimerization_system
 
 
@@ -52,3 +54,39 @@ def test_heterodimerization(k_on, expected):
 
     measured = sum(n_heterodimers) / len(n_heterodimers)
     assert abs(measured - expected) < expected / 5
+
+
+@pytest.mark.parametrize(
+    "kd, a_init, b_init",
+    itertools.product([10**-9], [2000], [2000, 3500]),
+)
+def test_equilibrium_matches_kd(kd, a_init, b_init):
+    """
+    Check that the input Kd matches what's observed empirically post-equilibrium
+    within a relative margin of error.
+    """
+    volume = 10**-13
+    on_rate = kinetic_to_stochastic_on_rate(volume=volume)
+    kd = 10**-9
+    off_rate = DIFFUSION_RATE * kd
+    system = kappa.system(
+        f"""
+        %init: {a_init} A(x[.])
+        %init: {b_init} B(x[.])
+        %obs: 'A' |A(x[.])|
+        %obs: 'B' |B(x[.])|
+        %obs: 'AB' |B(x[_])|
+        A(x[.]), B(x[.]) <-> A(x[1]), B(x[1]) @ {on_rate}, {off_rate}
+        """
+    )
+
+    empirical_kds = []
+    while system.time < 2:
+        system.update()
+        a_conc_eq = system.eval_observable("A") / AVOGADRO / volume
+        b_conc_eq = system.eval_observable("B") / AVOGADRO / volume
+        ab_conc_eq = system.eval_observable("AB") / AVOGADRO / volume
+        empirical_kds.append(a_conc_eq * b_conc_eq / ab_conc_eq)
+    i = int(len(empirical_kds) * 0.5)  # an index post-equilibrium
+    empirical_kd = sum(empirical_kds[i:]) / len(empirical_kds[i:])
+    assert abs((empirical_kd - kd) / kd) < 0.1
