@@ -1,4 +1,5 @@
 import random
+import warnings
 from functools import cached_property
 from typing import Optional, Iterable
 
@@ -55,12 +56,19 @@ class System:
         return sum(self.rule_reactivities)
 
     def wait(self) -> None:
-        self.time += random.expovariate(self.reactivity)
+        try:
+            self.time += random.expovariate(self.reactivity)
+        except ZeroDivisionError:
+            warnings.warn(
+                "system has no reactivity: infinite wait time", RuntimeWarning
+            )
 
     def act(self) -> None:
-        # TODO: warn after many consecutive null events?
-        rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
-        # print(rule.left.components)
+        try:
+            rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
+        except ValueError:
+            warnings.warn("system has no reactivity: no rule applied", RuntimeWarning)
+            return
         update = rule.select(self.mixture)
         if update is not None:
             self.mixture.apply_update(update)
