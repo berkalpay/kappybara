@@ -1,17 +1,48 @@
 import math
+import operator
 from collections import deque
-from typing import Self, Optional, TYPE_CHECKING
-
-from kappybara.pattern import Component
+from typing import Self, Optional, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from kappybara.pattern import Component
     from kappybara.system import System
 
 
+string_to_operator = {
+    # Unary
+    "[log]": math.log,
+    "[exp]": math.exp,
+    "[sin]": math.sin,
+    "[cos]": math.cos,
+    "[tan]": math.tan,
+    "[sqrt]": math.sqrt,
+    # Binary
+    "+": operator.add,
+    "-": operator.sub,
+    "*": operator.mul,
+    "/": operator.truediv,
+    "^": operator.pow,
+    "mod": operator.mod,
+    # Comparisons
+    "=": operator.eq,
+    "<": operator.lt,
+    ">": operator.gt,
+    # List
+    "[max]": max,
+    "[min]": min,
+}
+
+
+def parse_operator(kappa_operator: str) -> Callable:
+    """Takes a Kappa string operator and returns a Python operator."""
+    try:
+        return string_to_operator[kappa_operator]
+    except KeyError:
+        raise ValueError(f"Unknown operator: {kappa_operator}")
+
+
 class AlgExp:
-    """
-    Algebraic expressions as specified by the Kappa language.
-    """
+    """Algebraic expressions as specified by the Kappa language."""
 
     def __init__(self, type, **attrs):
         self.type = type
@@ -29,63 +60,26 @@ class AlgExp:
 
         elif self.type == "variable":
             name = self.attrs["name"]
-
             if system is None:
                 raise ValueError(
                     f"{self} requires a System to evaluate, due to referenced variable '{name}'."
                 )
-
             if not hasattr(system, "eval_variable"):
-                raise Error("AlgExp's with named variables require a KappaSystem")
-
+                raise ValueError("AlgExp's with named variables require a KappaSystem")
             return system.eval_variable(name)
 
-        elif self.type == "binary_op":
+        elif self.type in ("binary_op", "comparison"):
             left_val = self.attrs["left"].evaluate(system)
             right_val = self.attrs["right"].evaluate(system)
-            op = self.attrs["operator"]
-            if op == "+":
-                return left_val + right_val
-            elif op == "-":
-                return left_val - right_val
-            elif op == "*":
-                return left_val * right_val
-            elif op == "/":
-                return left_val / right_val
-            elif op == "^":
-                return left_val**right_val
-            elif op == "mod":
-                return left_val % right_val
-            else:
-                raise ValueError(f"Unknown binary operator: {op}")
+            return parse_operator(self.attrs["operator"])(left_val, right_val)
 
         elif self.type == "unary_op":
             child_val = self.attrs["child"].evaluate(system)
-            op = self.attrs["operator"]
-            if op == "[log]":
-                return math.log(child_val)
-            elif op == "[exp]":
-                return math.exp(child_val)
-            elif op == "[sin]":
-                return math.sin(child_val)
-            elif op == "[cos]":
-                return math.cos(child_val)
-            elif op == "[tan]":
-                return math.tan(child_val)
-            elif op == "[sqrt]":
-                return math.sqrt(child_val)
-            else:
-                raise ValueError(f"Unknown unary operator: {op}")
+            return parse_operator(self.attrs["operator"])(child_val)
 
         elif self.type == "list_op":
             children_vals = [child.evaluate(system) for child in self.attrs["children"]]
-            op = self.attrs["operator"]
-            if op == "[max]":
-                return max(children_vals)
-            elif op == "[min]":
-                return min(children_vals)
-            else:
-                raise ValueError(f"Unknown list operator: {op}")
+            return parse_operator(self.attrs["operator"])(children_vals)
 
         elif self.type == "defined_constant":
             const = self.attrs["name"]
@@ -104,19 +98,6 @@ class AlgExp:
                 if cond_val
                 else self.attrs["false_expr"].evaluate(system)
             )
-
-        elif self.type == "comparison":
-            left_val = self.attrs["left"].evaluate(system)
-            right_val = self.attrs["right"].evaluate(system)
-            op = self.attrs["operator"]
-            if op == "=":
-                return left_val == right_val
-            elif op == "<":
-                return left_val < right_val
-            elif op == ">":
-                return left_val > right_val
-            else:
-                raise ValueError(f"Unknown comparison operator: {op}")
 
         elif self.type == "logical_or":
             left_val = self.attrs["left"].evaluate(system)
@@ -167,7 +148,6 @@ class AlgExp:
 
         while stack:
             node = stack.pop()
-
             if node.type == type_str:
                 result.append(node)
 
