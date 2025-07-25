@@ -1,7 +1,6 @@
-from dataclasses import dataclass, field
 from collections import defaultdict
 from collections.abc import Callable, Hashable
-from typing import Optional, Iterable, Generic, TypeVar, Any, Self
+from typing import Iterable, Generic, TypeVar, Any, Self
 
 T = TypeVar("T")  # Member type of `IndexedSet`
 
@@ -19,13 +18,7 @@ class SetProperty:
         name: str
         members: list[str]
 
-    def get_members(team: SportsTeam):
-        return team.members
-
-    members = SetProperty(get_members, is_unique=False) # If someone can belong to multiple teams (default)
-    members_unique = SetProperty(get_members, is_unique=True) # If someone can belong to only one team
-
-    members_alt = SetProperty(lambda team: team.members) # Equivalent to `members`
+    members_alt = SetProperty(lambda team: team.members) # If someone can belong to multiple teams (default)
     ```
     """
 
@@ -43,24 +36,15 @@ class Property(SetProperty):
     takes a set member as input, and returns a single object which is
     the corresponding property value of a set member.
 
-    Two alternative examples for initializing a `Property`
+    An example of initializing a `Property`
     ```
     @dataclass
     class Fruit:
         color: str
 
-    def get_color(f: Fruit):
-        return f.color
-
-    my_property = Property(get_color)
-
-    my_property_alt = Property(lambda fruit: fruit.color) # Equivalent using a lambda function
+    my_property = Property(lambda fruit: fruit.color) # Equivalent using a lambda function
     ```
     """
-
-    def __init__(self, fn: Callable[[T], Hashable], is_unique=False):
-        self.fn = fn
-        self.is_unique = is_unique
 
     def __call__(self, item: T) -> Iterable[Hashable]:
         return [self.fn(item)]
@@ -90,22 +74,14 @@ class IndexedSet(set[T], Generic[T]):
         jersey_color: str
         members: list[str]
 
-    def get_members(team: SportsTeam):
-        return team.members
-
-    members = SetProperty(get_members, is_unique=False) # If someone can belong to multiple teams (default)
-    members_unique = SetProperty(get_members, is_unique=True) # If someone can belong to only one team
-
     teams: IndexedSet[SportsTeam] = IndexedSet()
     teams.create_index("name", Property(lambda team: team.name, is_unique=True))
-    teams.create_index("members", members_prop)
     teams.create_index("color", Property(lambda team: team.jersey_color))
 
     [...] # populate the set with teams
 
-    teams.lookup("members", "Alice") # Returns all `SportsTeam`s that Alice belongs to
-    teams.lookup("color", "blue")    # Returns all teams with blue jerseys
     teams.lookup("name", "Manchester") # Returns the team whose name is "Manchester"
+    teams.lookup("color", "blue")    # Returns all teams with blue jerseys
     ```
     """
 
@@ -117,9 +93,7 @@ class IndexedSet(set[T], Generic[T]):
 
     def __init__(self, iterable: Iterable[T] = []):
         iterable = list(iterable)
-
         super().__init__(iterable)
-
         self._item_list = iterable
         self._item_to_pos = {item: i for (i, item) in enumerate(iterable)}
 
@@ -129,7 +103,6 @@ class IndexedSet(set[T], Generic[T]):
     def add(self, item: T):
         if item in self:
             return
-
         super().add(item)
 
         # Update integer index
@@ -139,7 +112,6 @@ class IndexedSet(set[T], Generic[T]):
         # Update property indices
         for prop_name in self.properties:
             prop = self.properties[prop_name]
-
             for val in prop(item):
                 if prop.is_unique:
                     assert not self.indices[prop_name][val]
@@ -159,10 +131,8 @@ class IndexedSet(set[T], Generic[T]):
         # Update property indices
         for prop_name in self.properties:
             prop = self.properties[prop_name]
-
             for val in prop(item):
                 self.indices[prop_name][val].remove(item)
-
                 # If the index entry is now empty, delete it
                 if not self.indices[prop_name][val]:
                     del self.indices[prop_name][val]
@@ -179,21 +149,14 @@ class IndexedSet(set[T], Generic[T]):
 
     def remove_by(self, prop_name: str, value: Any):
         """
-        Remove all set members whose property `prop_name` matches
-        or contains `value`.
+        Remove all set members whose property `prop_name` matches or contains `value`.
         """
         if value not in self.indices[prop_name]:
             return
-
-        # It's important that this is a separate copy, since the
-        # index entry itself will get mutated as we delete items.
         matches = list(self.indices[prop_name][value])
-
-        for m in matches:
-            # print(f"Removing: {id(m)}, {m}")
-            # print(f"From : {[id(x) for x in self]}")
-            assert m in self
-            self.remove(m)
+        for match in matches:
+            assert match in self
+            self.remove(match)
 
     def create_index(self, name: str, prop: SetProperty):
         """
@@ -207,7 +170,6 @@ class IndexedSet(set[T], Generic[T]):
         NOTE: mutating set members outside of interface calls can invalidate indices.
         """
         assert name not in self.properties
-
         self.properties[name] = prop
         self.indices[name] = defaultdict(IndexedSet)
 
