@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
-from collections import defaultdict
 from typing import Optional, Iterable
 
 from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
-from kappybara.indexed_set import SetProperty, Property, IndexedSet
+from kappybara.utils import SetProperty, Property, IndexedSet
 
 
 @dataclass(frozen=True)
