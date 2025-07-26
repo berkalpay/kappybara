@@ -2,8 +2,8 @@ from kappybara.system import KappaSystem
 from kappybara.mixture import ComponentMixture
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
-from kappybara.algebra import AlgExp
-from kappybara.grammar import (
+from kappybara.kappa.algebra import AlgExp
+from kappybara.kappa.grammar import (
     kappa_parser,
     parse_tree_to_alg_exp,
     AgentBuilder,
