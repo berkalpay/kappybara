@@ -6,7 +6,7 @@ from typing import Optional, Iterable
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
-from kappybara.alg_exp import AlgExp
+from kappybara.algebra import AlgExp
 
 
 class System:

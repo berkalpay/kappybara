@@ -6,7 +6,7 @@ from typing import Optional, TYPE_CHECKING
 
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, ComponentMixture, MixtureUpdate
-from kappybara.alg_exp import AlgExp
+from kappybara.algebra import AlgExp
 from kappybara.utils import rejection_sample
 
 if TYPE_CHECKING:
