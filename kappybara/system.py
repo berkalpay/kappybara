@@ -12,6 +12,7 @@ from kappybara.kappa.algebra import AlgExp
 class System:
     mixture: Mixture
     rules: list[Rule]
+    observables: list[Component]
     time: float
 
     def __init__(
@@ -24,9 +25,9 @@ class System:
         self.rules = [] if rules is None else list(rules)
         for rule in self.rules:
             self._track_rule(rule)
-        if observables is not None:
-            for observable in observables:
-                self.mixture.track_component(observable)
+        self.observables = [] if observables is None else list(observables)
+        for observable in self.observables:
+            self.mixture.track_component(observable)
         self.time = 0
 
     def _track_rule(self, rule: Rule) -> None:
@@ -37,12 +38,19 @@ class System:
                 self.mixture.track_component(component)
 
     def count_observable(self, obs: Component) -> int:
-        """
-        NOTE: You must query with the same object in memory that you provided in the constructor.
-        Ismorphic components aren't recognized.
-        """
-        assert type(obs) is Component
-        return len(self.mixture.embeddings(obs))
+        try:
+            embeddings = self.mixture.embeddings(obs)
+        except KeyError:
+            # Try to find an isomorphic observable if the specific one given isn't tracked
+            try:
+                tracked_obs = next((c for c in self.observables if c.isomorphic(obs)))
+            except StopIteration as e:
+                e.add_note(
+                    f"No component isomorphic to observable `{obs}` has been declared"
+                )
+                raise
+            embeddings = self.mixture.embeddings(tracked_obs)
+        return len(embeddings)
 
     @cached_property
     def rule_reactivities(self) -> list[float]:

@@ -27,7 +27,6 @@ def test_basic_system():
     for pair in init_patterns:
         pattern_str, count = pair
         pattern = kappa.pattern(pattern_str)
-
         for _ in range(count):
             mixture.instantiate(pattern)
     rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
@@ -44,6 +43,7 @@ def test_basic_system():
 @pytest.mark.parametrize("k_on, expected", [(2.5e8, 65), (2.5e9, 331)])
 def test_heterodimerization(k_on, expected):
     heterodimer = kappa.component("A(x[1]),B(x[1])")
+    heterodimer_isomorphic = kappa.component("A(x[1]),B(x[1])")
     system = heterodimerization_system(k_on, heterodimer)
 
     n_heterodimers = []
@@ -51,6 +51,7 @@ def test_heterodimerization(k_on, expected):
         system.update()
         if system.time > 1:
             n_heterodimers.append(system.count_observable(heterodimer))
+            assert n_heterodimers[-1] == system.count_observable(heterodimer_isomorphic)
 
     measured = sum(n_heterodimers) / len(n_heterodimers)
     assert abs(measured - expected) < expected / 5
