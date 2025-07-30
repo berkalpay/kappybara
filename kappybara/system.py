@@ -30,13 +30,10 @@ class System:
         self.time = 0
 
     def _track_rule(self, rule: Rule) -> None:
-        """
-        Track any components mentioned in the left hand side of a `Rule`
-        """
+        """Track any components mentioned in the left hand side of a `Rule`"""
         if isinstance(rule, KappaRule):
             for component in rule.left.components:
-                # TODO: Efficiency thing: check for isomorphism with existing components
-                #       Create a surjective map from *all* components to set of unique components
+                # TODO: For efficiency check for isomorphism with already-tracked components
                 self.mixture.track_component(component)
 
     def count_observable(self, obs: Component) -> int:
@@ -133,11 +130,12 @@ class KappaSystem(System):
             self.mixture.track_component(component)
 
     def eval_observable(self, obs_name: str) -> int | float:
-        assert type(obs_name) is str
-        assert (
-            obs_name in self.alg_exp_observables
-        ), f"Observable `{obs_name}` not defined"
-        return self.alg_exp_observables[obs_name].evaluate(self)
+        try:
+            observable = self.alg_exp_observables[obs_name]
+        except KeyError as e:
+            e.add_note(f"Observable `{obs_name}` not defined")
+            raise
+        return observable.evaluate(self)
 
     def eval_variable(self, var_name: str) -> int | float:
         assert var_name in self.variables, f"Variable `{var_name}` not defined"
