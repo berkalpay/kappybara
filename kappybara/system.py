@@ -3,6 +3,10 @@ import warnings
 from functools import cached_property
 from typing import Optional, Iterable
 
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.figure
+
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
@@ -148,3 +152,37 @@ class KappaSystem(System):
     def eval_variable(self, var_name: str) -> int | float:
         assert var_name in self.variables, f"Variable `{var_name}` not defined"
         return self.variables[var_name].evaluate(self)
+
+
+class Monitor:
+    system: KappaSystem
+    history: dict[str, list[float]]
+
+    def __init__(self, system: KappaSystem):
+        self.system = system
+        self.history = {"time": []} | {
+            obs_name: [] for obs_name in system.alg_exp_observables
+        }
+
+    @cached_property
+    def obs_names(self) -> list[str]:
+        return list(self.system.alg_exp_observables.keys())
+
+    def update(self) -> None:
+        self.history["time"].append(self.system.time)
+        for obs_name in self.obs_names:
+            self.history[obs_name].append(self.system.eval_observable(obs_name))
+
+    @property
+    def dataframe(self) -> pd.DataFrame:
+        return pd.DataFrame(self.history)
+
+    def plot(self) -> matplotlib.figure.Figure:
+        fig, ax = plt.subplots()
+        for obs_name in self.obs_names:
+            ax.plot(self.history["time"], self.history[obs_name], label=obs_name)
+        plt.legend()
+        plt.xlabel("Time")
+        plt.ylabel("Observable")
+        plt.margins(0, 0)
+        return fig
