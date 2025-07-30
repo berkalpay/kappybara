@@ -69,10 +69,13 @@ class Mixture:
         self.apply_update(update)
 
     def embeddings(self, component: Pattern) -> IndexedSet[Embedding]:
-        assert (
-            component in self._embeddings
-        ), f"Undeclared component: {component}. To embed components, they must first be declared using `track_component`"
-        return self._embeddings[component]
+        try:
+            return self._embeddings[component]
+        except KeyError as e:
+            e.add_note(
+                f"Undeclared component: {component}. To embed it, first use `track_component`."
+            )
+            raise
 
     def track_component(self, component: Pattern):
         self._max_embedding_width = max(component.diameter, self._max_embedding_width)
@@ -82,9 +85,7 @@ class Mixture:
         self._embeddings[component] = embeddings
 
     def apply_update(self, update: "MixtureUpdate") -> None:
-        """
-        Apply the update while keeping indices up to date
-        """
+        """Apply the update while keeping indices up to date"""
         for agent in update.touched_before:
             for tracked in self._embeddings:
                 self._embeddings[tracked].remove_by("agent", agent)
