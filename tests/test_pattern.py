@@ -45,16 +45,11 @@ import kappybara.kappa as kappa
     ],
 )
 def test_component_isomorphism(test_case):
-    """
-    Test various cases of isomorphism between connected components.
-    """
-    a_str, b_str, expected_result = test_case
-
+    a_str, b_str, isomorphic = test_case
     a = kappa.component(a_str)
     b = kappa.component(b_str)
-
     assert a.isomorphic(b) == b.isomorphic(a)
-    assert expected_result == a.isomorphic(b)
+    assert isomorphic == a.isomorphic(b)
 
 
 def test_component_id_uniqueness():
@@ -73,20 +68,18 @@ def test_component_id_uniqueness():
 )
 def test_automorphism_counting(test_case):
     kappa_str, n_automorphisms_expected = test_case
-
     component = kappa.component(kappa_str)
-
     assert component.isomorphic(component)
     assert n_automorphisms_expected == len(list(component.isomorphisms(component)))
 
 
-if __name__ == "__main__":
-    test_kappa = """
+def test_pattern_creation():
+    kappa.pattern(
+        """
         A(a[.]{blah}, b[_]{bleh}, c[#], d[some_site_name.some_agent_name], e[13]),
         B(f[13], e[1], z[3]),
         C(x[1]),
         D(w[3]),
         E()
-    """
-
-    p = kappa.pattern(test_kappa)
+        """
+    )
