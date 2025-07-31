@@ -1,12 +1,8 @@
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
+from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple
 
 from kappybara.utils import Counted, IndexedSet, Property
-
-
-if TYPE_CHECKING:
-    from kappybara.mixture import ComponentMixture
 
 
 # String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
@@ -34,9 +30,7 @@ class Site(Counted):
 
     @property
     def undetermined(self) -> bool:
-        """
-        Is the site in a state equivalent to leaving it unnamed in an agent?
-        """
+        """Is the site in a state equivalent to leaving it unnamed in an agent?"""
         return self.state == "?" and self.partner in ("?", ".")
 
     @property
@@ -192,13 +186,8 @@ class Embedding(dict[Agent, Agent]):
 
 class Component(Counted):
     """
-    A set of agents that are all in the same connected component (this is
-    not guaranteed statically, you have to make sure it's enforced whenever
-    you create or manipulate it.)
-
-    NOTE(24-03-2025): Some new considerations following convo w/ Walter, elaborate.
-    - Optionally turning off connected component tracking
-    - Cost of detailed structs when it comes to FFI conversions
+    A set of agents that are all in the same connected component.
+    NOTE: Connectedness is not guaranteed statically and must be enforced.
     """
 
     agents: IndexedSet[Agent]
@@ -214,9 +203,7 @@ class Component(Counted):
                 "Simulations won't handle n_copies correctly in counting embeddings."
             )
 
-        self.agents = IndexedSet(
-            agents
-        )  # TODO: I want this to be ordered by graph traversal
+        self.agents = IndexedSet(agents)  # TODO: order by graph traversal
         self.agents.create_index("type", Property(lambda a: a.type))
         self.n_copies = n_copies
 
@@ -250,10 +237,9 @@ class Component(Counted):
         self.agents.add(agent)
 
     def isomorphic(self, other: Self) -> bool:
-        # TODO: set __eq__ with this method?
         return next(self.isomorphisms(other), None) is not None
 
-    def embeddings(  # TODO: rename this to `embed_in` or `embeddings_in`
+    def embeddings(  # TODO: rename to `embed_in` or `embeddings_in`
         self, other: Self | "Mixture" | Iterable[Agent], exact: bool = False
     ) -> Iterator[Embedding]:
         """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
@@ -310,11 +296,8 @@ class Component(Counted):
         ensuring that any internal site state specified in one compononent
         exists and is the same in the other.
 
-        NOTE: This is trying to handle things more general than just isomorphisms between
-        instantiated components in a mixture, so that we can also potentially check
-        isomorphism between rule patterns. See the cases in `test_component_isomorphism`
-        (in tests/test_pattern.py) for some usage examples between component patterns and
-        their expected behavior.
+        NOTE: Handles isomorphism generally, between instantiated components
+        in a mixture and potentially between rule patterns.
         """
         if len(self.agents) != len(other.agents):
             return
@@ -322,9 +305,7 @@ class Component(Counted):
 
     @property
     def diameter(self) -> int:
-        """
-        Return the maximum minimum shortest path between any two agents.
-        """
+        """The maximum minimum shortest path between any two agents."""
 
         def bfs_depth(root) -> int:
             frontier = set([root])
@@ -354,10 +335,8 @@ class Pattern:
         """
         Compile a pattern from a list of `Agent`s whose edges are implied by integer
         link states. Replaces integer link states with references to actual partners, and
-        constructs a helper object which tracks connected components in the pattern.
-
-        # NOTE: `agents` is a list of `Optional` types to support the possibility of
-        empty slots (represented by ".") in rule expression patterns.
+        constructs a helper object which tracks connected components in the pattern. A None
+        in `agents` represents an empty slot ("." in Kappa) in a rule expression pattern.
         """
         self.agents = agents
 
