@@ -67,6 +67,13 @@ class System:
                 "Name {name} doesn't correspond to a declared observable or variable"
             )
 
+    @property
+    def names(self) -> dict[str, set[str]]:
+        return {
+            "observables": set(self.observables),
+            "variables": set(self.variables),
+        }
+
     def _track_rule(self, rule: Rule) -> None:
         """Track any components mentioned in the left hand side of a `Rule`"""
         if isinstance(rule, KappaRule):
