@@ -25,13 +25,26 @@ class System:
         rules: Optional[Iterable[Rule]] = None,
         observables: Optional[Iterable[Component]] = None,
     ):
-        self.mixture = Mixture() if mixture is None else mixture
+        if mixture is None:
+            self.mixture = (
+                ComponentMixture()
+                if any(
+                    type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular]
+                    for r in rules
+                )
+                else Mixture()
+            )
+        else:
+            self.mixture = mixture
+
         self.rules = [] if rules is None else list(rules)
         for rule in self.rules:
             self._track_rule(rule)
+
         self.observables = [] if observables is None else list(observables)
         for observable in self.observables:
             self.mixture.track_component(observable)
+
         self.time = 0
 
     def _track_rule(self, rule: Rule) -> None:
@@ -104,22 +117,12 @@ class KappaSystem(System):
         alg_exp_observables: Optional[dict[str, AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
     ):
-        if mixture is None:
-            self.mixture = (
-                ComponentMixture()
-                if any(
-                    type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular]
-                    for r in rules
-                )
-                else Mixture()
-            )
-        else:
-            self.mixture = mixture
-
         super().__init__(mixture, rules, None)
+
         self.alg_exp_observables = alg_exp_observables or {}
         for name in self.alg_exp_observables:
             self._track_alg_exp(self.alg_exp_observables[name])
+
         self.variables = variables or {}
         for name in self.variables:
             self._track_alg_exp(self.variables[name])
