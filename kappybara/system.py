@@ -16,14 +16,15 @@ from kappybara.kappa.algebra import AlgExp
 class System:
     mixture: Mixture
     rules: list[Rule]
-    observables: list[Component]
+    observables: dict[str, Component | AlgExp]
     time: float
 
     def __init__(
         self,
         mixture: Optional[Mixture] = None,
         rules: Optional[Iterable[Rule]] = None,
-        observables: Optional[Iterable[Component]] = None,
+        observables: Optional[list[Component] | dict[str, Component | AlgExp]] = None,
+        variables: Optional[dict[str, AlgExp]] = None,
     ):
         if mixture is None:
             self.mixture = (
@@ -41,9 +42,18 @@ class System:
         for rule in self.rules:
             self._track_rule(rule)
 
-        self.observables = [] if observables is None else list(observables)
-        for observable in self.observables:
-            self.mixture.track_component(observable)
+        if isinstance(observables, list):
+            self.observables = {
+                str(i): observable for i, observable in enumerate(observables)
+            }
+        else:
+            self.observables = {} if observables is None else observables
+        for observable in self.observables.values():
+            self._track_components(observable)
+
+        self.variables = {} if variables is None else variables
+        for variable in self.variables.values():
+            self._track_components(variable)
 
         self.time = 0
 
@@ -54,13 +64,28 @@ class System:
                 # TODO: For efficiency check for isomorphism with already-tracked components
                 self.mixture.track_component(component)
 
+    def _track_components(self, observable: Component | AlgExp) -> None:
+        """
+        Tracks the `Component`s in the given observable.
+
+        NOTE: For `AlgExp`s, does not track patterns nested by indirection:
+        see the comment in the `filter` method.
+        """
+        if isinstance(observable, Component):
+            self.mixture.track_component(observable)
+        else:
+            for component_exp in observable.filter("component_pattern"):
+                self.mixture.track_component(component_exp.attrs["value"])
+
     def count_observable(self, obs: Component) -> int:
         try:
             embeddings = self.mixture.embeddings(obs)
         except KeyError:
             # Try to find an isomorphic observable if the specific one given isn't tracked
             try:
-                tracked_obs = next((c for c in self.observables if c.isomorphic(obs)))
+                tracked_obs = next(
+                    (c for c in self.observables.values() if c.isomorphic(obs))
+                )
             except StopIteration as e:
                 e.add_note(
                     f"No component isomorphic to observable `{obs}` has been declared"
@@ -68,6 +93,22 @@ class System:
                 raise
             embeddings = self.mixture.embeddings(tracked_obs)
         return len(embeddings)
+
+    def eval_observable(self, obs_name: str) -> int | float:
+        try:
+            observable = self.observables[obs_name]
+        except KeyError as e:
+            e.add_note(f"Observable `{obs_name}` not defined")
+            raise
+
+        if isinstance(observable, Component):
+            return len(self.mixture.embeddings(observable))
+        else:
+            return observable.evaluate(self)
+
+    def eval_variable(self, var_name: str) -> int | float:
+        assert var_name in self.variables, f"Variable `{var_name}` not defined"
+        return self.variables[var_name].evaluate(self)
 
     @cached_property
     def rule_reactivities(self) -> list[float]:
@@ -101,69 +142,17 @@ class System:
         self.act()
 
 
-class KappaSystem(System):
-    """
-    A wrapper around a base `System` that allows for observables in
-    the form of algebraic expressions.
-    """
-
-    alg_exp_observables: dict[str, AlgExp]
-    variables: dict[str, AlgExp]
-
-    def __init__(
-        self,
-        mixture: Optional[ComponentMixture] = None,
-        rules: Optional[Iterable[Rule]] = None,
-        alg_exp_observables: Optional[dict[str, AlgExp]] = None,
-        variables: Optional[dict[str, AlgExp]] = None,
-    ):
-        super().__init__(mixture, rules, None)
-
-        self.alg_exp_observables = alg_exp_observables or {}
-        for name in self.alg_exp_observables:
-            self._track_alg_exp(self.alg_exp_observables[name])
-
-        self.variables = variables or {}
-        for name in self.variables:
-            self._track_alg_exp(self.variables[name])
-
-    def _track_alg_exp(self, alg_exp: AlgExp) -> None:
-        """
-        Tracks the `Component`s in the given expression.
-
-        NOTE: Does not track patterns nested by indirection: see
-        the comment in the `filter` method.
-        """
-        for component_exp in alg_exp.filter("component_pattern"):
-            component: Component = component_exp.attrs["value"]
-            self.mixture.track_component(component)
-
-    def eval_observable(self, obs_name: str) -> int | float:
-        try:
-            observable = self.alg_exp_observables[obs_name]
-        except KeyError as e:
-            e.add_note(f"Observable `{obs_name}` not defined")
-            raise
-        return observable.evaluate(self)
-
-    def eval_variable(self, var_name: str) -> int | float:
-        assert var_name in self.variables, f"Variable `{var_name}` not defined"
-        return self.variables[var_name].evaluate(self)
-
-
 class Monitor:
-    system: KappaSystem
+    system: System
     history: dict[str, list[float]]
 
-    def __init__(self, system: KappaSystem):
+    def __init__(self, system: System):
         self.system = system
-        self.history = {"time": []} | {
-            obs_name: [] for obs_name in system.alg_exp_observables
-        }
+        self.history = {"time": []} | {obs_name: [] for obs_name in system.observables}
 
     @cached_property
     def obs_names(self) -> list[str]:
-        return list(self.system.alg_exp_observables.keys())
+        return list(self.system.observables.keys())
 
     def update(self) -> None:
         self.history["time"].append(self.system.time)
