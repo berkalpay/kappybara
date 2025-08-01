@@ -90,8 +90,8 @@ class System:
 
 class KappaSystem(System):
     """
-    A wrapper around a base `System` that allows for more expressive observables
-    in the form of an `AlgExp`.
+    A wrapper around a base `System` that allows for observables in
+    the form of algebraic expressions.
     """
 
     alg_exp_observables: dict[str, AlgExp]
@@ -117,27 +117,21 @@ class KappaSystem(System):
             self.mixture = mixture
 
         super().__init__(mixture, rules, None)
-
-        if alg_exp_observables:
-            for name in alg_exp_observables:
-                self._track_alg_exp(alg_exp_observables[name])
-        if variables:
-            for name in variables:
-                self._track_alg_exp(variables[name])
-
         self.alg_exp_observables = alg_exp_observables or {}
+        for name in self.alg_exp_observables:
+            self._track_alg_exp(self.alg_exp_observables[name])
         self.variables = variables or {}
+        for name in self.variables:
+            self._track_alg_exp(self.variables[name])
 
     def _track_alg_exp(self, alg_exp: AlgExp) -> None:
         """
-        Tracks the `Component`s which existing in `obs`.
+        Tracks the `Component`s in the given expression.
 
-        NOTE: Does not track patterns nested by indirection in `obs`, see
+        NOTE: Does not track patterns nested by indirection: see
         the comment in the `filter` method.
         """
-        filtered: list[AlgExp] = alg_exp.filter("component_pattern")
-
-        for component_exp in filtered:
+        for component_exp in alg_exp.filter("component_pattern"):
             component: Component = component_exp.attrs["value"]
             self.mixture.track_component(component)
 
