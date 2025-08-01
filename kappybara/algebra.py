@@ -64,8 +64,6 @@ class AlgExp:
                 raise ValueError(
                     f"{self} requires a System to evaluate, due to referenced variable '{name}'."
                 )
-            if not hasattr(system, "eval_variable"):
-                raise ValueError("AlgExp's with named variables require a KappaSystem")
             return system.eval_variable(name)
 
         elif self.type in ("binary_op", "comparison"):

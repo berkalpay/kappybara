@@ -1,5 +1,4 @@
-from kappybara.system import KappaSystem
-from kappybara.mixture import ComponentMixture
+from kappybara.system import System
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
 from kappybara.algebra import AlgExp
@@ -73,7 +72,7 @@ def alg_exp(kappa_str: str) -> AlgExp:
     return parse_tree_to_alg_exp(alg_exp_tree)
 
 
-def system(kappa_str: str) -> KappaSystem:
+def system(kappa_str: str) -> System:
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"
 
@@ -152,7 +151,7 @@ def system(kappa_str: str) -> KappaSystem:
         else:
             raise TypeError(f"Unsupported input type: {tag}")
 
-    system = KappaSystem(None, rules, observables, variables)
+    system = System(None, rules, observables, variables)
 
     for init in inits:
         amount = int(init[0].evaluate(system))
