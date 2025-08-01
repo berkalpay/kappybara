@@ -64,7 +64,7 @@ class AlgExp:
                 raise ValueError(
                     f"{self} requires a System to evaluate, due to referenced variable '{name}'."
                 )
-            return system.eval_variable(name)
+            return system[name]
 
         elif self.type in ("binary_op", "comparison"):
             left_val = self.attrs["left"].evaluate(system)
