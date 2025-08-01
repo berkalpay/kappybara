@@ -27,19 +27,18 @@ class System:
         observables: Optional[list[Component] | dict[str, Component | AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
     ):
+        self.rules = [] if rules is None else list(rules)
         if mixture is None:
             self.mixture = (
                 ComponentMixture()
                 if any(
-                    type(r) in [KappaRuleUnimolecular, KappaRuleBimolecular]
-                    for r in rules
+                    type(rule) in [KappaRuleUnimolecular, KappaRuleBimolecular]
+                    for rule in self.rules
                 )
                 else Mixture()
             )
         else:
             self.mixture = mixture
-
-        self.rules = [] if rules is None else list(rules)
         for rule in self.rules:
             self._track_rule(rule)
 
