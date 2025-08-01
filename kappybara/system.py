@@ -42,12 +42,12 @@ class System:
         for rule in self.rules:
             self._track_rule(rule)
 
-        if isinstance(observables, list):
-            self.observables = {
-                str(i): observable for i, observable in enumerate(observables)
-            }
+        if observables is None:
+            self.observables = {}
+        elif isinstance(observables, list):
+            self.observables = {str(i): obs for i, obs in enumerate(observables)}
         else:
-            self.observables = {} if observables is None else observables
+            self.observables = observables
         for observable in self.observables.values():
             self._track_components(observable)
 
