@@ -49,11 +49,11 @@ class System:
         else:
             self.observables = observables
         for observable in self.observables.values():
-            self._track_components(observable)
+            self._track_constituent_components(observable)
 
         self.variables = {} if variables is None else variables
         for variable in self.variables.values():
-            self._track_components(variable)
+            self._track_constituent_components(variable)
 
         self.time = 0
 
@@ -64,17 +64,17 @@ class System:
                 # TODO: For efficiency check for isomorphism with already-tracked components
                 self.mixture.track_component(component)
 
-    def _track_components(self, observable: Component | AlgExp) -> None:
+    def _track_constituent_components(self, obj: Component | AlgExp) -> None:
         """
         Tracks the `Component`s in the given observable.
 
         NOTE: For `AlgExp`s, does not track patterns nested by indirection:
         see the comment in the `filter` method.
         """
-        if isinstance(observable, Component):
-            self.mixture.track_component(observable)
+        if isinstance(obj, Component):
+            self.mixture.track_component(obj)
         else:
-            for component_exp in observable.filter("component_pattern"):
+            for component_exp in obj.filter("component_pattern"):
                 self.mixture.track_component(component_exp.attrs["value"])
 
     def count_observable(self, obs: Component) -> int:
