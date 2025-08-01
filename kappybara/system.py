@@ -17,6 +17,7 @@ class System:
     mixture: Mixture
     rules: list[Rule]
     observables: dict[str, Component | AlgExp]
+    variables: Optional[dict[str, AlgExp]] = None
     time: float
 
     def __init__(
