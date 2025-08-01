@@ -122,15 +122,15 @@ def test_system_from_kappa():
     A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
     """
     )
-    n = system.eval_variable("n")
+    n = system["n"]
     assert n == 300
-    assert system.eval_variable("g_on") == 0.003
-    assert system.eval_observable("A_total") == n
+    assert system["g_on"] == 0.003
+    assert system["A_total"] == n
 
     for i in range(1, n):
         system.update()
-        assert system.eval_observable("A_total") == n
-        assert system.eval_observable("A_u") == i
-        assert system.eval_observable("B_u") == n
-        assert system.eval_observable("A_p") == n - i
-        assert system.eval_observable("pairs") == n
+        assert system["A_total"] == n
+        assert system["A_u"] == i
+        assert system["B_u"] == n
+        assert system["A_p"] == n - i
+        assert system["pairs"] == n

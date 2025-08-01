@@ -84,9 +84,9 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
     empirical_kds = []
     while system.time < 2:
         system.update()
-        a_conc_eq = system.eval_observable("A") / AVOGADRO / volume
-        b_conc_eq = system.eval_observable("B") / AVOGADRO / volume
-        ab_conc_eq = system.eval_observable("AB") / AVOGADRO / volume
+        a_conc_eq = system["A"] / AVOGADRO / volume
+        b_conc_eq = system["B"] / AVOGADRO / volume
+        ab_conc_eq = system["AB"] / AVOGADRO / volume
         empirical_kds.append(a_conc_eq * b_conc_eq / ab_conc_eq)
     i = int(len(empirical_kds) * 0.5)  # an index post-equilibrium
     empirical_kd = sum(empirical_kds[i:]) / len(empirical_kds[i:])

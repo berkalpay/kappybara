@@ -57,6 +57,16 @@ class System:
 
         self.time = 0
 
+    def __getitem__(self, name: str) -> int | float:
+        if name in self.observables:
+            return self._eval_observable(name)
+        elif name in self.variables:
+            return self._eval_variable(name)
+        else:
+            raise KeyError(
+                "Name {name} doesn't correspond to a declared observable or variable"
+            )
+
     def _track_rule(self, rule: Rule) -> None:
         """Track any components mentioned in the left hand side of a `Rule`"""
         if isinstance(rule, KappaRule):
@@ -94,20 +104,14 @@ class System:
             embeddings = self.mixture.embeddings(tracked_obs)
         return len(embeddings)
 
-    def eval_observable(self, obs_name: str) -> int | float:
-        try:
-            observable = self.observables[obs_name]
-        except KeyError as e:
-            e.add_note(f"Observable `{obs_name}` not defined")
-            raise
-
+    def _eval_observable(self, obs_name: str) -> int | float:
+        observable = self.observables[obs_name]
         if isinstance(observable, Component):
             return len(self.mixture.embeddings(observable))
         else:
             return observable.evaluate(self)
 
-    def eval_variable(self, var_name: str) -> int | float:
-        assert var_name in self.variables, f"Variable `{var_name}` not defined"
+    def _eval_variable(self, var_name: str) -> int | float:
         return self.variables[var_name].evaluate(self)
 
     @cached_property
@@ -157,7 +161,7 @@ class Monitor:
     def update(self) -> None:
         self.history["time"].append(self.system.time)
         for obs_name in self.obs_names:
-            self.history[obs_name].append(self.system.eval_observable(obs_name))
+            self.history[obs_name].append(self.system[obs_name])
 
     @property
     def dataframe(self) -> pd.DataFrame:
