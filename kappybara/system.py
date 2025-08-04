@@ -10,7 +10,7 @@ import matplotlib.figure
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
-from kappybara.kappa.algebra import AlgExp
+from kappybara.algebra import AlgExp
 
 
 class System:

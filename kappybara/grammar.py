@@ -5,7 +5,7 @@ from lark import Lark, ParseTree, Tree, Visitor, Token, Transformer_NonRecursive
 
 from kappybara.pattern import Site, Agent, Pattern, SiteType, Partner
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
-from kappybara.kappa.algebra import AlgExp
+from kappybara.algebra import AlgExp
 
 
 class KappaParser:

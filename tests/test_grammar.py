@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
 
-from kappybara.kappa.grammar import kappa_parser
+from kappybara.grammar import kappa_parser
 from kappybara.rule import KappaRuleUnimolecular, KappaRuleBimolecular
 import kappybara.kappa as kappa
 
