@@ -48,6 +48,24 @@ class AlgExp:
         self.type = type
         self.attrs = attrs
 
+    @property
+    def kappa_str(self) -> str:
+        if self.type in ("literal", "boolean_literal"):
+            return str(self.evaluate())
+        elif self.type == "variable":
+            return self.attrs["name"]
+        elif self.type == "reserved_variable":
+            return self.attrs["value"].kappa_str
+        elif self.type == "component_pattern":
+            return f"|{self.attrs['value'].kappa_str}|"
+        elif self.type in ("binary_op", "comparison"):
+            return f"({self.attrs['left'].kappa_str}) {self.attrs['operator']} ({self.attrs['right'].kappa_str})"
+        elif self.type == "parentheses":
+            return self.attrs["child"].kappa_str
+        raise NotImplementedError(
+            f"The Kappa string of type {self.type} is not implemented."
+        )
+
     def evaluate(self, system: Optional["System"] = None) -> int | float:
         try:
             return self._evaluate(system)
@@ -55,7 +73,7 @@ class AlgExp:
             raise ValueError(f"Undefined variable in expression: {e}")
 
     def _evaluate(self, system: "System") -> int | float:
-        if self.type == "literal":
+        if self.type in ("literal", "boolean_literal"):
             return self.attrs["value"]
 
         elif self.type == "variable":
@@ -111,9 +129,6 @@ class AlgExp:
             child_val = self.attrs["child"].evaluate(system)
             return not child_val
 
-        elif self.type == "boolean_literal":
-            return self.attrs["value"]
-
         elif self.type == "reserved_variable":
             value = self.attrs["value"]
             if value.type == "component_pattern":
@@ -122,7 +137,6 @@ class AlgExp:
                     raise ValueError(
                         f"{self} requires a System to evaluate, due to referenced pattern {component}."
                     )
-
                 return system.count_observable(component)
             else:
                 raise NotImplementedError(
