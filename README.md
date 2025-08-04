@@ -4,24 +4,31 @@
 TODO: If/when this is shipped as a pypi package.
 
 ## Local development:
-TODO: Instructions for `pip` for people who don't want to use uv. We can always just export a `requirements.txt` using uv which can be consumed directly by pip.
+With `pip`:
 
-With `uv` (recommended):
+```
+pip install -r requirements.txt
+```
 
-Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/), then:
+<details>
+<summary> With uv (optional alternative to pip): </summary>
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then:
+
 ```
 uv sync --dev
 ```
 
-This will locally install the dependencies listed in `pyproject.toml`. To access dependencies, run your commands through `uv` like:
+To access `uv` dependencies, run your commands through `uv` like:
 ```
 uv run python
 ```
+
 Or, if you want to run commands normally, create a virtual environment:
 ```
 uv venv # Do this once
 source .venv/bin/activate # Do this every new shell
 ```
+
 and run commands as usual. (`deactivate` exits the venv.)
 
 Adding a Python package dependency (this automatically updates pyproject.toml):
@@ -33,14 +40,11 @@ Adding a package as a dev dependency:
 ```
 uv add --dev [package-name]
 ```
+</details>
 
 ## Running code formatter
 ```
 black .
-```
-or:
-```
-uv run black .
 ```
 
 ## Running tests locally
@@ -52,10 +56,6 @@ export PYTHONPATH="$PYTHONPATH:$(git rev-parse --show-toplevel)
 Then run tests using pytest:
 ```
 pytest
-```
-or:
-```
-uv run pytest
 ```
 
 ## Running performance profiles locally
