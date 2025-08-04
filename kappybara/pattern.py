@@ -24,13 +24,20 @@ class Site(Counted):
         return f'Site(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
+    def kappa_partner_str(self) -> str:
+        if self.partner == "?":
+            return ""
+        elif self.coupled:
+            return "[_]"
+        return f"[{self.partner}]"
+
+    @property
     def kappa_state_str(self) -> str:
         return "" if self.state == "?" else f"{{{self.state}}}"
 
     @property
     def kappa_str(self) -> str:
-        partner = "_" if self.coupled else self.partner
-        return f"{self.label}[{partner}]{self.kappa_state_str}"
+        return f"{self.label}{self.kappa_partner_str}{self.kappa_state_str}"
 
     @property
     def undetermined(self) -> bool:
@@ -226,14 +233,14 @@ class Component(Counted):
             site_strs = []
             for site in agent:
                 if site in bond_nums:
-                    partner = bond_nums[site]
+                    partner_str = f"[{bond_nums[site]}]"
                 elif site.coupled:
-                    partner = bond_num_counter
+                    partner_str = f"[{bond_num_counter}]"
                     bond_nums[site.partner] = bond_num_counter
                     bond_num_counter += 1
                 else:
-                    partner = site.partner
-                site_strs.append(f"{site.label}[{partner}]{site.kappa_state_str}")
+                    partner_str = "" if site.partner == "?" else f"[{site.partner}]"
+                site_strs.append(f"{site.label}{partner_str}{site.kappa_state_str}")
             agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
         return ", ".join(agent_strs)
 
