@@ -52,14 +52,16 @@ class AlgExp:
     def kappa_str(self) -> str:
         if self.type in ("literal", "boolean_literal"):
             return str(self.evaluate())
-        elif self.type in ("variable", "defined_constant"):
-            return self.attrs["name"]
+        elif self.type == "variable":
+            return f"'{self.attrs["name"]}'"
         elif self.type in ("binary_op", "comparison"):
             return f"({self.attrs['left'].kappa_str}) {self.attrs['operator']} ({self.attrs['right'].kappa_str})"
         elif self.type == "unary_op":
             return f"{self.attrs['operator']} ({self.attrs['child'].kappa_str})"
         elif self.type == "list_op":
             return f"{self.attrs["operator"]} ({", ".join(child.kappa_str for child in self.attrs['children'])})"
+        elif self.type == "defined_constant":
+            return f"{self.attrs["name"]}"
         elif self.type == "parentheses":
             return self.attrs["child"].kappa_str
         # TODO: ternary_op
