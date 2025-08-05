@@ -52,19 +52,27 @@ class AlgExp:
     def kappa_str(self) -> str:
         if self.type in ("literal", "boolean_literal"):
             return str(self.evaluate())
-        elif self.type == "variable":
+        elif self.type in ("variable", "defined_constant"):
             return self.attrs["name"]
+        elif self.type in ("binary_op", "comparison"):
+            return f"({self.attrs['left'].kappa_str}) {self.attrs['operator']} ({self.attrs['right'].kappa_str})"
+        elif self.type == "unary_op":
+            return f"{self.attrs['operator']} ({self.attrs['child'].kappa_str})"
+        elif self.type == "list_op":
+            return f"{self.attrs["operator"]} ({", ".join(child.kappa_str for child in self.attrs['children'])})"
+        elif self.type == "parentheses":
+            return self.attrs["child"].kappa_str
+        # TODO: ternary_op
+        elif self.type in ("logical_or", "logical_and"):
+            op = {"logical_or": "||", "logical_and": "&&"}
+            return f"({self.attrs['left'].kappa_str}) {op[self.type]} ({self.attrs['right'].kappa_str})"
+        elif self.type == "logical_not":
+            return f"[not] ({self.attrs['child'].kappa_str})"
         elif self.type == "reserved_variable":
             return self.attrs["value"].kappa_str
         elif self.type == "component_pattern":
             return f"|{self.attrs['value'].kappa_str}|"
-        elif self.type in ("binary_op", "comparison"):
-            return f"({self.attrs['left'].kappa_str}) {self.attrs['operator']} ({self.attrs['right'].kappa_str})"
-        elif self.type == "parentheses":
-            return self.attrs["child"].kappa_str
-        raise NotImplementedError(
-            f"The Kappa string of type {self.type} is not implemented."
-        )
+        raise ValueError(f"Unsupported node type: {self.type}")
 
     def evaluate(self, system: Optional["System"] = None) -> int | float:
         try:
@@ -143,8 +151,7 @@ class AlgExp:
                     f"Reserved variable {value.type} not implemented yet."
                 )
 
-        else:
-            raise ValueError(f"Unsupported node type: {self.type}")
+        raise ValueError(f"Unsupported node type: {self.type}")
 
     def filter(self, type_str: str) -> list[Self]:
         """
