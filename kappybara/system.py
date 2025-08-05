@@ -74,6 +74,24 @@ class System:
             "variables": set(self.variables),
         }
 
+    @property
+    def kappa_str(self) -> str:
+        kappa_str = ""
+        for var_name, var in self.variables.items():
+            kappa_str += f"%var: '{var_name}' {var.kappa_str}\n"
+        for rule in self.rules:
+            assert isinstance(rule, KappaRule)
+            kappa_str += f"{rule.kappa_str}\n"
+        for obs_name, obs in self.observables.items():
+            kappa_str += f"%obs: '{obs_name}' {obs.kappa_str}\n"
+        kappa_str += self.mixture.kappa_str
+        return kappa_str
+
+    def to_ka(self, filepath: str) -> None:
+        """Writes system information to a Kappa file."""
+        with open(filepath, "w") as f:
+            f.write(self.kappa_str)
+
     def _track_rule(self, rule: Rule) -> None:
         """Track any components mentioned in the left hand side of a `Rule`"""
         if isinstance(rule, KappaRule):
