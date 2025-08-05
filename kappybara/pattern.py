@@ -365,6 +365,9 @@ class Pattern:
                 linked_sites[0].partner = linked_sites[1]
                 linked_sites[1].partner = linked_sites[0]
 
+    def __iter__(self) -> Iterator[Component]:
+        yield from self.components
+
     @cached_property
     def components(self) -> list[Component]:
         unseen = set(agent for agent in self.agents if agent is not None)
@@ -374,6 +377,10 @@ class Pattern:
             unseen = unseen.difference(component)
             components.append(component)
         return components
+
+    @property
+    def kappa_str(self) -> str:
+        return ", ".join(component.kappa_str for component in self)
 
     @cached_property
     def underspecified(self) -> bool:
