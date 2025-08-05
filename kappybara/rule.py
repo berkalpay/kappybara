@@ -71,7 +71,7 @@ class KappaRule(Rule):
 
     @property
     def kappa_str(self) -> str:
-        return f"{self.left.kappa_str} -> {self.right.kappa_str} @ {self.stochastic_rate.kappa_str}\n"
+        return f"{self.left.kappa_str} -> {self.right.kappa_str} @ {self.stochastic_rate.kappa_str}"
 
     def rate(self, system: "System") -> float:
         return self.stochastic_rate.evaluate(system)
