@@ -1,4 +1,5 @@
 import pytest
+import math
 from pathlib import Path
 
 from kappybara.grammar import kappa_parser
@@ -134,3 +135,27 @@ def test_system_from_kappa():
         assert system["B_u"] == n
         assert system["A_p"] == n - i
         assert system["pairs"] == n
+
+
+def test_system_kappa_str():
+    system_in = kappa.system(
+        """
+    // constants
+    %var: 'x'     0.03
+    %var: 'k_on'  'x' * 10
+    %var: 'g_on'  'k_on' / 100
+    %var: 'n' 3 * 100
+    %var: 'p' [pi] * 'n'
+    %var: 'sqpi' [sqrt] ([pi])
+    %init: 'n' A(a[1]{p}), B(b[1]{u})
+    %obs: 'pairs'   |A(a[1]), B(b[1])|
+    A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
+        """
+    )
+    system_out = kappa.system(system_in.kappa_str)
+    for system in (system_in, system_out):
+        assert system["pairs"] == system["n"] == 300
+        assert system["p"] == pytest.approx(math.pi * system["n"])
+        assert system["sqpi"] == pytest.approx(math.sqrt(math.pi))
+
+    assert system_in["g_on"] == system_out["g_on"]
