@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Iterator
 
 from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
 from kappybara.utils import SetProperty, Property, IndexedSet
@@ -40,6 +40,18 @@ class Mixture:
                 # then when that subclass calls this `__init__` method, its
                 # override will be the one called here.
                 self.instantiate(pattern)
+
+    def __iter__(self) -> Iterator[Component]:
+        yield from ComponentMixture([Pattern(list(self.agents))])
+
+    @property
+    def kappa_str(self) -> str:
+        return "\n".join(
+            f"%init: {len(components)} {group.kappa_str}"
+            for group, components in grouped(
+                list(component for component in self)
+            ).items()
+        )
 
     def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
         assert (
@@ -170,6 +182,9 @@ class ComponentMixture(Mixture):
         )
 
         super().__init__(patterns)
+
+    def __iter__(self) -> Iterator[Component]:
+        yield from self.components
 
     def embeddings_in_component(
         self, match_pattern: Pattern, mixture_component: Component
@@ -403,3 +418,16 @@ def neighborhood(agents: Iterable[Agent], radius: int) -> set[Agent]:
         frontier = new_frontier
 
     return seen
+
+
+def grouped(components: Iterable[Component]) -> dict[Component, list[Component]]:
+    """Groups components by isomorphism, groups being indexed by a representative component."""
+    grouped: dict[Component, list[Component]] = {}
+    for component in components:
+        for group in grouped:
+            if component.isomorphic(group):
+                grouped[group].append(component)
+                break
+        else:
+            grouped[component] = [component]
+    return grouped
