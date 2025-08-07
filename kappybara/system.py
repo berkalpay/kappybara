@@ -64,7 +64,7 @@ class System:
             return self._eval_variable(name)
         else:
             raise KeyError(
-                "Name {name} doesn't correspond to a declared observable or variable"
+                f"Name {name} doesn't correspond to a declared observable or variable"
             )
 
     @property
