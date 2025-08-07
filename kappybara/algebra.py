@@ -78,12 +78,6 @@ class AlgExp:
         raise ValueError(f"Unsupported node type: {self.type}")
 
     def evaluate(self, system: Optional["System"] = None) -> int | float:
-        try:
-            return self._evaluate(system)
-        except KeyError as e:
-            raise ValueError(f"Undefined variable in expression: {e}")
-
-    def _evaluate(self, system: "System") -> int | float:
         if self.type in ("literal", "boolean_literal"):
             return self.attrs["value"]
 
