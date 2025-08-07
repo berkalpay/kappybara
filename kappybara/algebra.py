@@ -77,8 +77,8 @@ class AlgExp:
             return self.attrs["child"].kappa_str
 
         elif self.type == "ternary":
-            true_expr_str = self.attrs["true_expr"]
-            false_expr_str = self.attrs["false_expr"]
+            true_expr_str = self.attrs["true_expr"].kappa_str
+            false_expr_str = self.attrs["false_expr"].kappa_str
             return f"{self.attrs["condition"]} [?] {true_expr_str} [:] {false_expr_str}"
 
         elif self.type in ("logical_or", "logical_and"):
