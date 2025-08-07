@@ -64,7 +64,8 @@ class AlgExp:
             return f"{self.attrs["name"]}"
         elif self.type == "parentheses":
             return self.attrs["child"].kappa_str
-        # TODO: ternary_op
+        elif self.type == "ternary":
+            return f"{self.attrs["condition"]} [?] {self.attrs["true_expr"]} [:] {self.attrs["false_expr"]}"
         elif self.type in ("logical_or", "logical_and"):
             op = {"logical_or": "||", "logical_and": "&&"}
             return f"({self.attrs['left'].kappa_str}) {op[self.type]} ({self.attrs['right'].kappa_str})"
