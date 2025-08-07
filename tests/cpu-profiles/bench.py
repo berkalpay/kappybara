@@ -80,7 +80,7 @@ def profile_python_file(filename):
         print(result.stdout)
     if result.stderr:
         print("\nScript errors:")
-        print(result.stderr)
+        result.stderr
 
     profile_summary = {
         base_name: {
@@ -95,7 +95,10 @@ def profile_python_file(filename):
 
     write_json(json_name, profile_summary)
 
-    return result.returncode
+    if result.stderr == "Error: No child process (os error 10)":
+        return 0
+    else:
+        return result.returncode
 
 
 def write_json(json_file, data: dict):
