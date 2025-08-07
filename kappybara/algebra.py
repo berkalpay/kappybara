@@ -52,29 +52,50 @@ class AlgExp:
     def kappa_str(self) -> str:
         if self.type in ("literal", "boolean_literal"):
             return str(self.evaluate())
+
         elif self.type == "variable":
             return f"'{self.attrs["name"]}'"
+
         elif self.type in ("binary_op", "comparison"):
-            return f"({self.attrs['left'].kappa_str}) {self.attrs['operator']} ({self.attrs['right'].kappa_str})"
+            left_str = self.attrs["left"].kappa_str
+            right_str = self.attrs["right"].kappa_str
+            return f"({left_str}) {self.attrs['operator']} ({right_str})"
+
         elif self.type == "unary_op":
             return f"{self.attrs['operator']} ({self.attrs['child'].kappa_str})"
+
         elif self.type == "list_op":
-            return f"{self.attrs["operator"]} ({", ".join(child.kappa_str for child in self.attrs['children'])})"
+            children_str = ", ".join(
+                child.kappa_str for child in self.attrs["children"]
+            )
+            return f"{self.attrs["operator"]} ({children_str})"
+
         elif self.type == "defined_constant":
             return f"{self.attrs["name"]}"
+
         elif self.type == "parentheses":
             return self.attrs["child"].kappa_str
+
         elif self.type == "ternary":
-            return f"{self.attrs["condition"]} [?] {self.attrs["true_expr"]} [:] {self.attrs["false_expr"]}"
+            true_expr_str = self.attrs["true_expr"]
+            false_expr_str = self.attrs["false_expr"]
+            return f"{self.attrs["condition"]} [?] {true_expr_str} [:] {false_expr_str}"
+
         elif self.type in ("logical_or", "logical_and"):
+            left_str = self.attrs["left"].kappa_str
+            right_str = self.attrs["right"].kappa_str
             op = {"logical_or": "||", "logical_and": "&&"}
-            return f"({self.attrs['left'].kappa_str}) {op[self.type]} ({self.attrs['right'].kappa_str})"
+            return f"({left_str}) {op[self.type]} ({right_str})"
+
         elif self.type == "logical_not":
             return f"[not] ({self.attrs['child'].kappa_str})"
+
         elif self.type == "reserved_variable":
             return self.attrs["value"].kappa_str
+
         elif self.type == "component_pattern":
             return f"|{self.attrs['value'].kappa_str}|"
+
         raise ValueError(f"Unsupported node type: {self.type}")
 
     def evaluate(self, system: Optional["System"] = None) -> int | float:
@@ -84,9 +105,7 @@ class AlgExp:
         elif self.type == "variable":
             name = self.attrs["name"]
             if system is None:
-                raise ValueError(
-                    f"{self} requires a System to evaluate, due to referenced variable '{name}'."
-                )
+                raise ValueError(f"{self} needs a System to evaluate variable '{name}'")
             return system[name]
 
         elif self.type in ("binary_op", "comparison"):
@@ -131,8 +150,7 @@ class AlgExp:
             return left_val and right_val
 
         elif self.type == "logical_not":
-            child_val = self.attrs["child"].evaluate(system)
-            return not child_val
+            return not self.attrs["child"].evaluate(system)
 
         elif self.type == "reserved_variable":
             value = self.attrs["value"]
@@ -140,7 +158,7 @@ class AlgExp:
                 component: Component = value.attrs["value"]
                 if system is None:
                     raise ValueError(
-                        f"{self} requires a System to evaluate, due to referenced pattern {component}."
+                        f"{self} needs a System to evaluate pattern {component}"
                     )
                 return system.count_observable(component)
             else:
