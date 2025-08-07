@@ -76,7 +76,7 @@ class AlgExp:
         elif self.type == "parentheses":
             return self.attrs["child"].kappa_str
 
-        elif self.type == "ternary":
+        elif self.type == "conditional":
             true_expr_str = self.attrs["true_expr"].kappa_str
             false_expr_str = self.attrs["false_expr"].kappa_str
             return f"{self.attrs["condition"]} [?] {true_expr_str} [:] {false_expr_str}"
@@ -131,7 +131,7 @@ class AlgExp:
         elif self.type == "parentheses":
             return self.attrs["child"].evaluate(system)
 
-        elif self.type == "ternary":
+        elif self.type == "conditional":
             cond_val = self.attrs["condition"].evaluate(system)
             return (
                 self.attrs["true_expr"].evaluate(system)

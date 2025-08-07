@@ -322,7 +322,7 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
     def list_op_expression(self, children):
         children = [self.transform(c) for c in children]
         op_token, *args = children
-        return AlgExp("list_op", operator=op_token.value, children=args)
+        return AlgExp("list_op", operator=op_token.children[0], children=args)
 
     # --- Parentheses ---
     def parentheses(self, children):
@@ -330,11 +330,12 @@ class LarkTreetoAlgExp(Transformer_NonRecursive):
         return AlgExp("parentheses", child=children[0])
 
     # --- Ternary Conditional ---
-    def ternary(self, children):
+    def conditional_expression(self, children):
         children = [self.transform(c) for c in children]
         cond, true_expr, false_expr = children
+        cond = cond.children[0]
         return AlgExp(
-            "ternary", condition=cond, true_expr=true_expr, false_expr=false_expr
+            "conditional", condition=cond, true_expr=true_expr, false_expr=false_expr
         )
 
     # --- Boolean Logic ---
