@@ -99,54 +99,17 @@ def test_ambi_fr_rule_from_kappa():
 # System
 
 
-def test_system_from_kappa():
-    system = kappa.system(
-        """
-    %def: "maxConsecutiveClash" "20"
-    %def: "seed" "365457"
-
-    // constants
-    %var: 'x'     0.03
-    %var: 'k_on'  'x' * 10
-    %var: 'g_on'  'k_on' / 100
-
-    %var: 'n' 3 * 100
-
-    %init: 'n' A(a[1]{p}), B(b[1]{u})
-
-    %obs: 'A_total'   |A()|
-    %obs: 'A_u'       |A(a{u})|
-    %obs: 'B_u'       |B(b{u})|
-    %obs: 'A_p'       |A(a{p})|
-    %obs: 'pairs'     |A(a[1]), B(b[1])|
-
-    A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
-    """
-    )
-    n = system["n"]
-    assert n == 300
-    assert system["g_on"] == 0.003
-    assert system["A_total"] == n
-
-    for i in range(1, n):
-        system.update()
-        assert system["A_total"] == n
-        assert system["A_u"] == i
-        assert system["B_u"] == n
-        assert system["A_p"] == n - i
-        assert system["pairs"] == n
-
-
 def test_system_kappa_str():
     system_in = kappa.system(
         """
-    // constants
     %var: 'x'     0.03
     %var: 'k_on'  'x' * 10
     %var: 'g_on'  'k_on' / 100
+
     %var: 'n' 3 * 100
     %var: 'p' [pi] * 'n'
     %var: 'sqpi' [sqrt] ([pi])
+
     %init: 'n' A(a[1]{p}), B(b[1]{u})
     %obs: 'pairs'   |A(a[1]), B(b[1])|
     A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
@@ -157,5 +120,4 @@ def test_system_kappa_str():
         assert system["pairs"] == system["n"] == 300
         assert system["p"] == pytest.approx(math.pi * system["n"])
         assert system["sqpi"] == pytest.approx(math.sqrt(math.pi))
-
     assert system_in["g_on"] == system_out["g_on"]

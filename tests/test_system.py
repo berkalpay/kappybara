@@ -40,6 +40,44 @@ def test_basic_system():
             counts[obs].append(c)
 
 
+def test_system_from_kappa():
+    system = kappa.system(
+        """
+    %def: "maxConsecutiveClash" "20"
+    %def: "seed" "365457"
+
+    // constants
+    %var: 'x'     0.03
+    %var: 'k_on'  'x' * 10
+    %var: 'g_on'  'k_on' / 100
+
+    %var: 'n' 3 * 100
+
+    %init: 'n' A(a[1]{p}), B(b[1]{u})
+
+    %obs: 'A_total'   |A()|
+    %obs: 'A_u'       |A(a{u})|
+    %obs: 'B_u'       |B(b{u})|
+    %obs: 'A_p'       |A(a{p})|
+    %obs: 'pairs'     |A(a[1]), B(b[1])|
+
+    A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
+    """
+    )
+    n = system["n"]
+    assert n == 300
+    assert system["g_on"] == 0.003
+    assert system["A_total"] == n
+
+    for i in range(1, n):
+        system.update()
+        assert system["A_total"] == n
+        assert system["A_u"] == i
+        assert system["B_u"] == n
+        assert system["A_p"] == n - i
+        assert system["pairs"] == n
+
+
 @pytest.mark.parametrize("k_on, expected", [(2.5e8, 65), (2.5e9, 331)])
 def test_heterodimerization(k_on, expected):
     heterodimer = kappa.component("A(x[1]),B(x[1])")
