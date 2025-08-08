@@ -65,10 +65,10 @@ class AlgExp:
             return f"{self.attrs['operator']} ({self.attrs['child'].kappa_str})"
 
         elif self.type == "list_op":
-            children_str = ", ".join(
-                child.kappa_str for child in self.attrs["children"]
+            children_str = " ".join(
+                f"({child.kappa_str})" for child in self.attrs["children"]
             )
-            return f"{self.attrs["operator"]} ({children_str})"
+            return f"{self.attrs["operator"]} {children_str}"
 
         elif self.type == "defined_constant":
             return f"{self.attrs["name"]}"
