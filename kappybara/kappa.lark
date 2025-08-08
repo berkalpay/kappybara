@@ -147,7 +147,7 @@ unary_op : LOG | EXP | SIN | COS | TAN | SQRT
 binary_op_expression : algebraic_expression binary_op algebraic_expression
 binary_op : PLUS | MINUS |  MULT | DIV | POW | MOD
 defined_constant : PI
-list_op_expression: list_op "(" algebraic_expression [ ([","] algebraic_expression)* ] ")"
+list_op_expression: list_op "(" algebraic_expression ")" "(" algebraic_expression ")"
 list_op : MAX | MIN
 conditional_expression: boolean_expression "[?]" algebraic_expression "[:]" algebraic_expression
 
