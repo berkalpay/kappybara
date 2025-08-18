@@ -356,8 +356,8 @@ class Pattern:
                 linked_sites[0].partner = linked_sites[1]
                 linked_sites[1].partner = linked_sites[0]
 
-    def __iter__(self) -> Iterator[Component]:
-        yield from self.components
+    def __iter__(self) -> Iterator[Optional[Agent]]:
+        yield from self.agents
 
     @cached_property
     def components(self) -> list[Component]:
