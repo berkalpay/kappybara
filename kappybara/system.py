@@ -1,7 +1,9 @@
+import os
+import tempfile
 import random
 import warnings
 from functools import cached_property
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Self
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -172,6 +174,41 @@ class System:
     def update(self) -> None:
         self.wait()
         self.act()
+
+    def updated_via_kasim(self, time: float) -> Self:
+        """
+        Simulates for `time` additional time units in KaSim.
+        Needs KaSim to be installed and in the PATH.
+        Some features may not be compatible between Kappybara and KaSim.
+        TODO: Raise warnings of incompatible language features.
+        """
+        from kappybara.kappa import system
+
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            # Run KaSim on the current system
+            output_ka_path = os.path.join(tmpdirname, "out.ka")
+            output_cmd = f'%mod: alarm {time} do $SNAPSHOT "{output_ka_path}";'
+            input_ka_path = os.path.join(tmpdirname, "in.ka")
+            with open(input_ka_path, "w") as f:
+                f.write(f"{self.kappa_str}\n{output_cmd}")
+            print(f"{self.kappa_str}\n{output_cmd}")
+            os.system(f"KaSim {input_ka_path} -l {time} -d {tmpdirname}")
+
+            # Read the KaSim output
+            output_kappa_str = ""
+            with open(output_ka_path) as f:
+                for line in f:
+                    if line.startswith("%init"):
+                        split = line.split("/")
+                        output_kappa_str += split[0] + split[-1]
+
+        # Apply the update
+        new_mixture = system(output_kappa_str).mixture
+        new_system = type(self)(
+            new_mixture, self.rules, self.observables, self.variables
+        )
+        new_system.time = self.time + time
+        return new_system
 
 
 class Monitor:
