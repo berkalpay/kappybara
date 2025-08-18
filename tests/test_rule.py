@@ -50,17 +50,17 @@ def test_simple_rule_application():
     system = System(mixture, [rule], observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies
-    assert system["0"] == n_copies
-    assert system["1"] == 0
+    assert system["o0"] == n_copies
+    assert system["o1"] == 0
 
     for i in range(1, n_copies + 1):
         update = rule.select(system.mixture)
         assert len(update.edges_to_remove) == 1
 
         system.mixture.apply_update(update)
-        assert system["0"] == n_copies - i
-        assert system["1"] == i
-        assert system["2"] == n_copies
+        assert system["o0"] == n_copies - i
+        assert system["o1"] == i
+        assert system["o2"] == n_copies
 
 
 def test_edge_creating_rule_application():
@@ -75,12 +75,12 @@ def test_edge_creating_rule_application():
     system = System(mixture, [rule], observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies * n_copies
-    assert system["0"] == 0
+    assert system["o0"] == 0
     for _ in range(1, n_copies + 1):
         update = rule.select(system.mixture)
         assert len(update.edges_to_add) == 1
         system.mixture.apply_update(update)
-    assert system["0"] == n_copies
+    assert system["o0"] == n_copies
 
 
 def test_rule_application():
@@ -108,8 +108,8 @@ def test_rule_application():
     system = System(mixture, [rule], observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies
-    assert system["0"] == n_copies
-    assert system["1"] == 0
+    assert system["o0"] == n_copies
+    assert system["o1"] == 0
 
     for i in range(1, n_copies + 1):
         update = rule.select(system.mixture)
@@ -118,10 +118,10 @@ def test_rule_application():
         assert len(update.agents_changed) == 1
 
         system.mixture.apply_update(update)
-        assert system["0"] == n_copies - i
-        assert system["1"] == i
-        assert system["2"] == n_copies - i
-        assert system["3"] == i
+        assert system["o0"] == n_copies - i
+        assert system["o1"] == i
+        assert system["o2"] == n_copies - i
+        assert system["o3"] == i
 
 
 @pytest.mark.parametrize("n_copies", [50])
@@ -135,14 +135,14 @@ def test_simple_unimolecular_rule_application(n_copies):
     observables = [kappa.component("A(a[1]{u}), B(b[1]{u})")]
     system = System(mixture, [rule1, rule2], observables)
 
-    assert system["0"] == n_copies
+    assert system["o0"] == n_copies
     n_rule1_applications = n_copies // 2
     n_rule2_applications = n_copies // 2
 
     for i in range(1, n_rule2_applications + 1):
         update = rule2.select(system.mixture)
         system.mixture.apply_update(update)
-        assert system["0"] == n_copies - i
+        assert system["o0"] == n_copies - i
         assert len(system.mixture.components) == n_copies + i
         assert rule1.n_embeddings(mixture) == n_copies - i
 
@@ -151,7 +151,7 @@ def test_simple_unimolecular_rule_application(n_copies):
         update = rule1.select(system.mixture)
         system.mixture.apply_update(update)
         assert rule1.n_embeddings(mixture) == n_copies - n_rule2_applications - i
-        assert system["0"] == n_copies - n_rule2_applications - i
+        assert system["o0"] == n_copies - n_rule2_applications - i
 
 
 @pytest.mark.parametrize("n_copies", [50])
@@ -169,4 +169,4 @@ def test_simple_bimolecular_rule_application(n_copies):
         update = rule1.select(system.mixture)
         system.mixture.apply_update(update)
         assert rule1.n_embeddings(mixture) == 2 * comb(n_copies - 2 * i, 2)
-        assert system["0"] == i
+        assert system["o0"] == i

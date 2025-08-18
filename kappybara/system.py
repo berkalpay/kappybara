@@ -45,7 +45,7 @@ class System:
         if observables is None:
             self.observables = {}
         elif isinstance(observables, list):
-            self.observables = {str(i): obs for i, obs in enumerate(observables)}
+            self.observables = {f"o{i}": obs for i, obs in enumerate(observables)}
         else:
             self.observables = observables
         for observable in self.observables.values():
