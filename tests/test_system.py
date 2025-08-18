@@ -79,15 +79,25 @@ def test_system_from_kappa():
         assert system["pairs"] == n
 
 
-@pytest.mark.parametrize("k_on, expected", [(2.5e8, 65), (2.5e9, 331)])
-def test_heterodimerization(k_on, expected):
+@pytest.mark.parametrize(
+    "k_on, expected, via_kasim",
+    [
+        (k_on, expected, vk)
+        for vk in ((False, True) if os.getenv("GITHUB_ACTIONS") is None else (False,))
+        for k_on, expected in [(2.5e8, 65), (2.0e9, 331)]
+    ],
+)
+def test_heterodimerization(k_on, expected, via_kasim):
     heterodimer = kappa.component("A(x[1]),B(x[1])")
     heterodimer_isomorphic = kappa.component("A(x[1]),B(x[1])")
     system = heterodimerization_system(k_on, heterodimer)
 
     n_heterodimers = []
     while system.time < 2:
-        system.update()
+        if via_kasim:
+            system.update_via_kasim(0.1)
+        else:
+            system.update()
         if system.time > 1:
             n_heterodimers.append(system.count_observable(heterodimer))
             assert n_heterodimers[-1] == system.count_observable(heterodimer_isomorphic)
@@ -104,11 +114,11 @@ def test_heterodimerization_via_kasim(k_on, expected):
     system = heterodimerization_system(k_on, heterodimer)
 
     n_heterodimers = []
-    system = system.updated_via_kasim(time=1)
+    system.update_via_kasim(time=1)
     while system.time < 2:
         n_heterodimers.append(system.count_observable(heterodimer))
         assert n_heterodimers[-1] == system.count_observable(heterodimer_isomorphic)
-        system = system.updated_via_kasim(time=0.1)
+        system.update_via_kasim(time=0.1)
 
     measured = sum(n_heterodimers) / len(n_heterodimers)
     assert abs(measured - expected) < expected / 5

@@ -31,7 +31,7 @@ class System:
     ):
         self.rules = [] if rules is None else list(rules)
         if mixture is None:
-            self.mixture = (
+            mixture = (
                 ComponentMixture()
                 if any(
                     type(rule) in [KappaRuleUnimolecular, KappaRuleBimolecular]
@@ -39,10 +39,6 @@ class System:
                 )
                 else Mixture()
             )
-        else:
-            self.mixture = mixture
-        for rule in self.rules:
-            self._track_rule(rule)
 
         if observables is None:
             self.observables = {}
@@ -50,14 +46,20 @@ class System:
             self.observables = {f"o{i}": obs for i, obs in enumerate(observables)}
         else:
             self.observables = observables
-        for observable in self.observables.values():
-            self._track_constituent_components(observable)
 
         self.variables = {} if variables is None else variables
+
+        self.set_mixture(mixture)
+        self.time = 0
+
+    def set_mixture(self, mixture: Mixture) -> None:
+        self.mixture = mixture
+        for rule in self.rules:
+            self._track_rule(rule)
+        for observable in self.observables.values():
+            self._track_constituent_components(observable)
         for variable in self.variables.values():
             self._track_constituent_components(variable)
-
-        self.time = 0
 
     def __getitem__(self, name: str) -> int | float:
         if name in self.observables:
@@ -175,7 +177,7 @@ class System:
         self.wait()
         self.act()
 
-    def updated_via_kasim(self, time: float) -> Self:
+    def update_via_kasim(self, time: float) -> None:
         """
         Simulates for `time` additional time units in KaSim.
         Needs KaSim to be installed and in the PATH.
@@ -191,7 +193,6 @@ class System:
             input_ka_path = os.path.join(tmpdirname, "in.ka")
             with open(input_ka_path, "w") as f:
                 f.write(f"{self.kappa_str}\n{output_cmd}")
-            print(f"{self.kappa_str}\n{output_cmd}")
             os.system(f"KaSim {input_ka_path} -l {time} -d {tmpdirname}")
 
             # Read the KaSim output
@@ -203,12 +204,8 @@ class System:
                         output_kappa_str += split[0] + split[-1]
 
         # Apply the update
-        new_mixture = system(output_kappa_str).mixture
-        new_system = type(self)(
-            new_mixture, self.rules, self.observables, self.variables
-        )
-        new_system.time = self.time + time
-        return new_system
+        self.set_mixture(system(output_kappa_str).mixture)
+        self.time += time
 
 
 class Monitor:
