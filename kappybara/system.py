@@ -83,7 +83,10 @@ class System:
             assert isinstance(rule, KappaRule)
             kappa_str += f"{rule.kappa_str}\n"
         for obs_name, obs in self.observables.items():
-            kappa_str += f"%obs: '{obs_name}' {obs.kappa_str}\n"
+            obs_str = (
+                f"|{obs.kappa_str}|" if isinstance(obs, Component) else obs.kappa_str
+            )
+            kappa_str += f"%obs: '{obs_name}' {obs_str}\n"
         kappa_str += self.mixture.kappa_str
         return kappa_str
 
