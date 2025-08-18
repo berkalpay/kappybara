@@ -181,8 +181,7 @@ class System:
         """
         Simulates for `time` additional time units in KaSim.
         Needs KaSim to be installed and in the PATH.
-        Some features may not be compatible between Kappybara and KaSim.
-        TODO: Raise warnings of incompatible language features.
+        NOTE: some features may not be compatible between Kappybara and KaSim.
         """
         from kappybara.kappa import system
 
