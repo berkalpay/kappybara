@@ -226,23 +226,7 @@ class Component(Counted):
 
     @property
     def kappa_str(self) -> str:
-        bond_num_counter = 1
-        bond_nums: dict[Site, int] = dict()
-        agent_strs = []
-        for agent in self.agents:
-            site_strs = []
-            for site in agent:
-                if site in bond_nums:
-                    partner_str = f"[{bond_nums[site]}]"
-                elif site.coupled:
-                    partner_str = f"[{bond_num_counter}]"
-                    bond_nums[site.partner] = bond_num_counter
-                    bond_num_counter += 1
-                else:
-                    partner_str = "" if site.partner == "?" else f"[{site.partner}]"
-                site_strs.append(f"{site.label}{partner_str}{site.kappa_state_str}")
-            agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
-        return ", ".join(agent_strs)
+        return Pattern.agents_to_kappa_str(self.agents)
 
     def add(self, agent: Agent):
         self.agents.add(agent)
@@ -385,9 +369,32 @@ class Pattern:
             components.append(component)
         return components
 
+    @staticmethod
+    def agents_to_kappa_str(agents: Iterable[Optional[Agent]]) -> str:
+        bond_num_counter = 1
+        bond_nums: dict[Site, int] = dict()
+        agent_strs = []
+        for agent in agents:
+            if agent is None:
+                agent_strs.append(".")
+                continue
+            site_strs = []
+            for site in agent:
+                if site in bond_nums:
+                    partner_str = f"[{bond_nums[site]}]"
+                elif site.coupled:
+                    partner_str = f"[{bond_num_counter}]"
+                    bond_nums[site.partner] = bond_num_counter
+                    bond_num_counter += 1
+                else:
+                    partner_str = "" if site.partner == "?" else f"[{site.partner}]"
+                site_strs.append(f"{site.label}{partner_str}{site.kappa_state_str}")
+            agent_strs.append(f"{agent.type}({" ".join(site_strs)})")
+        return ", ".join(agent_strs)
+
     @property
     def kappa_str(self) -> str:
-        return ", ".join(component.kappa_str for component in self)
+        return type(self).agents_to_kappa_str(self.agents)
 
     @cached_property
     def underspecified(self) -> bool:
