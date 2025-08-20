@@ -76,6 +76,12 @@ class Mixture:
         update = MixtureUpdate(agents_to_add=new_agents, edges_to_add=new_edges)
         self.apply_update(update)
 
+    def remove(self, component: Component) -> None:
+        update = MixtureUpdate()
+        for agent in component:
+            update.remove_agent(agent)
+        self.apply_update(update)
+
     def embeddings(self, component: Pattern) -> IndexedSet[Embedding]:
         try:
             return self._embeddings[component]
@@ -131,7 +137,6 @@ class Mixture:
         """
         assert all(site.partner == "." for site in agent)  # Check all sites are unbound
         assert agent.instantiable
-
         self.agents.add(agent)
 
     def _remove_agent(self, agent: Agent) -> None:
@@ -164,7 +169,6 @@ class ComponentMixture(Mixture):
         self.components.create_index(
             "agent", SetProperty(lambda c: c.agents, is_unique=True)
         )
-
         super().__init__(patterns)
 
     def __iter__(self) -> Iterator[Component]:
@@ -177,7 +181,6 @@ class ComponentMixture(Mixture):
 
     def track_component(self, component: Pattern):
         super().track_component(component)
-
         self._embeddings[component].create_index(
             "component",
             Property(lambda e: self.components.lookup("agent", next(iter(e.values())))),
@@ -192,13 +195,11 @@ class ComponentMixture(Mixture):
 
     def _add_agent(self, agent: Agent) -> None:
         super()._add_agent(agent)
-
         component = Component([agent])
         self.components.add(component)
 
     def _remove_agent(self, agent: Agent) -> None:
         super()._remove_agent(agent)
-
         component = self.components.lookup("agent", agent)
         assert len(component.agents) == 1
         self.components.remove(component)
