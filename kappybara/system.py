@@ -3,7 +3,7 @@ import tempfile
 import random
 import warnings
 from functools import cached_property
-from typing import Optional, Iterable, Self
+from typing import Optional, Iterable
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -216,12 +216,12 @@ class Monitor:
         self.history = {"time": []} | {obs_name: [] for obs_name in system.observables}
 
     @cached_property
-    def obs_names(self) -> list[str]:
+    def observables_names(self) -> list[str]:
         return list(self.system.observables.keys())
 
     def update(self) -> None:
         self.history["time"].append(self.system.time)
-        for obs_name in self.obs_names:
+        for obs_name in self.observables_names:
             self.history[obs_name].append(self.system[obs_name])
 
     @property
@@ -230,7 +230,7 @@ class Monitor:
 
     def plot(self) -> matplotlib.figure.Figure:
         fig, ax = plt.subplots()
-        for obs_name in self.obs_names:
+        for obs_name in self.observables_names:
             ax.plot(self.history["time"], self.history[obs_name], label=obs_name)
         plt.legend()
         plt.xlabel("Time")
