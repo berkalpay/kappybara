@@ -36,9 +36,6 @@ class Mixture:
 
         if patterns is not None:
             for pattern in patterns:
-                # If `instantiate` has an overriding definition in a subclass,
-                # then when that subclass calls this `__init__` method, its
-                # override will be the one called here.
                 self.instantiate(pattern)
 
     def __iter__(self) -> Iterator[Component]:
@@ -110,15 +107,7 @@ class Mixture:
             self._add_agent(agent)
         for edge in update.edges_to_add:
             self._add_edge(edge)
-        # for agent in update.agents_changed:
-        #     # NOTE: the reason we don't account for anything here is that
-        #     # we never mutate agent type, and thus the "type" index of the
-        #     # agent set won't get invalidated even when agents have been mutated.
-        #     #
-        #     # If we start indexing other agent properties that can get altered by
-        #     # an update, we will have to account for that here by updating the indices
-        #     # in the agent set appropriately.
-        #     pass
+        # NOTE: the current implementation doesn't directly mutate agent type
 
         update_region = neighborhood(update.touched_after, self._max_embedding_width)
 
@@ -241,21 +230,16 @@ class ComponentMixture(Mixture):
             for e in relocated[tracked]:
                 self._embeddings[tracked].remove(e)
 
-        self.components.remove(
-            component2
-        )  # NOTE: This invokes a redundant linear time pass
+        self.components.remove(component2)  # NOTE: invokes a redundant linear time pass
         for agent in component2:
             component1.add(agent)
-            # self.component_index[agent] = component1
             # TODO: better semantics for this type of operation
             #       Operate on diffs to set property.. ?
-            # NOTE: tricky part
             self.components.indices["agent"][agent] = [component1]
 
         for tracked in self._embeddings:
-            # TODO: come back to refactor this when we have something
-            # for registering IndexedSet item updates, including cached
-            # property evaluations.
+            # TODO: refactor when we can register IndexedSet item updates, including
+            # cached property evaluations
             for e in relocated[tracked]:
                 assert (
                     self.components.lookup("agent", next(iter(e.values())))
@@ -288,19 +272,15 @@ class ComponentMixture(Mixture):
             for e in relocated[tracked]:
                 self._embeddings[tracked].remove(e)
 
-        # TODO: A lot of redundancy here for the sake of keeping the
-        # code simple for now. We could save a lot here by only
-        # creating one new component and making the necessary
-        # deletions, but this requires manual updates to the indices
-        # in `components`.
+        # TODO: need to do manual updates to the indices in `components`
+        # to do this more efficiently
         self.components.remove(old_component)
         self.components.add(new_component1)
         self.components.add(new_component2)
 
         for tracked in self._embeddings:
-            # TODO: come back to refactor this when we have something
-            # for registering IndexedSet item updates, including cached
-            # property evaluations.
+            # TODO: refactor when we can register IndexedSet item updates, including
+            # cached property evaluations
             for e in relocated[tracked]:
                 assert self.components.lookup("agent", next(iter(e.values()))) in [
                     new_component1,
@@ -378,10 +358,6 @@ class MixtureUpdate:
         """
         Return the agents that will be changed or removed by this update,
         before the update has actually been applied.
-
-        Lots of code redundancy, but deduplicating here would make what's
-        happening in either case a lot less clear. There's also a good chance
-        this version won't be needed in an improved incremental impl.
         """
         touched = self.agents_changed | set(self.agents_to_remove)
 
