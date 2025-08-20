@@ -56,9 +56,9 @@ class Mixture:
         ), "Pattern isn't specific enough to instantiate."
         for _ in range(n_copies):
             for component in pattern.components:
-                self._instantiate_component(component, 1)
+                self._instantiate_component(component)
 
-    def _instantiate_component(self, component: Pattern, n_copies: int) -> None:
+    def _instantiate_component(self, component: Pattern) -> None:
         component_ordered = list(component.agents)
         new_agents = [agent.detached() for agent in component_ordered]
         new_edges = set()
@@ -69,7 +69,6 @@ class Mixture:
                 if site.coupled:
                     partner = site.partner
                     i_partner = component_ordered.index(partner.agent)
-
                     new_site = new_agents[i][site.label]
                     new_partner = new_agents[i_partner][partner.label]
                     new_edges.add(Edge(new_site, new_partner))
@@ -90,7 +89,6 @@ class Mixture:
         self._max_embedding_width = max(component.diameter, self._max_embedding_width)
         embeddings = IndexedSet(component.embeddings(self))
         embeddings.create_index("agent", SetProperty(lambda e: iter(e.values())))
-
         self._embeddings[component] = embeddings
 
     def apply_update(self, update: "MixtureUpdate") -> None:
@@ -142,20 +140,17 @@ class Mixture:
         before trying to use this method call.
         """
         assert all(site.partner == "." for site in agent)  # Check all sites are unbound
-
         self.agents.remove(agent)
 
     def _add_edge(self, edge: Edge) -> None:
         assert edge.site1.agent in self.agents
         assert edge.site2.agent in self.agents
-
         edge.site1.partner = edge.site2
         edge.site2.partner = edge.site1
 
     def _remove_edge(self, edge: Edge) -> None:
         assert edge.site1.partner == edge.site2
         assert edge.site2.partner == edge.site1
-
         edge.site1.partner = "."
         edge.site2.partner = "."
 
@@ -382,7 +377,6 @@ def neighborhood(agents: Iterable[Agent], radius: int) -> set[Agent]:
     """
     frontier = agents
     seen = set(frontier)
-
     for _ in range(radius):
         new_frontier = set()
         for cur in frontier:
@@ -392,7 +386,6 @@ def neighborhood(agents: Iterable[Agent], radius: int) -> set[Agent]:
                     new_frontier.add(n)
 
         frontier = new_frontier
-
     return seen
 
 
