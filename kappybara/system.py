@@ -69,6 +69,9 @@ class System:
         for variable in self.variables.values():
             self._track_constituent_components(variable)
 
+    def __str__(self):
+        return self.kappa_str
+
     def __getitem__(self, name: str) -> int | float:
         if name in self.observables:
             return self._eval_observable(name)
