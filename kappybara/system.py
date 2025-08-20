@@ -21,6 +21,7 @@ class System:
     observables: dict[str, Component | AlgExp]
     variables: dict[str, AlgExp]
     time: float
+    monitor: Optional["Monitor"]
 
     def __init__(
         self,
@@ -28,6 +29,7 @@ class System:
         rules: Optional[Iterable[Rule]] = None,
         observables: Optional[list[Component] | dict[str, Component | AlgExp]] = None,
         variables: Optional[dict[str, AlgExp]] = None,
+        monitor: bool = True,
     ):
         self.rules = [] if rules is None else list(rules)
         if mixture is None:
@@ -51,6 +53,12 @@ class System:
 
         self.set_mixture(mixture)
         self.time = 0
+
+        if monitor:
+            self.monitor = Monitor(self)
+            self.monitor.update()
+        else:
+            self.monitor = None
 
     def set_mixture(self, mixture: Mixture) -> None:
         self.mixture = mixture
@@ -176,6 +184,8 @@ class System:
     def update(self) -> None:
         self.wait()
         self.act()
+        if self.monitor:
+            self.monitor.update()
 
     def update_via_kasim(self, time: float) -> None:
         """
@@ -205,6 +215,8 @@ class System:
         # Apply the update
         self.set_mixture(system(output_kappa_str).mixture)
         self.time += time
+        if self.monitor:
+            self.monitor.update()
 
 
 class Monitor:
