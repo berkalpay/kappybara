@@ -174,12 +174,14 @@ class System:
                 "system has no reactivity: infinite wait time", RuntimeWarning
             )
 
-    def act(self) -> None:
+    def choose_rule(self) -> Optional[Rule]:
         try:
-            rule = random.choices(self.rules, weights=self.rule_reactivities)[0]
+            return random.choices(self.rules, weights=self.rule_reactivities)[0]
         except ValueError:
             warnings.warn("system has no reactivity: no rule applied", RuntimeWarning)
-            return
+            return None
+
+    def apply_rule(self, rule: Rule) -> None:
         update = rule.select(self.mixture)
         if update is not None:
             self.mixture.apply_update(update)
@@ -187,7 +189,8 @@ class System:
 
     def update(self) -> None:
         self.wait()
-        self.act()
+        if (rule := self.choose_rule()) is not None:
+            self.apply_rule(rule)
         if self.monitor:
             self.monitor.update()
 
