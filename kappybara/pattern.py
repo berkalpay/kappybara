@@ -1,8 +1,11 @@
 from collections import defaultdict
 from functools import cached_property
-from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple
+from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
 from kappybara.utils import Counted, IndexedSet, Property
+
+if TYPE_CHECKING:
+    from kappybara.mixture import Mixture
 
 
 # String partner states can be: "#" (wildcard), "." (empty), "_" (bound), "?" (undetermined)
