@@ -56,9 +56,9 @@ class Mixture:
         ), "Pattern isn't specific enough to instantiate."
         for _ in range(n_copies):
             for component in pattern.components:
-                self._instantiate_component(component)
+                self.add(component)
 
-    def _instantiate_component(self, component: Pattern) -> None:
+    def add(self, component: Component) -> None:
         component_ordered = list(component.agents)
         new_agents = [agent.detached() for agent in component_ordered]
         new_edges = set()
