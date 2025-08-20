@@ -134,7 +134,11 @@ class System:
             # Try to find an isomorphic observable if the specific one given isn't tracked
             try:
                 tracked_obs = next(
-                    (c for c in self.observables.values() if c.isomorphic(obs))
+                    (
+                        c
+                        for c in self.observables.values()
+                        if isinstance(c, Component) and c.isomorphic(obs)
+                    )
                 )
             except StopIteration as e:
                 e.add_note(
