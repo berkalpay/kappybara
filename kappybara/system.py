@@ -60,15 +60,6 @@ class System:
         else:
             self.monitor = None
 
-    def set_mixture(self, mixture: Mixture) -> None:
-        self.mixture = mixture
-        for rule in self.rules:
-            self._track_rule(rule)
-        for observable in self.observables.values():
-            self._track_constituent_components(observable)
-        for variable in self.variables.values():
-            self._track_constituent_components(variable)
-
     def __str__(self):
         return self.kappa_str
 
@@ -110,6 +101,15 @@ class System:
         with open(filepath, "w") as f:
             f.write(self.kappa_str)
 
+    def set_mixture(self, mixture: Mixture) -> None:
+        self.mixture = mixture
+        for rule in self.rules:
+            self._track_rule(rule)
+        for observable in self.observables.values():
+            self._track_constituent_components(observable)
+        for variable in self.variables.values():
+            self._track_constituent_components(variable)
+
     def _track_rule(self, rule: Rule) -> None:
         """Track any components mentioned in the left hand side of a `Rule`"""
         if isinstance(rule, KappaRule):
@@ -120,9 +120,7 @@ class System:
     def _track_constituent_components(self, obj: Component | AlgExp) -> None:
         """
         Tracks the `Component`s in the given observable.
-
-        NOTE: For `AlgExp`s, does not track patterns nested by indirection:
-        see the comment in the `filter` method.
+        NOTE: for `AlgExp`s, doesn't track patterns nested by indirection - see the `filter` method.
         """
         if isinstance(obj, Component):
             self.mixture.track_component(obj)
