@@ -6,7 +6,7 @@ from typing import Optional, TYPE_CHECKING
 
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, ComponentMixture, MixtureUpdate
-from kappybara.algebra import AlgExp
+from kappybara.algebra import Expression
 from kappybara.utils import rejection_sample
 
 if TYPE_CHECKING:
@@ -54,7 +54,7 @@ class Rule(ABC):
 class KappaRule(Rule):
     left: Pattern
     right: Pattern
-    stochastic_rate: AlgExp
+    stochastic_rate: Expression
 
     def __post_init__(self):
         l = len(self.left.agents)

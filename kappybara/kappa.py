@@ -1,10 +1,10 @@
 from kappybara.system import System
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
-from kappybara.algebra import AlgExp
+from kappybara.algebra import Expression
 from kappybara.grammar import (
     kappa_parser,
-    parse_tree_to_alg_exp,
+    parse_tree_to_expression,
     AgentBuilder,
     PatternBuilder,
     RuleBuilder,
@@ -62,25 +62,25 @@ def rule(kappa_str: str) -> Rule:
     return r[0]
 
 
-def alg_exp(kappa_str: str) -> AlgExp:
+def expression(kappa_str: str) -> Expression:
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"
 
-    alg_exp_tree = input_tree.children[0]
-    assert alg_exp_tree.data == "!algebraic_expression"
+    expr_tree = input_tree.children[0]
+    assert expr_tree.data == "!algebraic_expression"
 
-    return parse_tree_to_alg_exp(alg_exp_tree)
+    return parse_tree_to_expression(expr_tree)
 
 
 def system(kappa_str: str) -> System:
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"
 
-    variables: dict[str, AlgExp] = {}
-    observables: dict[str, AlgExp] = {}
+    variables: dict[str, Expression] = {}
+    observables: dict[str, Expression] = {}
     rules: list[Rule] = []
     system_params: dict[str, int] = {}
-    inits: list[tuple[AlgExp, Pattern]] = []
+    inits: list[tuple[Expression, Pattern]] = []
 
     for child in input_tree.children:
         tag = child.data
@@ -94,9 +94,9 @@ def system(kappa_str: str) -> System:
             assert name_tree.data == "declared_variable_name"
             name = name_tree.children[0].value.strip("'\"")
 
-            alg_exp_tree = child.children[1]
-            assert alg_exp_tree.data == "algebraic_expression"
-            value = parse_tree_to_alg_exp(alg_exp_tree)
+            expr_tree = child.children[1]
+            assert expr_tree.data == "algebraic_expression"
+            value = parse_tree_to_expression(expr_tree)
 
             variables[name] = value
 
@@ -108,9 +108,9 @@ def system(kappa_str: str) -> System:
             assert isinstance(label_tree, str)
             name = label_tree.strip("'\"")
 
-            alg_exp_tree = child.children[1]
-            assert alg_exp_tree.data == "algebraic_expression"
-            value = parse_tree_to_alg_exp(alg_exp_tree)
+            expr_tree = child.children[1]
+            assert expr_tree.data == "algebraic_expression"
+            value = parse_tree_to_expression(expr_tree)
 
             observables[name] = value
 
@@ -119,9 +119,9 @@ def system(kappa_str: str) -> System:
             raise NotImplementedError
 
         elif tag == "init_declaration":
-            alg_exp_tree = child.children[0]
-            assert alg_exp_tree.data == "algebraic_expression"
-            amount = parse_tree_to_alg_exp(alg_exp_tree)
+            expr_tree = child.children[0]
+            assert expr_tree.data == "algebraic_expression"
+            amount = parse_tree_to_expression(expr_tree)
 
             pattern_tree = child.children[1]
             if pattern_tree.data == "declared_token_name":

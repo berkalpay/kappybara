@@ -12,14 +12,14 @@ import matplotlib.figure
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
-from kappybara.algebra import AlgExp
+from kappybara.algebra import Expression
 
 
 class System:
     mixture: Mixture
     rules: list[Rule]
-    observables: dict[str, Component | AlgExp]
-    variables: dict[str, AlgExp]
+    observables: dict[str, Component | Expression]
+    variables: dict[str, Expression]
     time: float
     monitor: Optional["Monitor"]
 
@@ -27,8 +27,10 @@ class System:
         self,
         mixture: Optional[Mixture] = None,
         rules: Optional[Iterable[Rule]] = None,
-        observables: Optional[list[Component] | dict[str, Component | AlgExp]] = None,
-        variables: Optional[dict[str, AlgExp]] = None,
+        observables: Optional[
+            list[Component] | dict[str, Component | Expression]
+        ] = None,
+        variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
     ):
         self.rules = [] if rules is None else list(rules)
@@ -117,10 +119,10 @@ class System:
                 # TODO: For efficiency check for isomorphism with already-tracked components
                 self.mixture.track_component(component)
 
-    def _track_constituent_components(self, obj: Component | AlgExp) -> None:
+    def _track_constituent_components(self, obj: Component | Expression) -> None:
         """
         Tracks the `Component`s in the given observable.
-        NOTE: for `AlgExp`s, doesn't track patterns nested by indirection - see the `filter` method.
+        NOTE: for `Expression`s, doesn't track patterns nested by indirection - see the `filter` method.
         """
         if isinstance(obj, Component):
             self.mixture.track_component(obj)

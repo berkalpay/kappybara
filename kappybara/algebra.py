@@ -41,7 +41,7 @@ def parse_operator(kappa_operator: str) -> Callable:
         raise ValueError(f"Unknown operator: {kappa_operator}")
 
 
-class AlgExp:
+class Expression:
     """Algebraic expressions as specified by the Kappa language."""
 
     def __init__(self, type, **attrs):
@@ -174,7 +174,7 @@ class AlgExp:
 
         NOTE: This doesn't catch stuff that's indirectly nested in named variables.
               If you are trying to search through the entire expression tree, including
-              following AlgExp's with type "variable" to their referred contents, this
+              following `Expression`s with type "variable" to their referred contents, this
               won't do what you might expect.
         """
         result = []
@@ -188,9 +188,9 @@ class AlgExp:
             # Add child nodes to the stack
             if hasattr(node, "attrs"):
                 for attr_value in node.attrs.values():
-                    if isinstance(attr_value, AlgExp):
+                    if isinstance(attr_value, Expression):
                         stack.append(attr_value)
                     elif isinstance(attr_value, (list, tuple)):
-                        stack.extend(v for v in attr_value if isinstance(v, AlgExp))
+                        stack.extend(v for v in attr_value if isinstance(v, Expression))
 
         return result

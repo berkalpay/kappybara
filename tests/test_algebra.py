@@ -12,5 +12,5 @@ import kappybara.kappa as kappa
         ("[min](1)(4)", 1),
     ],
 )
-def test_algexp_evaluation(expression, result):
+def test_expression_evaluation(expression, result):
     assert kappa.system(f"%obs: 'x' {expression}")["x"] == result
