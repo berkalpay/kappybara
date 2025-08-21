@@ -158,28 +158,3 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
     i = int(len(empirical_kds) * 0.5)  # an index post-equilibrium
     empirical_kd = sum(empirical_kds[i:]) / len(empirical_kds[i:])
     assert abs((empirical_kd - kd) / kd) < 0.1
-
-
-def test_system_manipulation():
-    system = kappa.system(
-        """
-        %init: 10 A(x[.])
-        %init: 10 B(x[.])
-        %obs: 'A' |A(x[.])|
-        %obs: 'B' |B(x[.])|
-        A(x[.]), B(x[.]) -> A(x[1]), B(x[1]) @ 0.1 {0.1}
-        """
-    )
-    print(type(system.mixture))
-    print(system.rules)
-
-    system.update()
-    # print(kappa.pattern("A(x[1]), B(x[1])").components[0])
-    system.mixture.instantiate(kappa.pattern("A(x[1]), B(x[1])"))
-    print(system)
-    print("****")
-    print(system.mixture.components[0])
-    system.mixture.remove(system.mixture.components[0])
-    print(system)
-    assert False
-    # print(system.kappa_str)
