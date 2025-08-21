@@ -2,6 +2,7 @@ import os
 import tempfile
 import random
 import warnings
+from collections import defaultdict
 from functools import cached_property
 from typing import Optional, Iterable
 
@@ -21,6 +22,7 @@ class System:
     observables: dict[str, Component | Expression]
     variables: dict[str, Expression]
     time: float
+    tallies: defaultdict[str, dict[str, int]]
     monitor: Optional["Monitor"]
 
     def __init__(
@@ -56,6 +58,7 @@ class System:
         self.set_mixture(mixture)
         self.time = 0
 
+        self.tallies = defaultdict(lambda: {"applied": 0, "failed": 0})
         if monitor:
             self.monitor = Monitor(self)
             self.monitor.update()
@@ -81,6 +84,13 @@ class System:
             "observables": set(self.observables),
             "variables": set(self.variables),
         }
+
+    @property
+    def tallies_str(self) -> str:
+        return "Rule\tApplied\tFailed\n" + "\n".join(
+            f"{rule_str}\t{tallies["applied"]}\t{tallies["failed"]}"
+            for rule_str, tallies in self.tallies.items()
+        )
 
     @property
     def kappa_str(self) -> str:
@@ -187,8 +197,11 @@ class System:
     def apply_rule(self, rule: Rule) -> None:
         update = rule.select(self.mixture)
         if update is not None:
+            self.tallies[str(rule)]["applied"] += 1
             self.mixture.apply_update(update)
             del self.__dict__["rule_reactivities"]
+        else:
+            self.tallies[str(rule)]["failed"] += 1
 
     def update(self) -> None:
         self.wait()
