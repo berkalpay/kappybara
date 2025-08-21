@@ -69,6 +69,9 @@ class KappaRule(Rule):
     def __iter__(self):
         yield from zip(self.left.agents, self.right.agents)
 
+    def __str__(self):
+        return self.kappa_str
+
     @property
     def kappa_str(self) -> str:
         return f"{self.left.kappa_str} -> {self.right.kappa_str} @ {self.stochastic_rate.kappa_str}"
