@@ -14,6 +14,7 @@ from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
 from kappybara.algebra import Expression
+import kappybara.kappa as kappa
 
 
 class System:
@@ -139,6 +140,18 @@ class System:
         else:
             for component_exp in obj.filter("component_pattern"):
                 self.mixture.track_component(component_exp.attrs["value"])
+
+    def create_variable(self, name: str, val_str: str) -> None:
+        """
+        Create a new variable by providing its name and the Kappa
+        string representation of an `Expression`.
+        """
+        assert name not in self.variables, f"Variable name `{name}` already in use."
+
+        val: Expression = kappa.expression(val)
+
+        self._track_constituent_components(val)
+        self.variables[name] = val
 
     def count_observable(self, obs: Component) -> int:
         try:

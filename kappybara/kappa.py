@@ -67,7 +67,7 @@ def expression(kappa_str: str) -> Expression:
     assert input_tree.data == "kappa_input"
 
     expr_tree = input_tree.children[0]
-    assert expr_tree.data == "!algebraic_expression"
+    assert expr_tree.data in ["!algebraic_expression", "algebraic_expression"]
 
     return parse_tree_to_expression(expr_tree)
 

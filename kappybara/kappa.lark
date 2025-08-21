@@ -14,6 +14,7 @@ kappa_input : ( f_rule
             | init_declaration
             | declared_token 
             | definition
+            | algebraic_expression
             | pattern )*
 
 // TERMINALS
