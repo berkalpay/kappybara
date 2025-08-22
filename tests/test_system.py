@@ -147,6 +147,7 @@ def test_system_manipulation():
         """
         %init: 10 A(x[.])
         %init: 10 B(x[.])
+        %init: 1 C()
 
         %obs: 'A' |A(x[.])|
         %obs: 'B' |B(x[.])|
@@ -175,3 +176,19 @@ def test_system_manipulation():
     # Add the component back
     system.mixture.add(component_to_remove)
     assert system["total_agents"] == total_agents_pre_removal
+
+    # Set a new variable
+    system["twiceA"] = "2 * 'A'"
+    assert system["twiceA"] == 2 * system["A"]
+    system.update()
+    assert system["twiceA"] == 2 * system["A"]
+
+    # Update an observable
+    system["A"] = "-1"
+    assert system["twiceA"] == -2
+
+    # Set a new observable
+    system["C"] = "|C()|"
+    assert system["C"] == 1
+    system.update()
+    assert system["C"] == 1

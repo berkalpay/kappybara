@@ -78,6 +78,16 @@ class System:
                 f"Name {name} doesn't correspond to a declared observable or variable"
             )
 
+    def __setitem__(self, name: str, kappa_str: str):
+        from kappybara.kappa import expression
+
+        expr = expression(kappa_str)
+        self._track_constituent_components(expr)
+        if name in self.variables:
+            self.variables[name] = expr
+        else:  # Set new expressions as observables
+            self.observables[name] = expr
+
     @property
     def names(self) -> dict[str, set[str]]:
         return {
