@@ -224,6 +224,9 @@ class Component(Counted):
     def __iter__(self):
         yield from self.agents
 
+    def __len__(self):
+        return len(self.agents)
+
     def __repr__(self):
         return f'Component(id={self.id}, kappa_str="{self.kappa_str}")'
 
@@ -361,6 +364,9 @@ class Pattern:
 
     def __iter__(self) -> Iterator[Optional[Agent]]:
         yield from self.agents
+
+    def __len__(self):
+        return len(self.agents)
 
     @cached_property
     def components(self) -> list[Component]:
