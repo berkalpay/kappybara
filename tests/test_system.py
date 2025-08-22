@@ -140,3 +140,38 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
     i = int(len(empirical_kds) * 0.5)  # an index post-equilibrium
     empirical_kd = sum(empirical_kds[i:]) / len(empirical_kds[i:])
     assert abs((empirical_kd - kd) / kd) < 0.1
+
+
+def test_system_manipulation():
+    system = kappa.system(
+        """
+        %init: 10 A(x[.])
+        %init: 10 B(x[.])
+
+        %obs: 'A' |A(x[.])|
+        %obs: 'B' |B(x[.])|
+        %obs: 'AB' |A(x[1]), B(x[1])|
+
+        %var: 'total_agents' 'A' + 'B' + (2 * 'AB')
+
+        A(x[.]), B(x[.]) -> A(x[1]), B(x[1]) @ 1 {1}
+        """
+    )
+    assert not system["AB"]
+    system.update()
+    assert system["AB"] == 1
+
+    # Add a pattern
+    system.mixture.instantiate(kappa.pattern("A(x[1]), B(x[1])"))
+    assert system["AB"] == 2
+    total_agents_pre_removal = system["total_agents"]
+    assert total_agents_pre_removal == 22
+
+    # Remove a component
+    component_to_remove = system.mixture.components[0]
+    system.mixture.remove(component_to_remove)
+    assert total_agents_pre_removal - system["total_agents"] == len(component_to_remove)
+
+    # Add the component back
+    system.mixture.add(component_to_remove)
+    assert system["total_agents"] == total_agents_pre_removal
