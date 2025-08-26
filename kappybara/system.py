@@ -4,7 +4,7 @@ import random
 import warnings
 from collections import defaultdict
 from functools import cached_property
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Self
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,23 +22,19 @@ class System:
     rules: list[Rule]
     observables: dict[str, Expression]
     variables: dict[str, Expression]
+    monitor: Optional["Monitor"]
     time: float
     tallies: defaultdict[str, dict[str, int]]
-    monitor: Optional["Monitor"]
 
     def __init__(
         self,
         mixture: Optional[Mixture] = None,
-        rules: Optional[Iterable[str]] = None,
-        observables: Optional[list[str] | dict[str, str]] = None,
-        variables: Optional[dict[str, str]] = None,
+        rules: Optional[Iterable[Rule]] = None,
+        observables: Optional[dict[str, Expression]] = None,
+        variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
     ):
-        self.rules = []
-        if rules is not None:
-            for rule in rules:
-                self.rules.extend(kappa.rules(rule))
-
+        self.rules = [] if rules is None else list(rules)
         if mixture is None:
             mixture = (
                 ComponentMixture()
@@ -49,22 +45,8 @@ class System:
                 else Mixture()
             )
 
-        if observables is None:
-            self.observables = {}
-        elif isinstance(observables, list):
-            self.observables = {
-                f"o{i}": kappa.expression(obs) for i, obs in enumerate(observables)
-            }
-        else:
-            self.observables = {
-                name: kappa.expression(obs) for name, obs in observables.items()
-            }
-
-        self.variables = (
-            {}
-            if variables is None
-            else {name: kappa.expression(var) for name, var in variables.items()}
-        )
+        self.observables = {} if observables is None else observables
+        self.variables = {} if variables is None else variables
 
         self.set_mixture(mixture)
         self.time = 0
@@ -75,6 +57,47 @@ class System:
             self.monitor.update()
         else:
             self.monitor = None
+
+    @classmethod
+    def from_kappa(
+        cls,
+        mixture: Optional[Mixture] = None,  # TODO: Optional[dict[str, int]]
+        rules: Optional[Iterable[str]] = None,
+        observables: Optional[list[str] | dict[str, str]] = None,
+        variables: Optional[dict[str, str]] = None,
+        *args,
+        **kwargs,
+    ) -> Self:
+        real_rules = []
+        if rules is not None:
+            for rule in rules:
+                real_rules.extend(kappa.rules(rule))
+
+        if observables is None:
+            real_observables = {}
+        elif isinstance(observables, list):
+            real_observables = {
+                f"o{i}": kappa.expression(obs) for i, obs in enumerate(observables)
+            }
+        else:
+            real_observables = {
+                name: kappa.expression(obs) for name, obs in observables.items()
+            }
+
+        real_variables = (
+            {}
+            if variables is None
+            else {name: kappa.expression(var) for name, var in variables.items()}
+        )
+
+        return cls(
+            mixture,
+            real_rules,
+            real_observables,
+            real_variables,
+            *args,
+            **kwargs,
+        )
 
     def __str__(self):
         return self.kappa_str

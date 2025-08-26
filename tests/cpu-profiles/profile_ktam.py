@@ -17,7 +17,7 @@ if __name__ == "__main__":
         for _ in range(count):
             mixture.instantiate(pattern)
     rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
-    system = System(mixture, rules)
+    system = System.from_kappa(mixture, rules)
 
     while system.time < 1:
         system.update()

@@ -11,7 +11,7 @@ def heterodimerization_system(k_on: float, observable: Component) -> System:
     avogadro = 6.0221413e23
     volume = 2.25e-12  # mammalian cell volume
     n_a, n_b = 1000, 1000
-    return System(
+    return System.from_kappa(
         Mixture([kappa.pattern("A(x[.])")] * n_a + [kappa.pattern("B(x[.])")] * n_b),
         rules=[
             f"A(x[.]), B(x[.]) -> A(x[1]), B(x[1]) @ {k_on / (avogadro * volume)}",

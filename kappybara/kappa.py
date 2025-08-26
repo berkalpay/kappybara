@@ -155,7 +155,7 @@ def system(kappa_str: str) -> "System":
         else:
             raise TypeError(f"Unsupported input type: {tag}")
 
-    system = System(None, rules, observables, variables)
+    system = System.from_kappa(None, rules, observables, variables)
 
     for init in inits:
         amount = int(init[0].evaluate(system))
