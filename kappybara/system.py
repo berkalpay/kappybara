@@ -29,12 +29,16 @@ class System:
     def __init__(
         self,
         mixture: Optional[Mixture] = None,
-        rules: Optional[Iterable[Rule]] = None,
+        rules: Optional[Iterable[str]] = None,
         observables: Optional[list[str] | dict[str, str]] = None,
         variables: Optional[dict[str, str]] = None,
         monitor: bool = True,
     ):
-        self.rules = [] if rules is None else list(rules)
+        self.rules = []
+        if rules is not None:
+            for rule in rules:
+                self.rules.extend(kappa.rules(rule))
+
         if mixture is None:
             mixture = (
                 ComponentMixture()

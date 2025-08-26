@@ -33,9 +33,9 @@ def test_rule_n_embeddings_at_system_initialiation(test_case):
     )
     mixture = ComponentMixture([kappa.pattern(mixture_pattern_str)] * n_copies)
     rule_pattern = kappa.pattern(rule_pattern_str)
-    rule = rule_class(rule_pattern, rule_pattern, 1.0)
-    system = System(mixture, [rule])
-    assert rule.n_embeddings(system.mixture) == n_embeddings
+    rule = rule_class(rule_pattern, rule_pattern, kappa.expression("1.0"))
+    system = System(mixture, [rule.kappa_str])
+    assert system.rules[0].n_embeddings(system.mixture) == n_embeddings
 
 
 def test_simple_rule_application():
@@ -44,10 +44,13 @@ def test_simple_rule_application():
     mixture = Mixture([kappa.pattern("A(a[1]), B(b[1])")] * n_copies)
     rule_left_str = "A(a[1]), B(b[1])"
     rule = KappaRule(
-        kappa.pattern(rule_left_str), kappa.pattern("A(a[.]), B(b[.])"), 1.0
+        kappa.pattern(rule_left_str),
+        kappa.pattern("A(a[.]), B(b[.])"),
+        kappa.expression("1.0"),
     )
     observables = [f"|{rule_left_str}|", "|A(a[.])|", "|B(b[#])|"]
-    system = System(mixture, [rule], observables)
+    system = System(mixture, [rule.kappa_str], observables)
+    rule = system.rules[0]
 
     assert rule.n_embeddings(system.mixture) == n_copies
     assert system["o0"] == n_copies
@@ -69,10 +72,13 @@ def test_edge_creating_rule_application():
     rule_right_str = "A(a[1]), B(b[1])"
     mixture = Mixture([kappa.pattern("A(a[.]), B(b[.])")] * n_copies)
     rule = KappaRule(
-        kappa.pattern("A(a[.]), B(b[.])"), kappa.pattern(rule_right_str), 1.0
+        kappa.pattern("A(a[.]), B(b[.])"),
+        kappa.pattern(rule_right_str),
+        kappa.expression("1.0"),
     )
     observables = [f"|{rule_right_str}|"]
-    system = System(mixture, [rule], observables)
+    system = System(mixture, [rule.kappa_str], observables)
+    rule = system.rules[0]
 
     assert rule.n_embeddings(system.mixture) == n_copies * n_copies
     assert system["o0"] == 0
@@ -99,10 +105,11 @@ def test_rule_application():
     rule = KappaRule(
         kappa.pattern(rule_left_str),
         kappa.pattern("A(a[1]), B(b[.], x[3]), C(c[1]{u}), D(d[.]{p}, x[3])"),
-        1.0,
+        kappa.expression("1.0"),
     )
     observables = [f"|{rule_left_str}|", "|A(a[1]), C(c[1])|", "|B(b[_])|", "|C(c{u})|"]
-    system = System(mixture, [rule], observables)
+    system = System(mixture, [rule.kappa_str], observables)
+    rule = system.rules[0]
 
     assert rule.n_embeddings(system.mixture) == n_copies
     assert system["o0"] == n_copies
@@ -125,12 +132,19 @@ def test_rule_application():
 def test_simple_unimolecular_rule_application(n_copies):
     """Test selection/application of a simple unimolecular KappaRule in a mixture."""
     mixture = ComponentMixture([kappa.pattern("A(a[1]{u}), B(b[1]{u})")] * n_copies)
-    rule1 = kappa.rule("A(a{u}), B(b{u}) -> A(a{p}), B(b{p}) @ 0.0 {1.0}")
-    rule2 = kappa.rule("A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0")
+    system = System(
+        mixture,
+        [
+            "A(a{u}), B(b{u}) -> A(a{p}), B(b{p}) @ 0.0 {1.0}",
+            "A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0",
+        ],
+        ["|A(a[1]{u}), B(b[1]{u})|"],
+    )
+
+    rule1 = system.rules[0]
+    rule2 = system.rules[1]
     assert isinstance(rule1, KappaRuleUnimolecular)
     assert isinstance(rule2, KappaRule)
-    observables = ["|A(a[1]{u}), B(b[1]{u})|"]
-    system = System(mixture, [rule1, rule2], observables)
 
     assert system["o0"] == n_copies
     n_rule1_applications = n_copies // 2
@@ -155,10 +169,12 @@ def test_simple_unimolecular_rule_application(n_copies):
 def test_simple_bimolecular_rule_application(n_copies):
     """Test selection/application of a simple bimolecular KappaRule in a mixture."""
     mixture = ComponentMixture([kappa.pattern("A(a[.]{u})")] * n_copies)
-    rule1 = kappa.rule("A(a{u}), A(a{u}) -> A(a{p}), B(a{p}) @ 1.0 {0.0}")
+    system = System(
+        mixture, ["A(a{u}), A(a{u}) -> A(a{p}), B(a{p}) @ 1.0 {0.0}"], ["|B(a{p})|"]
+    )
+
+    rule1 = system.rules[0]
     assert isinstance(rule1, KappaRuleBimolecular)
-    observables = ["|B(a{p})|"]
-    system = System(mixture, [rule1], observables)
 
     n_rule1_applications = n_copies // 2
     for i in range(1, n_rule1_applications + 1):

@@ -14,10 +14,8 @@ def heterodimerization_system(k_on: float, observable: Component) -> System:
     return System(
         Mixture([kappa.pattern("A(x[.])")] * n_a + [kappa.pattern("B(x[.])")] * n_b),
         rules=[
-            kappa.rule(
-                f"A(x[.]), B(x[.]) -> A(x[1]), B(x[1]) @ {k_on / (avogadro * volume)}"
-            ),
-            kappa.rule(f"A(x[1]), B(x[1]) -> A(x[.]), B(x[.]) @ {2.5}"),
+            f"A(x[.]), B(x[.]) -> A(x[1]), B(x[1]) @ {k_on / (avogadro * volume)}",
+            "A(x[1]), B(x[1]) -> A(x[.]), B(x[.]) @ 2.5",
         ],
         observables=[f"|{observable.kappa_str}|"],
     )

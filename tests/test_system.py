@@ -29,7 +29,6 @@ def test_basic_system():
         pattern = kappa.pattern(pattern_str)
         for _ in range(count):
             mixture.instantiate(pattern)
-    rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
     system = System(mixture, rules, observables)
 
     counts = defaultdict(list)

@@ -82,7 +82,7 @@ def system(kappa_str: str) -> "System":
 
     variables: dict[str, Expression] = {}
     observables: dict[str, Expression] = {}
-    rules: list[Rule] = []
+    rules: list[str] = []
     system_params: dict[str, int] = {}
     inits: list[tuple[Expression, Pattern]] = []
 
@@ -91,7 +91,7 @@ def system(kappa_str: str) -> "System":
 
         if tag in ["f_rule", "fr_rule", "ambi_rule", "ambi_fr_rule"]:
             new_rules = RuleBuilder(child).objects
-            rules.extend(new_rules)
+            rules.extend([rule.kappa_str for rule in new_rules])
 
         elif tag == "variable_declaration":
             name_tree = child.children[0]
