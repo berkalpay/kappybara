@@ -69,7 +69,7 @@ class System:
     @classmethod
     def from_kappa(
         cls,
-        mixture: Optional[Mixture] = None,  # TODO: Optional[dict[str, int]]
+        mixture: Optional[dict[str, int]] = None,
         rules: Optional[Iterable[str]] = None,
         observables: Optional[list[str] | dict[str, str]] = None,
         variables: Optional[dict[str, str]] = None,
@@ -99,7 +99,7 @@ class System:
         )
 
         return cls(
-            mixture,
+            None if mixture is None else Mixture.from_kappa(mixture),
             real_rules,
             real_observables,
             real_variables,

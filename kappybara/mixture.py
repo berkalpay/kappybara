@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Optional, Iterable, Iterator
+from typing import Optional, Iterable, Iterator, Self
 
+import kappybara.kappa as kappa
 from kappybara.pattern import Site, Agent, Component, Pattern, Embedding
 from kappybara.utils import SetProperty, Property, IndexedSet
 
@@ -26,6 +27,13 @@ class Mixture:
     agents: IndexedSet[Agent]
     _embeddings: dict[Pattern, IndexedSet[Embedding]]
     _max_embedding_width: int
+
+    @classmethod
+    def from_kappa(cls, patterns: dict[str, int]) -> Self:
+        real_patterns = []
+        for pattern, count in patterns.items():
+            real_patterns.extend([kappa.pattern(pattern)] * count)
+        return cls(real_patterns)
 
     def __init__(self, patterns: Optional[Iterable[Pattern]] = None):
         self.agents = IndexedSet()

@@ -1,10 +1,8 @@
 import pytest
-import os
 import shutil
 import itertools
 from collections import defaultdict
 
-from kappybara.mixture import ComponentMixture
 from kappybara.system import System
 import kappybara.kappa as kappa
 from kappybara.rule import AVOGADRO, DIFFUSION_RATE, kinetic_to_stochastic_on_rate
@@ -12,24 +10,18 @@ from kappybara.examples import heterodimerization_system
 
 
 def test_basic_system():
-    init_patterns = [("A(a[.], b[.])", 100)]
-    rules = [
-        "A(a[.]), A(a[.]) <-> A(a[1]), A(a[1]) @ 1.0 {2.0}, 1.0",
-        "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 1.5, 1.0",
-    ]
-    observables = [
-        "|A(a[.])|",
-        "|A(b[1]), A(b[1])|",
-        "|A(a[1], b[.]), A(a[1], b[_])|",
-    ]
-
-    mixture = ComponentMixture()
-    for pair in init_patterns:
-        pattern_str, count = pair
-        pattern = kappa.pattern(pattern_str)
-        for _ in range(count):
-            mixture.instantiate(pattern)
-    system = System.from_kappa(mixture, rules, observables)
+    system = System.from_kappa(
+        {"A(a[.], b[.])": 100},
+        rules=[
+            "A(a[.]), A(a[.]) <-> A(a[1]), A(a[1]) @ 1.0 {2.0}, 1.0",
+            "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 1.5, 1.0",
+        ],
+        observables=[
+            "|A(a[.])|",
+            "|A(b[1]), A(b[1])|",
+            "|A(a[1], b[.]), A(a[1], b[_])|",
+        ],
+    )
 
     counts = defaultdict(list)
     for _ in range(1000):

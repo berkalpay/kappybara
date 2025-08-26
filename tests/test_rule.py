@@ -1,7 +1,6 @@
 import pytest
 from math import comb
 
-from kappybara.mixture import ComponentMixture, Mixture
 from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.system import System
 import kappybara.kappa as kappa
@@ -31,17 +30,15 @@ def test_rule_n_embeddings_at_system_initialiation(test_case):
     (mixture_pattern_str, n_copies, rule_class, rule_pattern_str, n_embeddings) = (
         test_case
     )
-    mixture = ComponentMixture([kappa.pattern(mixture_pattern_str)] * n_copies)
     rule_pattern = kappa.pattern(rule_pattern_str)
     rule = rule_class(rule_pattern, rule_pattern, kappa.expression("1.0"))
-    system = System.from_kappa(mixture, [rule.kappa_str])
+    system = System.from_kappa({mixture_pattern_str: n_copies}, [rule.kappa_str])
     assert system.rules[0].n_embeddings(system.mixture) == n_embeddings
 
 
 def test_simple_rule_application():
     """Test selection/application of a simple KappaRule in a mixture."""
     n_copies = 10
-    mixture = Mixture([kappa.pattern("A(a[1]), B(b[1])")] * n_copies)
     rule_left_str = "A(a[1]), B(b[1])"
     rule = KappaRule(
         kappa.pattern(rule_left_str),
@@ -49,7 +46,9 @@ def test_simple_rule_application():
         kappa.expression("1.0"),
     )
     observables = [f"|{rule_left_str}|", "|A(a[.])|", "|B(b[#])|"]
-    system = System.from_kappa(mixture, [rule.kappa_str], observables)
+    system = System.from_kappa(
+        {"A(a[1]), B(b[1])": n_copies}, [rule.kappa_str], observables
+    )
     rule = system.rules[0]
 
     assert rule.n_embeddings(system.mixture) == n_copies
@@ -70,14 +69,15 @@ def test_edge_creating_rule_application():
     """Test selection/application of a KappaRule which creates a new edge in a mixture."""
     n_copies = 4
     rule_right_str = "A(a[1]), B(b[1])"
-    mixture = Mixture([kappa.pattern("A(a[.]), B(b[.])")] * n_copies)
     rule = KappaRule(
         kappa.pattern("A(a[.]), B(b[.])"),
         kappa.pattern(rule_right_str),
         kappa.expression("1.0"),
     )
     observables = [f"|{rule_right_str}|"]
-    system = System.from_kappa(mixture, [rule.kappa_str], observables)
+    system = System.from_kappa(
+        {"A(a[.]), B(b[.])": n_copies}, [rule.kappa_str], observables
+    )
     rule = system.rules[0]
 
     assert rule.n_embeddings(system.mixture) == n_copies * n_copies
@@ -97,10 +97,6 @@ def test_rule_application():
     TODO: Supporting agent interfaces so we know a master list of sites for agents to be able to initialize defaults.
     """
     n_copies = 100
-    mixture = Mixture(
-        [kappa.pattern("A(a[1]), B(b[1], x[3]), C(c[2]{p}), D(d[2]{p}, x[3])")]
-        * n_copies
-    )
     rule_left_str = "A(a[1]), B(b[1], x[3]), C(c[2]{p}), D(d[2]{p}, x[3])"
     rule = KappaRule(
         kappa.pattern(rule_left_str),
@@ -108,7 +104,11 @@ def test_rule_application():
         kappa.expression("1.0"),
     )
     observables = [f"|{rule_left_str}|", "|A(a[1]), C(c[1])|", "|B(b[_])|", "|C(c{u})|"]
-    system = System.from_kappa(mixture, [rule.kappa_str], observables)
+    system = System.from_kappa(
+        {"A(a[1]), B(b[1], x[3]), C(c[2]{p}), D(d[2]{p}, x[3])": n_copies},
+        [rule.kappa_str],
+        observables,
+    )
     rule = system.rules[0]
 
     assert rule.n_embeddings(system.mixture) == n_copies
@@ -131,9 +131,8 @@ def test_rule_application():
 @pytest.mark.parametrize("n_copies", [50])
 def test_simple_unimolecular_rule_application(n_copies):
     """Test selection/application of a simple unimolecular KappaRule in a mixture."""
-    mixture = ComponentMixture([kappa.pattern("A(a[1]{u}), B(b[1]{u})")] * n_copies)
     system = System.from_kappa(
-        mixture,
+        {"A(a[1]{u}), B(b[1]{u})": n_copies},
         [
             "A(a{u}), B(b{u}) -> A(a{p}), B(b{p}) @ 0.0 {1.0}",
             "A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0",
@@ -155,22 +154,25 @@ def test_simple_unimolecular_rule_application(n_copies):
         system.mixture.apply_update(update)
         assert system["o0"] == n_copies - i
         assert len(system.mixture.components) == n_copies + i
-        assert rule1.n_embeddings(mixture) == n_copies - i
+        assert rule1.n_embeddings(system.mixture) == n_copies - i
 
     for i in range(1, n_rule1_applications + 1):
-        rule1.n_embeddings(mixture)  # Uni/bimolecular rules use this to weight choices
+        rule1.n_embeddings(
+            system.mixture
+        )  # Uni/bimolecular rules use this to weight choices
         update = rule1.select(system.mixture)
         system.mixture.apply_update(update)
-        assert rule1.n_embeddings(mixture) == n_copies - n_rule2_applications - i
+        assert rule1.n_embeddings(system.mixture) == n_copies - n_rule2_applications - i
         assert system["o0"] == n_copies - n_rule2_applications - i
 
 
 @pytest.mark.parametrize("n_copies", [50])
 def test_simple_bimolecular_rule_application(n_copies):
     """Test selection/application of a simple bimolecular KappaRule in a mixture."""
-    mixture = ComponentMixture([kappa.pattern("A(a[.]{u})")] * n_copies)
     system = System.from_kappa(
-        mixture, ["A(a{u}), A(a{u}) -> A(a{p}), B(a{p}) @ 1.0 {0.0}"], ["|B(a{p})|"]
+        {"A(a[.]{u})": n_copies},
+        ["A(a{u}), A(a{u}) -> A(a{p}), B(a{p}) @ 1.0 {0.0}"],
+        ["|B(a{p})|"],
     )
 
     rule1 = system.rules[0]
@@ -178,8 +180,10 @@ def test_simple_bimolecular_rule_application(n_copies):
 
     n_rule1_applications = n_copies // 2
     for i in range(1, n_rule1_applications + 1):
-        rule1.n_embeddings(mixture)  # Uni/bimolecular rules use this to weight choices
+        rule1.n_embeddings(
+            system.mixture
+        )  # Uni/bimolecular rules use this to weight choices
         update = rule1.select(system.mixture)
         system.mixture.apply_update(update)
-        assert rule1.n_embeddings(mixture) == 2 * comb(n_copies - 2 * i, 2)
+        assert rule1.n_embeddings(system.mixture) == 2 * comb(n_copies - 2 * i, 2)
         assert system["o0"] == i
