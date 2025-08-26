@@ -45,5 +45,5 @@ uv add --dev [package-name]
 </details>
 
 To run correctness tests, run `pytest`.
-Running `./tests/cpu_profiles/run_profiler.sh` will CPU-profile predefined Kappa models and write the results to `tests/cpu-profiles/results`.
+Running `./tests/cpu-profiles/run_profiler.sh` will CPU-profile predefined Kappa models and write the results to `tests/cpu-profiles/results`.
 We use the Black code formatter, which can be run as `black .`
