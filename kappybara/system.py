@@ -147,16 +147,6 @@ class System:
             for component_exp in obj.filter("component_pattern"):
                 self.mixture.track_component(component_exp.attrs["value"])
 
-    def _eval_observable(self, obs_name: str) -> int | float:
-        observable = self.observables[obs_name]
-        if isinstance(observable, Component):
-            return len(self.mixture.embeddings(observable))
-        else:
-            return observable.evaluate(self)
-
-    def _eval_variable(self, var_name: str) -> int | float:
-        return self.variables[var_name].evaluate(self)
-
     @cached_property
     def rule_reactivities(self) -> list[float]:
         return [rule.reactivity(self) for rule in self.rules]
