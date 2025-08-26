@@ -10,6 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.figure
 
+import kappybara.kappa as kappa
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component
@@ -77,9 +78,7 @@ class System:
             )
 
     def __setitem__(self, name: str, kappa_str: str):
-        from kappybara.kappa import expression
-
-        expr = expression(kappa_str)
+        expr = kappa.expression(kappa_str)
         self._track_constituent_components(expr)
         if name in self.variables:
             self.variables[name] = expr
@@ -203,8 +202,6 @@ class System:
         Needs KaSim to be installed and in the PATH.
         NOTE: some features may not be compatible between Kappybara and KaSim.
         """
-        from kappybara.kappa import system
-
         with tempfile.TemporaryDirectory() as tmpdirname:
             # Run KaSim on the current system
             output_ka_path = os.path.join(tmpdirname, "out.ka")
@@ -223,7 +220,7 @@ class System:
                         output_kappa_str += split[0] + split[-1]
 
         # Apply the update
-        self.set_mixture(system(output_kappa_str).mixture)
+        self.set_mixture(kappa.system(output_kappa_str).mixture)
         self.time += time
         if self.monitor:
             self.monitor.update()

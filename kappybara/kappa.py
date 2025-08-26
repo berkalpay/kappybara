@@ -1,4 +1,5 @@
-from kappybara.system import System
+from typing import TYPE_CHECKING
+
 from kappybara.pattern import Agent, Component, Pattern
 from kappybara.rule import Rule
 from kappybara.algebra import Expression
@@ -9,6 +10,9 @@ from kappybara.grammar import (
     PatternBuilder,
     RuleBuilder,
 )
+
+if TYPE_CHECKING:
+    from kappybara.system import System
 
 
 def agent(kappa_str: str) -> Agent:
@@ -70,7 +74,9 @@ def expression(kappa_str: str) -> Expression:
     return parse_tree_to_expression(expr_tree)
 
 
-def system(kappa_str: str) -> System:
+def system(kappa_str: str) -> "System":
+    from kappybara.system import System
+
     input_tree = kappa_parser.parse(kappa_str)
     assert input_tree.data == "kappa_input"
 
