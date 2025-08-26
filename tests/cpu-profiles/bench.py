@@ -80,7 +80,7 @@ def profile_python_file(filename):
         print(result.stdout)
     if result.stderr:
         print("\nScript errors:")
-        result.stderr
+        print(result.stderr)
 
     profile_summary = {
         base_name: {
@@ -166,5 +166,5 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    exit_code = profile_python_file(args.filename)
-    sys.exit(exit_code)
+    profile_python_file(args.filename)
+    sys.exit()  # TODO: exit with error code
