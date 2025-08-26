@@ -1,5 +1,6 @@
 import pytest
 import os
+import shutil
 import itertools
 from collections import defaultdict
 
@@ -80,7 +81,11 @@ def test_system_from_kappa():
     "k_on, expected, via_kasim",
     [
         (k_on, expected, vk)
-        for vk in ((False, True) if os.getenv("GITHUB_ACTIONS") is None else (False,))
+        for vk in (
+            (False, True)
+            if os.getenv("GITHUB_ACTIONS") is None and shutil.which("KaSim")
+            else (False,)
+        )
         for k_on, expected in [(2.5e8, 65), (2.0e9, 331)]
     ],
 )
