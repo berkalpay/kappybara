@@ -50,8 +50,11 @@ class Expression:
 
     @property
     def kappa_str(self) -> str:
-        if self.type in ("literal", "boolean_literal"):
+        if self.type == "literal":
             return str(self.evaluate())
+
+        elif self.type == "boolean_literal":
+            return "[true]" if self.attrs["value"] else "[false]"
 
         elif self.type == "variable":
             return f"'{self.attrs["name"]}'"
