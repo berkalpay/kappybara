@@ -226,7 +226,7 @@ class System:
 
 class Monitor:
     system: System
-    history: dict[str, list[float]]
+    history: dict[str, list[Optional[float]]]
 
     def __init__(self, system: System):
         self.system = system
@@ -235,6 +235,8 @@ class Monitor:
     def update(self) -> None:
         self.history["time"].append(self.system.time)
         for obs_name in self.system.observables:
+            if obs_name not in self.history:
+                self.history[obs_name] = [None] * (len(self.history["time"]) - 1)
             self.history[obs_name].append(self.system[obs_name])
 
     @property
