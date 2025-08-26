@@ -46,7 +46,9 @@ def test_simple_rule_application():
     rule = KappaRule(
         kappa.pattern(rule_left_str), kappa.pattern("A(a[.]), B(b[.])"), 1.0
     )
-    observables = [kappa.component(s) for s in (rule_left_str, "A(a[.])", "B(b[#])")]
+    observables = [
+        kappa.expression(s) for s in (f"|{rule_left_str}|", "|A(a[.])|", "|B(b[#])|")
+    ]
     system = System(mixture, [rule], observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies
@@ -71,7 +73,7 @@ def test_edge_creating_rule_application():
     rule = KappaRule(
         kappa.pattern("A(a[.]), B(b[.])"), kappa.pattern(rule_right_str), 1.0
     )
-    observables = [kappa.component(rule_right_str)]
+    observables = [kappa.expression(f"|{rule_right_str}|")]
     system = System(mixture, [rule], observables)
 
     assert rule.n_embeddings(system.mixture) == n_copies * n_copies
@@ -102,8 +104,8 @@ def test_rule_application():
         1.0,
     )
     observables = [
-        kappa.component(s)
-        for s in (rule_left_str, "A(a[1]), C(c[1])", "B(b[_])", "C(c{u})")
+        kappa.expression(s)
+        for s in (f"|{rule_left_str}|", "|A(a[1]), C(c[1])|", "|B(b[_])|", "|C(c{u})|")
     ]
     system = System(mixture, [rule], observables)
 
@@ -132,7 +134,7 @@ def test_simple_unimolecular_rule_application(n_copies):
     rule2 = kappa.rule("A(a[1]), B(b[1]) -> A(a[.]), B(b[.]) @ 1.0")
     assert isinstance(rule1, KappaRuleUnimolecular)
     assert isinstance(rule2, KappaRule)
-    observables = [kappa.component("A(a[1]{u}), B(b[1]{u})")]
+    observables = [kappa.expression("|A(a[1]{u}), B(b[1]{u})|")]
     system = System(mixture, [rule1, rule2], observables)
 
     assert system["o0"] == n_copies
@@ -160,7 +162,7 @@ def test_simple_bimolecular_rule_application(n_copies):
     mixture = ComponentMixture([kappa.pattern("A(a[.]{u})")] * n_copies)
     rule1 = kappa.rule("A(a{u}), A(a{u}) -> A(a{p}), B(a{p}) @ 1.0 {0.0}")
     assert isinstance(rule1, KappaRuleBimolecular)
-    observables = [kappa.component("B(a{p})")]
+    observables = [kappa.expression("|B(a{p})|")]
     system = System(mixture, [rule1], observables)
 
     n_rule1_applications = n_copies // 2

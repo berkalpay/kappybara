@@ -19,7 +19,7 @@ from kappybara.algebra import Expression
 class System:
     mixture: Mixture
     rules: list[Rule]
-    observables: dict[str, Component | Expression]
+    observables: dict[str, Expression]
     variables: dict[str, Expression]
     time: float
     tallies: defaultdict[str, dict[str, int]]
@@ -29,9 +29,7 @@ class System:
         self,
         mixture: Optional[Mixture] = None,
         rules: Optional[Iterable[Rule]] = None,
-        observables: Optional[
-            list[Component] | dict[str, Component | Expression]
-        ] = None,
+        observables: Optional[list[Expression] | dict[str, Expression]] = None,
         variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
     ):
@@ -70,9 +68,9 @@ class System:
 
     def __getitem__(self, name: str) -> int | float:
         if name in self.observables:
-            return self._eval_observable(name)
+            return self.observables[name].evaluate(self)
         elif name in self.variables:
-            return self._eval_variable(name)
+            return self.variables[name].evaluate(self)
         else:
             raise KeyError(
                 f"Name {name} doesn't correspond to a declared observable or variable"
@@ -149,27 +147,6 @@ class System:
         else:
             for component_exp in obj.filter("component_pattern"):
                 self.mixture.track_component(component_exp.attrs["value"])
-
-    def count_observable(self, obs: Component) -> int:
-        try:
-            embeddings = self.mixture.embeddings(obs)
-        except KeyError:
-            # Try to find an isomorphic observable if the specific one given isn't tracked
-            try:
-                tracked_obs = next(
-                    (
-                        c
-                        for c in self.observables.values()
-                        if isinstance(c, Component) and c.isomorphic(obs)
-                    )
-                )
-            except StopIteration as e:
-                e.add_note(
-                    f"No component isomorphic to observable `{obs}` has been declared"
-                )
-                raise
-            embeddings = self.mixture.embeddings(tracked_obs)
-        return len(embeddings)
 
     def _eval_observable(self, obs_name: str) -> int | float:
         observable = self.observables[obs_name]

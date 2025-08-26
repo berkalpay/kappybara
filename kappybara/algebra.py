@@ -160,7 +160,7 @@ class Expression:
                     raise ValueError(
                         f"{self} needs a System to evaluate pattern {component}"
                     )
-                return system.count_observable(component)
+                return len(system.mixture.embeddings(component))
             else:
                 raise NotImplementedError(
                     f"Reserved variable {value.type} not implemented yet."

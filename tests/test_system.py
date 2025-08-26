@@ -1,6 +1,7 @@
 import pytest
 import os
 import itertools
+from collections import defaultdict
 
 from kappybara.mixture import ComponentMixture
 from kappybara.system import System
@@ -16,11 +17,11 @@ def test_basic_system():
         "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 1.5, 1.0",
     ]
     observables = [
-        kappa.component(o)
+        kappa.expression(o)
         for o in [
-            "A(a[.])",
-            "A(b[1]), A(b[1])",
-            "A(a[1], b[.]), A(a[1], b[_])",
+            "|A(a[.])|",
+            "|A(b[1]), A(b[1])|",
+            "|A(a[1], b[.]), A(a[1], b[_])|",
         ]
     ]
 
@@ -33,12 +34,11 @@ def test_basic_system():
     rules = [rule for rule_str in rules for rule in kappa.rules(rule_str)]
     system = System(mixture, rules, observables)
 
-    counts = {obs: [] for obs in observables}
+    counts = defaultdict(list)
     for _ in range(1000):
         system.update()
-        for obs in observables:
-            c = system.count_observable(obs)
-            counts[obs].append(c)
+        for obs_name in system.observables:
+            counts[obs_name].append(system[obs_name])
 
 
 def test_system_from_kappa():
@@ -89,7 +89,6 @@ def test_system_from_kappa():
 )
 def test_heterodimerization(k_on, expected, via_kasim):
     heterodimer = kappa.component("A(x[1]),B(x[1])")
-    heterodimer_isomorphic = kappa.component("A(x[1]),B(x[1])")
     system = heterodimerization_system(k_on, heterodimer)
 
     n_heterodimers = []
@@ -99,8 +98,7 @@ def test_heterodimerization(k_on, expected, via_kasim):
         else:
             system.update()
         if system.time > 1:
-            n_heterodimers.append(system.count_observable(heterodimer))
-            assert n_heterodimers[-1] == system.count_observable(heterodimer_isomorphic)
+            n_heterodimers.append(system["o0"])
 
     measured = sum(n_heterodimers) / len(n_heterodimers)
     assert abs(measured - expected) < expected / 5
