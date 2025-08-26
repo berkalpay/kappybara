@@ -82,7 +82,7 @@ def system(kappa_str: str) -> "System":
 
     variables: dict[str, Expression] = {}
     observables: dict[str, Expression] = {}
-    rules: list[str] = []
+    rules: list[Rule] = []
     system_params: dict[str, int] = {}
     inits: list[tuple[Expression, Pattern]] = []
 
@@ -91,7 +91,7 @@ def system(kappa_str: str) -> "System":
 
         if tag in ["f_rule", "fr_rule", "ambi_rule", "ambi_fr_rule"]:
             new_rules = RuleBuilder(child).objects
-            rules.extend([rule.kappa_str for rule in new_rules])
+            rules.extend(new_rules)
 
         elif tag == "variable_declaration":
             name_tree = child.children[0]
@@ -102,7 +102,7 @@ def system(kappa_str: str) -> "System":
             assert expr_tree.data == "algebraic_expression"
             value = parse_tree_to_expression(expr_tree)
 
-            variables[name] = value.kappa_str
+            variables[name] = value
 
         elif tag == "plot_declaration":
             raise NotImplementedError
@@ -116,7 +116,7 @@ def system(kappa_str: str) -> "System":
             assert expr_tree.data == "algebraic_expression"
             value = parse_tree_to_expression(expr_tree)
 
-            observables[name] = value.kappa_str
+            observables[name] = value
 
         elif tag == "signature_declaration":
             # TODO
@@ -155,7 +155,7 @@ def system(kappa_str: str) -> "System":
         else:
             raise TypeError(f"Unsupported input type: {tag}")
 
-    system = System.from_kappa(None, rules, observables, variables)
+    system = System(None, rules, observables, variables)
 
     for init in inits:
         amount = int(init[0].evaluate(system))
