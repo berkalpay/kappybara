@@ -79,7 +79,7 @@ class Expression:
         elif self.type == "conditional":
             true_expr_str = self.attrs["true_expr"].kappa_str
             false_expr_str = self.attrs["false_expr"].kappa_str
-            return f"{self.attrs["condition"]} [?] {true_expr_str} [:] {false_expr_str}"
+            return f"{self.attrs["condition"].kappa_str} [?] {true_expr_str} [:] {false_expr_str}"
 
         elif self.type in ("logical_or", "logical_and"):
             left_str = self.attrs["left"].kappa_str
