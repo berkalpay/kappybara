@@ -232,13 +232,9 @@ class Monitor:
         self.system = system
         self.history = {"time": []} | {obs_name: [] for obs_name in system.observables}
 
-    @cached_property
-    def observables_names(self) -> list[str]:
-        return list(self.system.observables.keys())
-
     def update(self) -> None:
         self.history["time"].append(self.system.time)
-        for obs_name in self.observables_names:
+        for obs_name in self.system.observables:
             self.history[obs_name].append(self.system[obs_name])
 
     @property
@@ -247,7 +243,7 @@ class Monitor:
 
     def plot(self) -> matplotlib.figure.Figure:
         fig, ax = plt.subplots()
-        for obs_name in self.observables_names:
+        for obs_name in self.system.observables:
             ax.plot(self.history["time"], self.history[obs_name], label=obs_name)
         plt.legend()
         plt.xlabel("Time")
