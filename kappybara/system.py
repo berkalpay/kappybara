@@ -13,7 +13,7 @@ import matplotlib.figure
 import kappybara.kappa as kappa
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
-from kappybara.pattern import Component
+from kappybara.pattern import Component, Pattern
 from kappybara.algebra import Expression
 
 
@@ -35,6 +35,14 @@ class System:
         monitor: bool = True,
     ):
         self.rules = [] if rules is None else list(rules)
+
+        if not isinstance(mixture, ComponentMixture) and any(
+            type(rule) in [KappaRuleUnimolecular, KappaRuleBimolecular]
+            for rule in self.rules
+        ):
+            patterns = [] if mixture is None else [Pattern(list(mixture.agents))]
+            mixture = ComponentMixture(patterns)
+
         if mixture is None:
             mixture = (
                 ComponentMixture()
