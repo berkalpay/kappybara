@@ -188,6 +188,10 @@ class KappaRuleUnimolecular(KappaRule):
         super().__post_init__()
         self.component_weights: dict[Component, int] = {}
 
+    @property
+    def kappa_str(self) -> str:
+        return f"{self.left.kappa_str} -> {self.right.kappa_str} @ 0 {{{self.stochastic_rate.kappa_str}}}"
+
     def n_embeddings(self, mixture: ComponentMixture) -> int:
         count = 0
         # TODO: incrementally update counts (also accounting for component removal)
@@ -237,6 +241,10 @@ class KappaRuleBimolecular(KappaRule):
         assert (
             len(self.left.components) == 2
         ), "Bimolecular rule patterns must consist of exactly 2 components."
+
+    @property
+    def kappa_str(self) -> str:
+        return super().kappa_str + "{0}"
 
     def n_embeddings(self, mixture: ComponentMixture) -> int:
         count = 0
