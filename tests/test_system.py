@@ -17,12 +17,9 @@ def test_basic_system():
         "A(b[.]), A(b[.]) <-> A(b[1]), A(b[1]) @ 1.5, 1.0",
     ]
     observables = [
-        kappa.expression(o)
-        for o in [
-            "|A(a[.])|",
-            "|A(b[1]), A(b[1])|",
-            "|A(a[1], b[.]), A(a[1], b[_])|",
-        ]
+        "|A(a[.])|",
+        "|A(b[1]), A(b[1])|",
+        "|A(a[1], b[.]), A(a[1], b[_])|",
     ]
 
     mixture = ComponentMixture()

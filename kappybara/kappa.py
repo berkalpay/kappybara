@@ -102,7 +102,7 @@ def system(kappa_str: str) -> "System":
             assert expr_tree.data == "algebraic_expression"
             value = parse_tree_to_expression(expr_tree)
 
-            variables[name] = value
+            variables[name] = value.kappa_str
 
         elif tag == "plot_declaration":
             raise NotImplementedError
@@ -116,7 +116,7 @@ def system(kappa_str: str) -> "System":
             assert expr_tree.data == "algebraic_expression"
             value = parse_tree_to_expression(expr_tree)
 
-            observables[name] = value
+            observables[name] = value.kappa_str
 
         elif tag == "signature_declaration":
             # TODO

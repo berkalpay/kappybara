@@ -30,8 +30,8 @@ class System:
         self,
         mixture: Optional[Mixture] = None,
         rules: Optional[Iterable[Rule]] = None,
-        observables: Optional[list[Expression] | dict[str, Expression]] = None,
-        variables: Optional[dict[str, Expression]] = None,
+        observables: Optional[list[str] | dict[str, str]] = None,
+        variables: Optional[dict[str, str]] = None,
         monitor: bool = True,
     ):
         self.rules = [] if rules is None else list(rules)
@@ -48,11 +48,19 @@ class System:
         if observables is None:
             self.observables = {}
         elif isinstance(observables, list):
-            self.observables = {f"o{i}": obs for i, obs in enumerate(observables)}
+            self.observables = {
+                f"o{i}": kappa.expression(obs) for i, obs in enumerate(observables)
+            }
         else:
-            self.observables = observables
+            self.observables = {
+                name: kappa.expression(obs) for name, obs in observables.items()
+            }
 
-        self.variables = {} if variables is None else variables
+        self.variables = (
+            {}
+            if variables is None
+            else {name: kappa.expression(var) for name, var in variables.items()}
+        )
 
         self.set_mixture(mixture)
         self.time = 0

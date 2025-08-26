@@ -19,5 +19,5 @@ def heterodimerization_system(k_on: float, observable: Component) -> System:
             ),
             kappa.rule(f"A(x[1]), B(x[1]) -> A(x[.]), B(x[.]) @ {2.5}"),
         ],
-        observables=[kappa.expression(f"|{observable.kappa_str}|")],
+        observables=[f"|{observable.kappa_str}|"],
     )
