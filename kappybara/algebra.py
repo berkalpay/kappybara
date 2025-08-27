@@ -44,6 +44,16 @@ def parse_operator(kappa_operator: str) -> Callable:
 class Expression:
     """Algebraic expressions as specified by the Kappa language."""
 
+    @classmethod
+    def from_kappa(cls, kappa_str: str) -> Self:
+        from kappybara.grammar import kappa_parser, parse_tree_to_expression
+
+        input_tree = kappa_parser.parse(kappa_str)
+        assert input_tree.data == "kappa_input"
+        expr_tree = input_tree.children[0]
+        assert expr_tree.data in ["!algebraic_expression", "algebraic_expression"]
+        return parse_tree_to_expression(expr_tree)
+
     def __init__(self, type, **attrs):
         self.type = type
         self.attrs = attrs

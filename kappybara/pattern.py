@@ -97,6 +97,22 @@ class Site(Counted):
 
 
 class Agent(Counted):
+    @classmethod
+    def from_kappa(cls, kappa_str: str) -> Self:
+        from kappybara.grammar import kappa_parser, AgentBuilder
+
+        # Check pattern describes only a single agent
+        input_tree = kappa_parser.parse(kappa_str)
+        assert input_tree.data == "kappa_input"
+        assert len(input_tree.children) == 1
+        pattern_tree = input_tree.children[0]
+        assert pattern_tree.data == "pattern"
+        assert (
+            len(pattern_tree.children) == 1
+        ), "Zero or more than one agent patterns were specified."
+        agent_tree = pattern_tree.children[0]
+        return AgentBuilder(agent_tree).object
+
     def __init__(self, type: str, sites: Iterable[Site]):
         super().__init__()
         self.type = type
@@ -206,6 +222,12 @@ class Component(Counted):
 
     agents: IndexedSet[Agent]
     n_copies: int
+
+    @classmethod
+    def from_kappa(cls, kappa_str: str) -> Self:
+        parsed_pattern = Pattern.from_kappa(kappa_str)
+        assert len(parsed_pattern.components) == 1
+        return parsed_pattern.components[0]
 
     def __init__(self, agents: list[Agent], n_copies: int = 1):
         super().__init__()
@@ -331,6 +353,19 @@ class Component(Counted):
 
 class Pattern:
     agents: list[Optional[Agent]]
+
+    @classmethod
+    def from_kappa(cls, kappa_str: str) -> Self:
+        from kappybara.grammar import kappa_parser, PatternBuilder
+
+        input_tree = kappa_parser.parse(kappa_str)
+        assert input_tree.data == "kappa_input"
+        assert (
+            len(input_tree.children) == 1
+        ), "Zero or more than one patterns were specified."
+        assert len(input_tree.children) == 1
+        pattern_tree = input_tree.children[0]
+        return PatternBuilder(pattern_tree).object
 
     def __init__(self, agents: list[Optional[Agent]]):
         """

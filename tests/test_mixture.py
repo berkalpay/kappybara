@@ -1,7 +1,7 @@
 import pytest
 
+from kappybara.pattern import Pattern
 from kappybara.mixture import ComponentMixture
-import kappybara.kappa as kappa
 
 
 @pytest.mark.parametrize(
@@ -14,7 +14,7 @@ import kappybara.kappa as kappa
     ],
 )
 def test_instantiate_pattern_one_component(test_str):
-    pattern = kappa.pattern(test_str)
+    pattern = Pattern.from_kappa(test_str)
     mixture = ComponentMixture([pattern])
     assert pattern.components.pop().isomorphic(mixture.components.pop())
 
@@ -42,13 +42,13 @@ def test_find_embeddings_one_component(test_case):
     n = 1000
 
     mixture_pattern_str, n_copies, match_pattern_str, n_embeddings_expected = test_case
-    mixture_pattern = kappa.pattern(mixture_pattern_str)
+    mixture_pattern = Pattern.from_kappa(mixture_pattern_str)
 
     mixture = ComponentMixture()
     for _ in range(n):
         mixture.instantiate(mixture_pattern, n_copies)
 
-    match_pattern = kappa.pattern(match_pattern_str)
+    match_pattern = Pattern.from_kappa(match_pattern_str)
     assert len(match_pattern.components) == 1
 
     embeddings = list(match_pattern.components[0].embeddings(mixture))

@@ -44,7 +44,7 @@ class SiteBuilder(Visitor):
     def __init__(self, tree: ParseTree):
         super().__init__()
 
-        self.parsed_agents: list[Agent] = []
+        self.parsed_agents: list["Agent"] = []
 
         assert tree.data == "site"
         self.visit(tree)

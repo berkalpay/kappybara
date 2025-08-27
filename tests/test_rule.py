@@ -1,9 +1,10 @@
 import pytest
 from math import comb
 
+from kappybara.algebra import Expression
+from kappybara.pattern import Pattern
 from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.system import System
-import kappybara.kappa as kappa
 
 
 @pytest.mark.parametrize(
@@ -30,8 +31,8 @@ def test_rule_n_embeddings_at_system_initialiation(test_case):
     (mixture_pattern_str, n_copies, rule_class, rule_pattern_str, n_embeddings) = (
         test_case
     )
-    rule_pattern = kappa.pattern(rule_pattern_str)
-    rule = rule_class(rule_pattern, rule_pattern, kappa.expression("1.0"))
+    rule_pattern = Pattern.from_kappa(rule_pattern_str)
+    rule = rule_class(rule_pattern, rule_pattern, Expression.from_kappa("1.0"))
     system = System.from_kappa({mixture_pattern_str: n_copies}, [rule.kappa_str])
     assert system.rules[0].n_embeddings(system.mixture) == n_embeddings
 
@@ -41,9 +42,9 @@ def test_simple_rule_application():
     n_copies = 10
     rule_left_str = "A(a[1]), B(b[1])"
     rule = KappaRule(
-        kappa.pattern(rule_left_str),
-        kappa.pattern("A(a[.]), B(b[.])"),
-        kappa.expression("1.0"),
+        Pattern.from_kappa(rule_left_str),
+        Pattern.from_kappa("A(a[.]), B(b[.])"),
+        Expression.from_kappa("1.0"),
     )
     observables = [f"|{rule_left_str}|", "|A(a[.])|", "|B(b[#])|"]
     system = System.from_kappa(
@@ -70,9 +71,9 @@ def test_edge_creating_rule_application():
     n_copies = 4
     rule_right_str = "A(a[1]), B(b[1])"
     rule = KappaRule(
-        kappa.pattern("A(a[.]), B(b[.])"),
-        kappa.pattern(rule_right_str),
-        kappa.expression("1.0"),
+        Pattern.from_kappa("A(a[.]), B(b[.])"),
+        Pattern.from_kappa(rule_right_str),
+        Expression.from_kappa("1.0"),
     )
     observables = [f"|{rule_right_str}|"]
     system = System.from_kappa(
@@ -99,9 +100,9 @@ def test_rule_application():
     n_copies = 100
     rule_left_str = "A(a[1]), B(b[1], x[3]), C(c[2]{p}), D(d[2]{p}, x[3])"
     rule = KappaRule(
-        kappa.pattern(rule_left_str),
-        kappa.pattern("A(a[1]), B(b[.], x[3]), C(c[1]{u}), D(d[.]{p}, x[3])"),
-        kappa.expression("1.0"),
+        Pattern.from_kappa(rule_left_str),
+        Pattern.from_kappa("A(a[1]), B(b[.], x[3]), C(c[1]{u}), D(d[.]{p}, x[3])"),
+        Expression.from_kappa("1.0"),
     )
     observables = [f"|{rule_left_str}|", "|A(a[1]), C(c[1])|", "|B(b[_])|", "|C(c{u})|"]
     system = System.from_kappa(

@@ -1,6 +1,5 @@
 import pytest
-
-import kappybara.kappa as kappa
+from kappybara.system import System
 
 
 @pytest.mark.parametrize(
@@ -13,4 +12,4 @@ import kappybara.kappa as kappa
     ],
 )
 def test_expression_evaluation(expression, result):
-    assert kappa.system(f"%obs: 'x' {expression}")["x"] == result
+    assert System.from_ka(f"%obs: 'x' {expression}")["x"] == result

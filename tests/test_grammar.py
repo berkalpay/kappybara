@@ -3,9 +3,9 @@ import math
 from pathlib import Path
 
 from kappybara.grammar import kappa_parser
-from kappybara.rule import KappaRuleUnimolecular, KappaRuleBimolecular
-import kappybara.kappa as kappa
-
+from kappybara.pattern import Pattern
+from kappybara.rule import KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
+from kappybara.system import System
 
 # Parser
 
@@ -34,7 +34,7 @@ def test_pattern_from_kappa():
         D(w[3]),
         E()
     """
-    pattern = kappa.pattern(test_kappa)
+    pattern = Pattern.from_kappa(test_kappa)
     assert ["A", "B", "C", "D", "E"] == [agent.type for agent in pattern.agents]
     assert ["a", "b", "c", "d", "e"] == [site.label for site in pattern.agents[0]]
     assert len(pattern.components) == 2
@@ -52,11 +52,11 @@ def test_pattern_from_kappa():
     ],
 )
 def test_rule_len_from_kappa(rule_str, rule_len):
-    assert len(kappa.rules(rule_str)) == rule_len
+    assert len(KappaRule.multiple_from_kappa(rule_str)) == rule_len
 
 
 def test_ambi_rule_from_kappa():
-    rules = kappa.rules(
+    rules = KappaRule.multiple_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}"
     )
     assert len(rules) == 2
@@ -67,7 +67,7 @@ def test_ambi_rule_from_kappa():
 
 
 def test_uni_rule_from_kappa():
-    rules = kappa.rules(
+    rules = KappaRule.multiple_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 0.0 {2.0}"
     )
     assert len(rules) == 1
@@ -76,7 +76,7 @@ def test_uni_rule_from_kappa():
 
 
 def test_bi_rule_from_kappa():
-    rules = kappa.rules(
+    rules = KappaRule.multiple_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {0.0}"
     )
     assert len(rules) == 1
@@ -85,7 +85,7 @@ def test_bi_rule_from_kappa():
 
 
 def test_ambi_fr_rule_from_kappa():
-    rules = kappa.rules(
+    rules = KappaRule.multiple_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) <-> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}, 3.0"
     )
     assert len(rules) == 3
@@ -100,7 +100,7 @@ def test_ambi_fr_rule_from_kappa():
 
 
 def test_system_kappa_str():
-    system_in = kappa.system(
+    system_in = System.from_ka(
         """
     %var: 'x'     0.03
     %var: 'k_on'  'x' * 10
@@ -118,7 +118,7 @@ def test_system_kappa_str():
     A(a{p}), B(b[_]) -> A(a{u}), B() @ 'g_on'
         """
     )
-    system_out = kappa.system(system_in.kappa_str)
+    system_out = System.from_ka(system_in.kappa_str)
     for system in (system_in, system_out):
         assert system["pairs"] == system["n"] == system["m"] == 300
         assert system["p"] == pytest.approx(math.pi * system["n"])

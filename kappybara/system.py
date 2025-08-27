@@ -10,7 +10,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.figure
 
-import kappybara.kappa as kappa
 from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component, Pattern
@@ -25,6 +24,138 @@ class System:
     monitor: Optional["Monitor"]
     time: float
     tallies: defaultdict[str, dict[str, int]]
+
+    @classmethod
+    def from_ka(cls, ka_str: str) -> Self:
+        from kappybara.grammar import (
+            kappa_parser,
+            parse_tree_to_expression,
+            PatternBuilder,
+            RuleBuilder,
+        )
+
+        input_tree = kappa_parser.parse(ka_str)
+        assert input_tree.data == "kappa_input"
+
+        variables: dict[str, Expression] = {}
+        observables: dict[str, Expression] = {}
+        rules: list[Rule] = []
+        system_params: dict[str, int] = {}
+        inits: list[tuple[Expression, Pattern]] = []
+
+        for child in input_tree.children:
+            tag = child.data
+
+            if tag in ["f_rule", "fr_rule", "ambi_rule", "ambi_fr_rule"]:
+                new_rules = RuleBuilder(child).objects
+                rules.extend(new_rules)
+
+            elif tag == "variable_declaration":
+                name_tree = child.children[0]
+                assert name_tree.data == "declared_variable_name"
+                name = name_tree.children[0].value.strip("'\"")
+
+                expr_tree = child.children[1]
+                assert expr_tree.data == "algebraic_expression"
+                value = parse_tree_to_expression(expr_tree)
+
+                variables[name] = value
+
+            elif tag == "plot_declaration":
+                raise NotImplementedError
+
+            elif tag == "observable_declaration":
+                label_tree = child.children[0]
+                assert isinstance(label_tree, str)
+                name = label_tree.strip("'\"")
+
+                expr_tree = child.children[1]
+                assert expr_tree.data == "algebraic_expression"
+                value = parse_tree_to_expression(expr_tree)
+
+                observables[name] = value
+
+            elif tag == "signature_declaration":
+                raise NotImplementedError
+
+            elif tag == "init_declaration":
+                expr_tree = child.children[0]
+                assert expr_tree.data == "algebraic_expression"
+                amount = parse_tree_to_expression(expr_tree)
+
+                pattern_tree = child.children[1]
+                if pattern_tree.data == "declared_token_name":
+                    raise NotImplementedError
+                assert pattern_tree.data == "pattern"
+                pattern = PatternBuilder(pattern_tree).object
+
+                inits.append((amount, pattern))
+
+            elif tag == "declared_token":
+                raise NotImplementedError
+
+            elif tag == "definition":
+                reserved_name_tree = child.children[0]
+                assert reserved_name_tree.data == "reserved_name"
+                name = reserved_name_tree.children[0].value.strip("'\"")
+
+                value_tree = child.children[1]
+                assert value_tree.data == "value"
+                value = int(value_tree.children[0].value)
+
+                system_params[name] = value
+
+            elif tag == "pattern":
+                raise NotImplementedError
+
+            else:
+                raise TypeError(f"Unsupported input type: {tag}")
+
+        system = cls(None, rules, observables, variables)
+        for init in inits:
+            system.mixture.instantiate(init[1], int(init[0].evaluate(system)))
+        return system
+
+    @classmethod
+    def from_kappa(
+        cls,
+        mixture: Optional[dict[str, int]] = None,
+        rules: Optional[Iterable[str]] = None,
+        observables: Optional[list[str] | dict[str, str]] = None,
+        variables: Optional[dict[str, str]] = None,
+        *args,
+        **kwargs,
+    ) -> Self:
+        real_rules = []
+        if rules is not None:
+            for rule in rules:
+                real_rules.extend(KappaRule.multiple_from_kappa(rule))
+
+        if observables is None:
+            real_observables = {}
+        elif isinstance(observables, list):
+            real_observables = {
+                f"o{i}": Expression.from_kappa(obs) for i, obs in enumerate(observables)
+            }
+        else:
+            real_observables = {
+                name: Expression.from_kappa(obs) for name, obs in observables.items()
+            }
+
+        real_variables = (
+            {}
+            if variables is None
+            else {name: Expression.from_kappa(var) for name, var in variables.items()}
+        )
+
+        return cls(
+            None if mixture is None else Mixture.from_kappa(mixture),
+            real_rules,
+            real_observables,
+            real_variables,
+            *args,
+            **kwargs,
+        )
 
     def __init__(
         self,
@@ -66,47 +197,6 @@ class System:
         else:
             self.monitor = None
 
-    @classmethod
-    def from_kappa(
-        cls,
-        mixture: Optional[dict[str, int]] = None,
-        rules: Optional[Iterable[str]] = None,
-        observables: Optional[list[str] | dict[str, str]] = None,
-        variables: Optional[dict[str, str]] = None,
-        *args,
-        **kwargs,
-    ) -> Self:
-        real_rules = []
-        if rules is not None:
-            for rule in rules:
-                real_rules.extend(kappa.rules(rule))
-
-        if observables is None:
-            real_observables = {}
-        elif isinstance(observables, list):
-            real_observables = {
-                f"o{i}": kappa.expression(obs) for i, obs in enumerate(observables)
-            }
-        else:
-            real_observables = {
-                name: kappa.expression(obs) for name, obs in observables.items()
-            }
-
-        real_variables = (
-            {}
-            if variables is None
-            else {name: kappa.expression(var) for name, var in variables.items()}
-        )
-
-        return cls(
-            None if mixture is None else Mixture.from_kappa(mixture),
-            real_rules,
-            real_observables,
-            real_variables,
-            *args,
-            **kwargs,
-        )
-
     def __str__(self):
         return self.kappa_str
 
@@ -121,7 +211,7 @@ class System:
             )
 
     def __setitem__(self, name: str, kappa_str: str):
-        expr = kappa.expression(kappa_str)
+        expr = Expression.from_kappa(kappa_str)
         self._track_constituent_components(expr)
         if name in self.variables:
             self.variables[name] = expr
@@ -253,7 +343,7 @@ class System:
                         output_kappa_str += split[0] + split[-1]
 
         # Apply the update
-        self.set_mixture(kappa.system(output_kappa_str).mixture)
+        self.set_mixture(System.from_ka(output_kappa_str).mixture)
         self.time += time
         if self.monitor:
             self.monitor.update()

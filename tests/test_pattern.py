@@ -1,5 +1,5 @@
 import pytest
-import kappybara.kappa as kappa
+from kappybara.pattern import Component, Pattern
 
 
 @pytest.mark.parametrize(
@@ -46,15 +46,15 @@ import kappybara.kappa as kappa
 )
 def test_component_isomorphism(test_case):
     a_str, b_str, isomorphic = test_case
-    a = kappa.component(a_str)
-    b = kappa.component(b_str)
+    a = Component.from_kappa(a_str)
+    b = Component.from_kappa(b_str)
     assert a.isomorphic(b) == b.isomorphic(a)
     assert isomorphic == a.isomorphic(b)
 
 
 def test_component_id_uniqueness():
-    a = kappa.component("A(a[.]{u})")
-    b = kappa.component("A(a[.]{u})")
+    a = Component.from_kappa("A(a[.]{u})")
+    b = Component.from_kappa("A(a[.]{u})")
     assert a.id != b.id
 
 
@@ -68,13 +68,13 @@ def test_component_id_uniqueness():
 )
 def test_automorphism_counting(test_case):
     kappa_str, n_automorphisms_expected = test_case
-    component = kappa.component(kappa_str)
+    component = Component.from_kappa(kappa_str)
     assert component.isomorphic(component)
     assert n_automorphisms_expected == len(list(component.isomorphisms(component)))
 
 
 def test_pattern_creation():
-    kappa.pattern(
+    Pattern.from_kappa(
         """
         A(a[.]{blah}, b[_]{bleh}, c[#], d[some_site_name.some_agent_name], e[13]),
         B(f[13], e[1], z[3]),

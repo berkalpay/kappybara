@@ -2,7 +2,7 @@ import random
 from dataclasses import dataclass
 from math import prod
 from abc import ABC, abstractmethod
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, Self, TYPE_CHECKING
 
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, ComponentMixture, MixtureUpdate
@@ -55,6 +55,24 @@ class KappaRule(Rule):
     left: Pattern
     right: Pattern
     stochastic_rate: Expression
+
+    @classmethod
+    def multiple_from_kappa(cls, kappa_str: str) -> list[Self]:
+        from kappybara.grammar import kappa_parser, RuleBuilder
+
+        """Forward-reverse rules (with "<->") really represent two rules."""
+        input_tree = kappa_parser.parse(kappa_str)
+        assert input_tree.data == "kappa_input"
+        rule_tree = input_tree.children[0]
+        return RuleBuilder(rule_tree).objects
+
+    @classmethod
+    def from_kappa(cls, kappa_str: str) -> Self:
+        rules = cls.multiple_from_kappa(kappa_str)
+        assert (
+            len(rules) == 1
+        ), "The given rule expression represents more than one rule."
+        return rules[0]
 
     def __post_init__(self):
         l = len(self.left.agents)

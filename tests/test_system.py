@@ -3,9 +3,9 @@ import shutil
 import itertools
 from collections import defaultdict
 
-from kappybara.system import System
-import kappybara.kappa as kappa
+from kappybara.pattern import Component, Pattern
 from kappybara.rule import AVOGADRO, DIFFUSION_RATE, kinetic_to_stochastic_on_rate
+from kappybara.system import System
 from kappybara.examples import heterodimerization_system
 
 
@@ -31,7 +31,7 @@ def test_basic_system():
 
 
 def test_system_from_kappa():
-    system = kappa.system(
+    system = System.from_ka(
         """
     %def: "maxConsecutiveClash" "20"
     %def: "seed" "365457"
@@ -77,7 +77,7 @@ def test_system_from_kappa():
     ],
 )
 def test_heterodimerization(k_on, expected, via_kasim):
-    heterodimer = kappa.component("A(x[1]),B(x[1])")
+    heterodimer = Component.from_kappa("A(x[1]),B(x[1])")
     system = heterodimerization_system(k_on, heterodimer)
 
     n_heterodimers = []
@@ -106,7 +106,7 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
     on_rate = kinetic_to_stochastic_on_rate(volume=volume)
     kd = 10**-9
     off_rate = DIFFUSION_RATE * kd
-    system = kappa.system(
+    system = System.from_ka(
         f"""
         %init: {a_init} A(x[.])
         %init: {b_init} B(x[.])
@@ -130,7 +130,7 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
 
 
 def test_system_manipulation():
-    system = kappa.system(
+    system = System.from_ka(
         """
         %init: 10 A(x[.])
         %init: 10 B(x[.])
@@ -150,7 +150,7 @@ def test_system_manipulation():
     assert system["AB"] == 1
 
     # Add a pattern
-    system.mixture.instantiate(kappa.pattern("A(x[1]), B(x[1])"))
+    system.mixture.instantiate(Pattern.from_kappa("A(x[1]), B(x[1])"))
     assert system["AB"] == 2
     total_agents_pre_removal = system["total_agents"]
     assert total_agents_pre_removal == 22
