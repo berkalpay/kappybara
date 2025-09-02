@@ -129,7 +129,7 @@ class System:
         real_rules = []
         if rules is not None:
             for rule in rules:
-                real_rules.extend(KappaRule.multiple_from_kappa(rule))
+                real_rules.extend(KappaRule.list_from_kappa(rule))
 
         if observables is None:
             real_observables = {}

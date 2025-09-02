@@ -57,7 +57,7 @@ class KappaRule(Rule):
     stochastic_rate: Expression
 
     @classmethod
-    def multiple_from_kappa(cls, kappa_str: str) -> list[Self]:
+    def list_from_kappa(cls, kappa_str: str) -> list[Self]:
         from kappybara.grammar import kappa_parser, RuleBuilder
 
         """Forward-reverse rules (with "<->") really represent two rules."""
@@ -68,7 +68,7 @@ class KappaRule(Rule):
 
     @classmethod
     def from_kappa(cls, kappa_str: str) -> Self:
-        rules = cls.multiple_from_kappa(kappa_str)
+        rules = cls.list_from_kappa(kappa_str)
         assert (
             len(rules) == 1
         ), "The given rule expression represents more than one rule."

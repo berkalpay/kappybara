@@ -52,11 +52,11 @@ def test_pattern_from_kappa():
     ],
 )
 def test_rule_len_from_kappa(rule_str, rule_len):
-    assert len(KappaRule.multiple_from_kappa(rule_str)) == rule_len
+    assert len(KappaRule.list_from_kappa(rule_str)) == rule_len
 
 
 def test_ambi_rule_from_kappa():
-    rules = KappaRule.multiple_from_kappa(
+    rules = KappaRule.list_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}"
     )
     assert len(rules) == 2
@@ -67,7 +67,7 @@ def test_ambi_rule_from_kappa():
 
 
 def test_uni_rule_from_kappa():
-    rules = KappaRule.multiple_from_kappa(
+    rules = KappaRule.list_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 0.0 {2.0}"
     )
     assert len(rules) == 1
@@ -76,7 +76,7 @@ def test_uni_rule_from_kappa():
 
 
 def test_bi_rule_from_kappa():
-    rules = KappaRule.multiple_from_kappa(
+    rules = KappaRule.list_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) -> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {0.0}"
     )
     assert len(rules) == 1
@@ -85,7 +85,7 @@ def test_bi_rule_from_kappa():
 
 
 def test_ambi_fr_rule_from_kappa():
-    rules = KappaRule.multiple_from_kappa(
+    rules = KappaRule.list_from_kappa(
         "A(a{p}), B(b[1]), C(c[1]) <-> A(a{u}), B(b[.]), C(c[.]) @ 1.0 {2.0}, 3.0"
     )
     assert len(rules) == 3
