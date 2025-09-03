@@ -74,7 +74,7 @@ plt.show()
 ```
 
 <h1 align="center">
-<img width="640" height="480" alt="demo" src="https://github.com/user-attachments/assets/857de62e-f437-4fba-ba85-a3d5a324167b" />
+<img width="400" height="300" alt="demo" src="https://github.com/user-attachments/assets/78eb6555-d3a3-4a67-9d60-e457a633f9d6" />
 </h1>
 
 Above it can be seen that the system equilibrates relatively early, new `A` is added and the number of complexes increases, and then observables are computed at the end of a period of computation in KaSim.
