@@ -300,9 +300,9 @@ class System:
 
     def choose_rule(self) -> Optional[Rule]:
         try:
-            return random.choices(self.rules.values(), weights=self.rule_reactivities)[
-                0
-            ]
+            return random.choices(
+                list(self.rules.values()), weights=self.rule_reactivities
+            )[0]
         except ValueError:
             warnings.warn("system has no reactivity: no rule applied", RuntimeWarning)
             return None
