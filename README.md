@@ -47,7 +47,7 @@ times.append(system.time)
 
 We'll now manually instantiate 50 new `A` and `B` molecules each, start tracking the number of free `A`, and simulate until there are no more than 10 free `A` in the mixture:
 ```python
-from pattern import Pattern
+from kappybara.pattern import Pattern
 
 system.mixture.instantiate(Pattern.from_kappa("A(x[.]), B(x[.])"), 50)
 
