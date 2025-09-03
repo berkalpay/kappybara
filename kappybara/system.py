@@ -18,7 +18,7 @@ from kappybara.algebra import Expression
 
 class System:
     mixture: Mixture
-    rules: list[Rule]
+    rules: Optional[dict[str, Rule]]
     observables: dict[str, Expression]
     variables: dict[str, Expression]
     monitor: Optional["Monitor"]
@@ -165,11 +165,13 @@ class System:
         variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
     ):
-        self.rules = [] if rules is None else list(rules)
+        self.rules = (
+            {} if rules is None else {f"r{i}": rule for i, rule in enumerate(rules)}
+        )
 
         if not isinstance(mixture, ComponentMixture) and any(
             type(rule) in [KappaRuleUnimolecular, KappaRuleBimolecular]
-            for rule in self.rules
+            for rule in self.rules.values()
         ):
             patterns = [] if mixture is None else [Pattern(list(mixture.agents))]
             mixture = ComponentMixture(patterns)
@@ -237,7 +239,7 @@ class System:
         kappa_str = ""
         for var_name, var in self.variables.items():
             kappa_str += f"%var: '{var_name}' {var.kappa_str}\n"
-        for rule in self.rules:
+        for rule in self.rules.values():
             assert isinstance(rule, KappaRule)
             kappa_str += f"{rule.kappa_str}\n"
         for obs_name, obs in self.observables.items():
@@ -255,7 +257,7 @@ class System:
 
     def set_mixture(self, mixture: Mixture) -> None:
         self.mixture = mixture
-        for rule in self.rules:
+        for rule in self.rules.values():
             self._track_rule(rule)
         for observable in self.observables.values():
             self._track_constituent_components(observable)
@@ -282,7 +284,7 @@ class System:
 
     @cached_property
     def rule_reactivities(self) -> list[float]:
-        return [rule.reactivity(self) for rule in self.rules]
+        return [rule.reactivity(self) for rule in self.rules.values()]
 
     @property
     def reactivity(self) -> float:
@@ -298,7 +300,9 @@ class System:
 
     def choose_rule(self) -> Optional[Rule]:
         try:
-            return random.choices(self.rules, weights=self.rule_reactivities)[0]
+            return random.choices(self.rules.values(), weights=self.rule_reactivities)[
+                0
+            ]
         except ValueError:
             warnings.warn("system has no reactivity: no rule applied", RuntimeWarning)
             return None
