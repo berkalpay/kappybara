@@ -264,6 +264,19 @@ class System:
         for variable in self.variables.values():
             self._track_constituent_components(variable)
 
+    def add_rule(self, name: str, rule: Rule) -> None:
+        assert name not in self.rules, "Rule {name} already exists in the system"
+        self._track_rule(rule)
+        self.rules[name] = rule
+
+    def remove_rule(self, name: str) -> None:
+        assert self.rules[name].rate(self) > 0, "Rule {name} is already null"
+        try:
+            self.rules[name].stochastic_rate = Expression.from_kappa("0")
+        except KeyError as e:
+            e.add_note("No rule {name} exists in the system")
+            raise e
+
     def _track_rule(self, rule: Rule) -> None:
         """Track any components mentioned in the left hand side of a `Rule`"""
         if isinstance(rule, KappaRule):

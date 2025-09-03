@@ -130,6 +130,8 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
 
 
 def test_system_manipulation():
+    from kappybara.rule import KappaRule
+
     system = System.from_ka(
         """
         %init: 10 A(x[.])
@@ -179,3 +181,12 @@ def test_system_manipulation():
     assert system["C"] == 1
     system.update()
     assert system["C"] == 1
+
+    system.add_rule("new", KappaRule.from_kappa("B() -> C() @ 1000"))
+    while system.reactivity:
+        system.update()
+    assert system["B"] == 0 and system["C"] == 12
+    system.remove_rule("new")
+    system.add_rule("newer", KappaRule.from_kappa("C() -> B() @ 1000"))
+    while system.reactivity:
+        assert system["B"] == 12 and system["C"] == 0
