@@ -211,7 +211,7 @@ class ComponentMixture(Mixture):
     def _remove_agent(self, agent: Agent) -> None:
         super()._remove_agent(agent)
         component = self.components.lookup("agent", agent)
-        assert len(component.agents) == 1
+        assert len(component) == 1
         self.components.remove(component)
 
     def _add_edge(self, edge: Edge) -> None:
@@ -225,7 +225,7 @@ class ComponentMixture(Mixture):
             return
 
         # Ensure `component2` is the smaller of the 2
-        if len(component2.agents) > len(component1.agents):
+        if len(component2) > len(component1):
             component1, component2 = component2, component1
 
         relocated: dict[Component, list[Embedding]] = {}
