@@ -27,6 +27,11 @@ class System:
     tallies: defaultdict[str, dict[str, int]]
 
     @classmethod
+    def read_ka(cls, filepath: str) -> Self:
+        with open(filepath) as f:
+            return cls.from_ka(f.read())
+
+    @classmethod
     def from_ka(cls, ka_str: str) -> Self:
         from kappybara.grammar import (
             kappa_parser,
