@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 import random
 import warnings
@@ -339,9 +340,12 @@ class System:
     def update_via_kasim(self, time: float) -> None:
         """
         Simulates for `time` additional time units in KaSim.
-        Needs KaSim to be installed and in the PATH.
         NOTE: some features may not be compatible between Kappybara and KaSim.
         """
+        assert shutil.which(
+            "KaSim"
+        ), "To update via KaSim, it must be installed and in the PATH."
+
         with tempfile.TemporaryDirectory() as tmpdirname:
             # Run KaSim on the current system
             output_ka_path = os.path.join(tmpdirname, "out.ka")
