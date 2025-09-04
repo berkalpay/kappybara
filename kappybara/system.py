@@ -19,7 +19,7 @@ from kappybara.algebra import Expression
 
 class System:
     mixture: Mixture
-    rules: Optional[dict[str, Rule]]
+    rules: dict[str, Rule]
     observables: dict[str, Expression]
     variables: dict[str, Expression]
     monitor: Optional["Monitor"]
