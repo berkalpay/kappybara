@@ -49,7 +49,7 @@ We'll now manually instantiate 50 new `A` and `B` molecules each, start tracking
 ```python
 from kappybara.pattern import Pattern
 
-system.mixture.instantiate(Pattern.from_kappa("A(x[.]), B(x[.])"), 50)
+system.mixture.instantiate("A(x[.]), B(x[.])", 50)
 
 system["A"] = "|A(x[.])|"
 while system["A"] > 10:

@@ -57,7 +57,10 @@ class Mixture:
             ).items()
         )
 
-    def instantiate(self, pattern: Pattern, n_copies: int = 1) -> None:
+    def instantiate(self, pattern: Pattern | str, n_copies: int = 1) -> None:
+        if isinstance(pattern, str):
+            pattern = Pattern.from_kappa(pattern)
+
         assert (
             not pattern.underspecified
         ), "Pattern isn't specific enough to instantiate."
