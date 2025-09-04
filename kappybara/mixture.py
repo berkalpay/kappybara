@@ -24,7 +24,7 @@ class Edge:
 @dataclass
 class Mixture:
     agents: IndexedSet[Agent]
-    _embeddings: dict[Pattern, IndexedSet[Embedding]]
+    _embeddings: dict[Component, IndexedSet[Embedding]]
     _max_embedding_width: int
 
     @classmethod
@@ -92,7 +92,7 @@ class Mixture:
             update.remove_agent(agent)
         self.apply_update(update)
 
-    def embeddings(self, component: Pattern) -> IndexedSet[Embedding]:
+    def embeddings(self, component: Component) -> IndexedSet[Embedding]:
         try:
             return self._embeddings[component]
         except KeyError as e:
@@ -101,7 +101,7 @@ class Mixture:
             )
             raise
 
-    def track_component(self, component: Pattern):
+    def track_component(self, component: Component):
         self._max_embedding_width = max(component.diameter, self._max_embedding_width)
         embeddings = IndexedSet(component.embeddings(self))
         embeddings.create_index("agent", SetProperty(lambda e: iter(e.values())))
@@ -185,11 +185,11 @@ class ComponentMixture(Mixture):
         yield from self.components
 
     def embeddings_in_component(
-        self, match_pattern: Pattern, mixture_component: Component
+        self, match_pattern: Component, mixture_component: Component
     ) -> list[dict[Agent, Agent]]:
         return self._embeddings[match_pattern].lookup("component", mixture_component)
 
-    def track_component(self, component: Pattern):
+    def track_component(self, component: Component):
         super().track_component(component)
         self._embeddings[component].create_index(
             "component",
@@ -228,7 +228,7 @@ class ComponentMixture(Mixture):
         if len(component2.agents) > len(component1.agents):
             component1, component2 = component2, component1
 
-        relocated: dict[Pattern, list[Embedding]] = {}
+        relocated: dict[Component, list[Embedding]] = {}
         for tracked in self._embeddings:
             relocated[tracked] = list(
                 self._embeddings[tracked].lookup("component", component2)
@@ -270,7 +270,7 @@ class ComponentMixture(Mixture):
         new_component1 = maybe_new_component
         new_component2 = Component(agent2.depth_first_traversal)
 
-        relocated: dict[Pattern, list[Embedding]] = {}
+        relocated: dict[Component, list[Embedding]] = {}
         for tracked in self._embeddings:
             relocated[tracked] = list(
                 self._embeddings[tracked].lookup("component", old_component)
