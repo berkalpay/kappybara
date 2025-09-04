@@ -11,6 +11,8 @@ pip install .
 
 We can initialize a system of a simple reversable binding interaction as follows:
 ```python
+from kappybara.system import System
+
 system = System.from_kappa(
     mixture={"A(x[.])": 100, "B(x[.])": 100},
     rules=[
