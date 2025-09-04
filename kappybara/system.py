@@ -270,8 +270,10 @@ class System:
         for variable in self.variables.values():
             self._track_constituent_components(variable)
 
-    def add_rule(self, name: str, rule: Rule) -> None:
+    def add_rule(self, name: str, rule: Rule | str) -> None:
         assert name not in self.rules, "Rule {name} already exists in the system"
+        if isinstance(rule, str):
+            rule = KappaRule.from_kappa(rule)
         self._track_rule(rule)
         self.rules[name] = rule
 

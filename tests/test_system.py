@@ -182,11 +182,11 @@ def test_system_manipulation():
     system.update()
     assert system["C"] == 1
 
-    system.add_rule("new", KappaRule.from_kappa("B() -> C() @ 1000"))
+    system.add_rule("new", "B() -> C() @ 1000")
     while system.reactivity:
         system.update()
     assert system["B"] == 0 and system["C"] == 12
     system.remove_rule("new")
-    system.add_rule("newer", KappaRule.from_kappa("C() -> B() @ 1000"))
+    system.add_rule("newer", "C() -> B() @ 1000")
     while system.reactivity:
         assert system["B"] == 12 and system["C"] == 0
