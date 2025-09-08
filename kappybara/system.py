@@ -405,3 +405,14 @@ class Monitor:
         plt.ylabel("Observable")
         plt.margins(0, 0)
         return fig
+
+    def measure(self, observable_name: str, time: Optional[float] = None):
+        times: list[int] = list(self.history["time"])
+        if time is None:
+            time = times[-1]
+        assert time <= max(times), "Simulation hasn't reached time {time}"
+
+        i = 0
+        while times[i] < time:
+            i += 1
+        return self.history[observable_name][i]
