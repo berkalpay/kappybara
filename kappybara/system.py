@@ -389,6 +389,17 @@ class Monitor:
                 self.history[obs_name] = [None] * (len(self.history["time"]) - 1)
             self.history[obs_name].append(self.system[obs_name])
 
+    def measure(self, observable_name: str, time: Optional[float] = None):
+        times: list[int] = list(self.history["time"])
+        if time is None:
+            time = times[-1]
+        assert time <= max(times), "Simulation hasn't reached time {time}"
+
+        i = 0
+        while times[i] < time:
+            i += 1
+        return self.history[observable_name][i]
+
     @property
     def dataframe(self) -> pd.DataFrame:
         return pd.DataFrame(self.history)
@@ -402,14 +413,3 @@ class Monitor:
         plt.ylabel("Observable")
         plt.margins(0, 0)
         return fig
-
-    def measure(self, observable_name: str, time: Optional[float] = None):
-        times: list[int] = list(self.history["time"])
-        if time is None:
-            time = times[-1]
-        assert time <= max(times), "Simulation hasn't reached time {time}"
-
-        i = 0
-        while times[i] < time:
-            i += 1
-        return self.history[observable_name][i]
