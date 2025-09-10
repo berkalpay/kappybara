@@ -220,7 +220,7 @@ class System:
 
     def __setitem__(self, name: str, kappa_str: str):
         expr = Expression.from_kappa(kappa_str)
-        self._track_constituent_components(expr)
+        self._track_expression(expr)
         if name in self.variables:
             self.variables[name] = expr
         else:  # Set new expressions as observables
@@ -266,9 +266,9 @@ class System:
         for rule in self.rules.values():
             self._track_rule(rule)
         for observable in self.observables.values():
-            self._track_constituent_components(observable)
+            self._track_expression(observable)
         for variable in self.variables.values():
-            self._track_constituent_components(variable)
+            self._track_expression(variable)
 
     def add_rule(self, name: str, rule: Rule | str) -> None:
         assert name not in self.rules, "Rule {name} already exists in the system"
@@ -292,16 +292,13 @@ class System:
                 # TODO: For efficiency check for isomorphism with already-tracked components
                 self.mixture.track_component(component)
 
-    def _track_constituent_components(self, obj: Component | Expression) -> None:
+    def _track_expression(self, expression: Expression) -> None:
         """
-        Tracks the `Component`s in the given observable.
-        NOTE: for `Expression`s, doesn't track patterns nested by indirection - see the `filter` method.
+        Tracks the `Component`s in the given expression.
+        NOTE: doesn't track patterns nested by indirection - see the `filter` method.
         """
-        if isinstance(obj, Component):
-            self.mixture.track_component(obj)
-        else:
-            for component_exp in obj.filter("component_pattern"):
-                self.mixture.track_component(component_exp.attrs["value"])
+        for component_expr in expression.filter("component_pattern"):
+            self.mixture.track_component(component_expr.attrs["value"])
 
     @cached_property
     def rule_reactivities(self) -> list[float]:
