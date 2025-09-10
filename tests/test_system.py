@@ -3,7 +3,6 @@ import shutil
 import itertools
 from collections import defaultdict
 
-from kappybara.pattern import Component, Pattern
 from kappybara.rule import AVOGADRO, DIFFUSION_RATE, kinetic_to_stochastic_on_rate
 from kappybara.system import System
 from kappybara.examples import heterodimerization_system
@@ -77,9 +76,7 @@ def test_system_from_kappa():
     ],
 )
 def test_heterodimerization(k_on, expected, via_kasim):
-    heterodimer = Component.from_kappa("A(x[1]),B(x[1])")
-    system = heterodimerization_system(k_on, heterodimer)
-
+    system = heterodimerization_system(k_on)
     n_heterodimers = []
     while system.time < 2:
         if via_kasim:
@@ -130,8 +127,6 @@ def test_equilibrium_matches_kd(kd, a_init, b_init):
 
 
 def test_system_manipulation():
-    from kappybara.rule import KappaRule
-
     system = System.from_ka(
         """
         %init: 10 A(x[.])
