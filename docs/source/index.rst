@@ -3,12 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Kappybara documentation
-=======================
+#########
+Kappybara
+#########
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+A Python simulator of rule-based models built on top of the Kappa language.
+See the :doc:`intro example <examples/heterodimerization>` for how Kappybara can be used to simulate a molecular system.
 
 
 .. toctree::
