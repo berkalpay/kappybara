@@ -1,6 +1,6 @@
 # From https://www.sphinx-doc.org/en/master/tutorial/deploying.html
 
-name: "Render docs"
+name: "docs"
 
 on: push
 
