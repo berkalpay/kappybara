@@ -13,5 +13,6 @@ See the :doc:`intro example <examples/heterodimerization>` for how Kappybara can
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :hidden:
 
+   examples/index
