@@ -13,10 +13,22 @@ author = "Kappybara Developers"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.githubpages"]
+extensions = [
+    "sphinx.ext.githubpages",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = []
+
+autosummary_generate = True
+autodoc_typehints = "description"
+autodoc_default_options = {"members": True, "undoc-members": True}
+autoclass_content = "class"
+napoleon_google_docstring = True
 
 
 # -- Options for HTML output -------------------------------------------------
