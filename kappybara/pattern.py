@@ -40,7 +40,6 @@ class Site(Counted):
         self.partner = partner
 
     def __repr__(self):
-        """Return debug representation of the site."""
         return f'Site(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
@@ -195,7 +194,6 @@ class Agent(Counted):
         self.interface = {site.label: site for site in sites}
 
     def __iter__(self):
-        """Iterate over the agent's sites."""
         yield from self.sites
 
     def __getitem__(self, key: str) -> Site:
@@ -210,7 +208,6 @@ class Agent(Counted):
         return self.interface[key]
 
     def __repr__(self):
-        """Return debug representation of the agent."""
         return f'Agent(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
@@ -341,11 +338,9 @@ class Embedding(dict[Agent, Agent]):
     """Dictionary representing a mapping from pattern agents to mixture agents."""
 
     def __hash__(self):
-        """Make embeddings hashable for use in sets."""
         return hash(frozenset(self.items()))
 
     def __repr__(self):
-        """Return debug representation of the embedding."""
         return f"Embedding({', '.join(f"{a.id}: {self[a].id}" for a in self)})"
 
 
@@ -618,11 +613,9 @@ class Pattern:
                 linked_sites[1].partner = linked_sites[0]
 
     def __iter__(self) -> Iterator[Optional[Agent]]:
-        """Iterate over agents in the pattern."""
         yield from self.agents
 
     def __len__(self):
-        """Get the number of agent slots in the pattern."""
         return len(self.agents)
 
     @cached_property
