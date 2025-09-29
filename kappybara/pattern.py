@@ -15,15 +15,32 @@ Partner = str | SiteType | int | Union["Site"]
 
 
 class Site(Counted):
+    """Represents a site on an agent with state and binding partner information.
+
+    Attributes:
+        agent: The agent this site belongs to (set after initialization).
+        label: Name of the site.
+        state: Internal state of the site.
+        partner: Binding partner specification.
+    """
+
     agent: "Agent"  # Expected to be set after initialization
 
     def __init__(self, label: str, state: str, partner: Partner):
+        """Initialize a site with label, state, and partner.
+
+        Args:
+            label: Name of the site.
+            state: Internal state of the site.
+            partner: Binding partner specification.
+        """
         super().__init__()
         self.label = label
         self.state = state
         self.partner = partner
 
     def __repr__(self):
+        """Return debug representation of the site."""
         return f'Site(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
@@ -40,16 +57,29 @@ class Site(Counted):
 
     @property
     def kappa_str(self) -> str:
+        """The site representation in Kappa format.
+
+        Returns:
+            Kappa string representation of the site.
+        """
         return f"{self.label}{self.kappa_partner_str}{self.kappa_state_str}"
 
     @property
     def undetermined(self) -> bool:
-        """Is the site in a state equivalent to leaving it unnamed in an agent?"""
+        """Check if the site is in a state equivalent to leaving it unnamed in an agent.
+
+        Returns:
+            True if the site is undetermined.
+        """
         return self.state == "?" and self.partner in ("?", ".")
 
     @property
     def underspecified(self) -> bool:
-        """Checks if a concrete `Site` can be created from this pattern."""
+        """Check if a concrete Site can be created from this pattern.
+
+        Returns:
+            True if the site specification is incomplete.
+        """
         return (
             self.state == "#"
             or self.partner in ("#", "_")
@@ -58,10 +88,20 @@ class Site(Counted):
 
     @property
     def stated(self) -> bool:
+        """Check if the site has a specific internal state.
+
+        Returns:
+            True if the site has a determined state.
+        """
         return self.state not in ("#", "?")
 
     @property
     def bound(self) -> bool:
+        """Check if the site is bound.
+
+        Returns:
+            True if the site is bound to something.
+        """
         return (
             self.partner == "_"
             or isinstance(self.partner, SiteType)
@@ -70,10 +110,22 @@ class Site(Counted):
 
     @property
     def coupled(self) -> bool:
+        """Check if the site is coupled to a specific other site.
+
+        Returns:
+            True if the site has a direct partner reference.
+        """
         return isinstance(self.partner, Site)
 
     def embeds_in(self, other: Self) -> bool:
-        """Checks whether self as a pattern matches other as a concrete site."""
+        """Check whether self as a pattern matches other as a concrete site.
+
+        Args:
+            other: Concrete site to match against.
+
+        Returns:
+            True if this site pattern matches the concrete site.
+        """
         if (self.stated and self.state != other.state) or (
             self.bound and not other.coupled
         ):
@@ -97,8 +149,26 @@ class Site(Counted):
 
 
 class Agent(Counted):
+    """Represents an agent with a type and collection of sites.
+
+    Attributes:
+        type: Type name of the agent.
+        interface: Dictionary mapping site labels to Site objects.
+    """
+
     @classmethod
     def from_kappa(cls, kappa_str: str) -> Self:
+        """Parse a single agent from a Kappa string.
+
+        Args:
+            kappa_str: Kappa string describing a single agent.
+
+        Returns:
+            Parsed Agent object.
+
+        Raises:
+            AssertionError: If the string doesn't describe exactly one agent.
+        """
         from kappybara.grammar import kappa_parser, AgentBuilder
 
         # Check pattern describes only a single agent
@@ -114,39 +184,78 @@ class Agent(Counted):
         return AgentBuilder(agent_tree).object
 
     def __init__(self, type: str, sites: Iterable[Site]):
+        """Initialize an agent with type and sites.
+
+        Args:
+            type: Type name of the agent.
+            sites: Collection of sites belonging to this agent.
+        """
         super().__init__()
         self.type = type
         self.interface = {site.label: site for site in sites}
 
     def __iter__(self):
+        """Iterate over the agent's sites."""
         yield from self.sites
 
     def __getitem__(self, key: str) -> Site:
+        """Get a site by its label.
+
+        Args:
+            key: Label of the site to retrieve.
+
+        Returns:
+            Site with the given label.
+        """
         return self.interface[key]
 
     def __repr__(self):
+        """Return debug representation of the agent."""
         return f'Agent(id={self.id}, kappa_str="{self.kappa_str}")'
 
     @property
     def kappa_str(self):
+        """The agent representation in Kappa format.
+
+        Returns:
+            Kappa string representation of the agent.
+        """
         return f"{self.type}({" ".join(site.kappa_str for site in self)})"
 
     @property
     def sites(self) -> Iterable[Site]:
+        """All sites of this agent.
+
+        Yields:
+            Sites belonging to this agent.
+        """
         yield from self.interface.values()
 
     @cached_property
     def underspecified(self) -> bool:
-        """Checks if a concrete `Agent` can be created from this pattern."""
+        """Check if a concrete Agent can be created from this pattern.
+
+        Returns:
+            True if any site is underspecified.
+        """
         return any(site.underspecified for site in self)
 
     @property
     def neighbors(self) -> list[Self]:
+        """The agents directly connected to this one.
+
+        Returns:
+            List of neighboring agents.
+        """
         return [site.partner.agent for site in self if site.coupled]
 
     @property
     def depth_first_traversal(self) -> list[Self]:
-        """Depth first traversal starting here."""
+        """Perform depth-first traversal starting from this agent.
+
+        Returns:
+            List of agents in depth-first order.
+        """
         visited = set()
         traversal = []
         stack = [self]
@@ -159,10 +268,19 @@ class Agent(Counted):
 
     @property
     def instantiable(self) -> bool:
+        """Check if this agent pattern can be instantiated.
+
+        Returns:
+            True if all sites are sufficiently specified.
+        """
         return not any(site.underspecified for site in self)
 
     def detached(self) -> Self:
-        """Makes a clone of itself but with all its sites emptied."""
+        """Create a clone with all sites emptied of partners.
+
+        Returns:
+            New agent with same type and states but no connections.
+        """
         detached = type(self)(
             self.type, [Site(site.label, site.state, ".") for site in self]
         )
@@ -171,11 +289,17 @@ class Agent(Counted):
         return detached
 
     def isomorphic(self, other: Self) -> bool:
-        """
-        Check if two `Agent`s are equivalent locally, ignoring partners.
-        NOTE: Doesn't assume agents of the same type will have the same site signatures.
-        """
+        """Check if two Agents are equivalent locally, ignoring partners.
 
+        Note:
+            Doesn't assume agents of the same type will have the same site signatures.
+
+        Args:
+            other: Agent to compare against.
+
+        Returns:
+            True if agents are locally isomorphic.
+        """
         if self.type != other.type:
             return False
 
@@ -192,7 +316,14 @@ class Agent(Counted):
         return all(other[site_name].undetermined for site_name in b_sites_leftover)
 
     def embeds_in(self, other: Self) -> bool:
-        """Checks whether self as a pattern matches other as a concrete agent."""
+        """Check whether self as a pattern matches other as a concrete agent.
+
+        Args:
+            other: Concrete agent to match against.
+
+        Returns:
+            True if this agent pattern matches the concrete agent.
+        """
         if self.type != other.type:
             return False
 
@@ -207,17 +338,26 @@ class Agent(Counted):
 
 
 class Embedding(dict[Agent, Agent]):
+    """Dictionary representing a mapping from pattern agents to mixture agents."""
+
     def __hash__(self):
+        """Make embeddings hashable for use in sets."""
         return hash(frozenset(self.items()))
 
     def __repr__(self):
+        """Return debug representation of the embedding."""
         return f"Embedding({', '.join(f"{a.id}: {self[a].id}" for a in self)})"
 
 
 class Component(Counted):
-    """
-    A set of agents that are all in the same connected component.
-    NOTE: Connectedness is not guaranteed statically and must be enforced.
+    """A set of agents that are all in the same connected component.
+
+    Note:
+        Connectedness is not guaranteed statically and must be enforced.
+
+    Attributes:
+        agents: Indexed set of agents in this component.
+        n_copies: Number of copies of this component (usually 1).
     """
 
     agents: IndexedSet[Agent]
@@ -225,13 +365,32 @@ class Component(Counted):
 
     @classmethod
     def from_kappa(cls, kappa_str: str) -> Self:
+        """Parse a single component from a Kappa string.
+
+        Args:
+            kappa_str: Kappa string describing a connected component.
+
+        Returns:
+            Parsed Component object.
+
+        Raises:
+            AssertionError: If the pattern doesn't represent exactly one component.
+        """
         parsed_pattern = Pattern.from_kappa(kappa_str)
         assert len(parsed_pattern.components) == 1
         return parsed_pattern.components[0]
 
     def __init__(self, agents: list[Agent], n_copies: int = 1):
-        super().__init__()
+        """Initialize a component with agents.
 
+        Args:
+            agents: List of agents in this component.
+            n_copies: Number of copies of this component.
+
+        Raises:
+            AssertionError: If agents list is empty or n_copies < 1.
+            NotImplementedError: If n_copies != 1 (not yet supported).
+        """
         assert agents
         assert n_copies >= 1
         if n_copies != 1:
@@ -254,18 +413,44 @@ class Component(Counted):
 
     @property
     def kappa_str(self) -> str:
+        """The component representation in Kappa format.
+
+        Returns:
+            Kappa string representation of the component.
+        """
         return Pattern.agents_to_kappa_str(self.agents)
 
     def add(self, agent: Agent):
+        """Add an agent to this component.
+
+        Args:
+            agent: Agent to add to the component.
+        """
         self.agents.add(agent)
 
     def isomorphic(self, other: Self) -> bool:
+        """Check if two components are isomorphic.
+
+        Args:
+            other: Component to compare against.
+
+        Returns:
+            True if an isomorphism exists between the components.
+        """
         return next(self.isomorphisms(other), None) is not None
 
-    def embeddings(  # TODO: rename to `embed_in` or `embeddings_in`
+    def embeddings(
         self, other: Self | "Mixture" | Iterable[Agent], exact: bool = False
     ) -> Iterator[Embedding]:
-        """Finds embeddings of self in other. Setting exact=True finds isomorphisms."""
+        """Find embeddings of self in other.
+
+        Args:
+            other: Target to find embeddings in.
+            exact: If True, finds isomorphisms instead of embeddings.
+
+        Yields:
+            Valid embeddings from self to other.
+        """
         if hasattr(other, "agents"):
             other: IndexedSet[Agent] = other.agents
 
@@ -314,13 +499,20 @@ class Component(Counted):
                 yield agent_map  # A valid bijection
 
     def isomorphisms(self, other: Self | "Mixture") -> Iterator[dict[Agent, Agent]]:
-        """
-        Checks for bijections which respect links in the site graph,
-        ensuring that any internal site state specified in one compononent
-        exists and is the same in the other.
+        """Find bijections which respect links in the site graph.
 
-        NOTE: Handles isomorphism generally, between instantiated components
-        in a mixture and potentially between rule patterns.
+        Checks for bijections ensuring that any internal site state specified
+        in one component exists and is the same in the other.
+
+        Note:
+            Handles isomorphism generally, between instantiated components
+            in a mixture and potentially between rule patterns.
+
+        Args:
+            other: Component or mixture to find isomorphisms with.
+
+        Yields:
+            Valid isomorphisms between the components.
         """
         if len(self.agents) != len(other.agents):
             return
@@ -328,7 +520,11 @@ class Component(Counted):
 
     @property
     def diameter(self) -> int:
-        """The maximum minimum shortest path between any two agents."""
+        """Get the maximum minimum shortest path between any two agents.
+
+        Returns:
+            Diameter of the component graph.
+        """
 
         def bfs_depth(root) -> int:
             frontier = set([root])
@@ -352,10 +548,27 @@ class Component(Counted):
 
 
 class Pattern:
+    """A pattern consisting of multiple agents, some of which may be None (empty slots).
+
+    Attributes:
+        agents: List of agents, where None represents empty slots in rules.
+    """
+
     agents: list[Optional[Agent]]
 
     @classmethod
     def from_kappa(cls, kappa_str: str) -> Self:
+        """Parse a pattern from a Kappa string.
+
+        Args:
+            kappa_str: Kappa string describing a pattern.
+
+        Returns:
+            Parsed Pattern object.
+
+        Raises:
+            AssertionError: If the string doesn't describe exactly one pattern.
+        """
         from kappybara.grammar import kappa_parser, PatternBuilder
 
         input_tree = kappa_parser.parse(kappa_str)
@@ -368,11 +581,17 @@ class Pattern:
         return PatternBuilder(pattern_tree).object
 
     def __init__(self, agents: list[Optional[Agent]]):
-        """
-        Compile a pattern from a list of `Agent`s whose edges are implied by integer
-        link states. Replaces integer link states with references to actual partners, and
-        constructs a helper object which tracks connected components in the pattern. A None
-        in `agents` represents an empty slot ("." in Kappa) in a rule expression pattern.
+        """Compile a pattern from a list of Agents.
+
+        Replaces integer link states with references to actual partners, and
+        constructs helper objects for tracking connected components. A None
+        in agents represents an empty slot in a rule expression pattern.
+
+        Args:
+            agents: List of agents, where None represents empty slots.
+
+        Raises:
+            AssertionError: If integer links are malformed.
         """
         self.agents = agents
 
@@ -398,13 +617,20 @@ class Pattern:
                 linked_sites[1].partner = linked_sites[0]
 
     def __iter__(self) -> Iterator[Optional[Agent]]:
+        """Iterate over agents in the pattern."""
         yield from self.agents
 
     def __len__(self):
+        """Get the number of agent slots in the pattern."""
         return len(self.agents)
 
     @cached_property
     def components(self) -> list[Component]:
+        """The connected components in this pattern.
+
+        Returns:
+            List of Component objects representing connected parts.
+        """
         unseen = set(agent for agent in self.agents if agent is not None)
         components = []
         while unseen:
@@ -415,6 +641,14 @@ class Pattern:
 
     @staticmethod
     def agents_to_kappa_str(agents: Iterable[Optional[Agent]]) -> str:
+        """Convert a collection of agents to Kappa string representation.
+
+        Args:
+            agents: Collection of agents to convert.
+
+        Returns:
+            Kappa string representation of the agents.
+        """
         bond_num_counter = 1
         bond_nums: dict[Site, int] = dict()
         agent_strs = []
@@ -438,8 +672,18 @@ class Pattern:
 
     @property
     def kappa_str(self) -> str:
+        """The pattern representation in Kappa format.
+
+        Returns:
+            Kappa string representation of the pattern.
+        """
         return type(self).agents_to_kappa_str(self.agents)
 
     @cached_property
     def underspecified(self) -> bool:
+        """Check if any agents in the pattern are underspecified.
+
+        Returns:
+            True if any agent is None or underspecified.
+        """
         return any(agent is None or agent.underspecified for agent in self.agents)

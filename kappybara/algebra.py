@@ -34,7 +34,17 @@ string_to_operator = {
 
 
 def parse_operator(kappa_operator: str) -> Callable:
-    """Takes a Kappa string operator and returns a Python operator."""
+    """Convert a Kappa string operator to a Python function.
+
+    Args:
+        kappa_operator: Kappa language operator string.
+
+    Returns:
+        Python function counterpart.
+
+    Raises:
+        ValueError: If the operator is not recognized.
+    """
     try:
         return string_to_operator[kappa_operator]
     except KeyError:
@@ -42,10 +52,26 @@ def parse_operator(kappa_operator: str) -> Callable:
 
 
 class Expression:
-    """Algebraic expressions as specified by the Kappa language."""
+    """Algebraic expressions as specified by the Kappa language.
+
+    Attributes:
+        type: Type of expression (literal, variable, binary_op, etc.).
+        attrs: Dictionary of attributes specific to the expression type.
+    """
 
     @classmethod
     def from_kappa(cls, kappa_str: str) -> Self:
+        """Parse an Expression from a Kappa string.
+
+        Args:
+            kappa_str: Kappa expression string.
+
+        Returns:
+            Parsed Expression object.
+
+        Raises:
+            AssertionError: If the string doesn't represent a valid expression.
+        """
         from kappybara.grammar import kappa_parser, parse_tree_to_expression
 
         input_tree = kappa_parser.parse(kappa_str)
@@ -60,6 +86,14 @@ class Expression:
 
     @property
     def kappa_str(self) -> str:
+        """Get the expression representation in Kappa format.
+
+        Returns:
+            Kappa string representation of the expression.
+
+        Raises:
+            ValueError: If expression type is not supported for string conversion.
+        """
         if self.type == "literal":
             return str(self.evaluate())
 
@@ -112,6 +146,17 @@ class Expression:
         raise ValueError(f"Unsupported node type: {self.type}")
 
     def evaluate(self, system: Optional["System"] = None) -> int | float:
+        """Evaluate the expression to get its value.
+
+        Args:
+            system: System context for variable evaluation (required for variables).
+
+        Returns:
+            Result of evaluating the expression.
+
+        Raises:
+            ValueError: If evaluation fails due to missing context or unsupported type.
+        """
         if self.type in ("literal", "boolean_literal"):
             return self.attrs["value"]
 
@@ -185,10 +230,8 @@ class Expression:
         """
         Returns all nodes in the expression tree whose type matches the provided string.
 
-        NOTE: This doesn't catch stuff that's indirectly nested in named variables.
-              If you are trying to search through the entire expression tree, including
-              following `Expression`s with type "variable" to their referred contents, this
-              won't do what you might expect.
+        Note:
+            Doesn't detect nodes indirectly nested in named variables.
         """
         result = []
         stack = deque([self])  # DFS from the root

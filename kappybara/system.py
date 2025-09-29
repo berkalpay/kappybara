@@ -18,6 +18,18 @@ from kappybara.algebra import Expression
 
 
 class System:
+    """A Kappa system containing agents, rules, observables, and variables for simulation.
+
+    Attributes:
+        mixture: The current state of agents and their connections.
+        rules: Dictionary mapping rule names to Rule objects.
+        observables: Dictionary mapping observable names to expressions.
+        variables: Dictionary mapping variable names to expressions.
+        monitor: Optional Monitor object for tracking simulation history.
+        time: Current simulation time.
+        tallies: Dictionary tracking rule application counts.
+    """
+
     mixture: Mixture
     rules: dict[str, Rule]
     observables: dict[str, Expression]
@@ -28,11 +40,27 @@ class System:
 
     @classmethod
     def read_ka(cls, filepath: str) -> Self:
+        """Read and parse a Kappa .ka file to create a System.
+
+        Args:
+            filepath: Path to the Kappa file.
+
+        Returns:
+            A new System instance parsed from the file.
+        """
         with open(filepath) as f:
             return cls.from_ka(f.read())
 
     @classmethod
     def from_ka(cls, ka_str: str) -> Self:
+        """Create a System from a Kappa (.ka style) string.
+
+        Args:
+            ka_str: Kappa language string containing a system definition.
+
+        Returns:
+            A new System instance parsed from the string.
+        """
         from kappybara.grammar import (
             kappa_parser,
             parse_tree_to_expression,
@@ -132,6 +160,19 @@ class System:
         *args,
         **kwargs,
     ) -> Self:
+        """Create a System from Kappa strings.
+
+        Args:
+            mixture: Dictionary mapping agent patterns to initial counts.
+            rules: Iterable of rule strings in Kappa format.
+            observables: List of observable expressions or dict mapping names to expressions.
+            variables: Dictionary mapping variable names to expressions.
+            *args: Additional arguments passed to System constructor.
+            **kwargs: Additional keyword arguments passed to System constructor.
+
+        Returns:
+            A new System instance.
+        """
         real_rules = []
         if rules is not None:
             for rule in rules:
@@ -171,6 +212,15 @@ class System:
         variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
     ):
+        """Initialize a new System.
+
+        Args:
+            mixture: Initial mixture state.
+            rules: Collection of rules to apply.
+            observables: Dictionary of observable expressions.
+            variables: Dictionary of variable expressions.
+            monitor: Whether to enable monitoring of simulation history.
+        """
         self.rules = (
             {} if rules is None else {f"r{i}": rule for i, rule in enumerate(rules)}
         )
@@ -209,6 +259,17 @@ class System:
         return self.kappa_str
 
     def __getitem__(self, name: str) -> int | float:
+        """Get the value of an observable or variable.
+
+        Args:
+            name: Name of the observable or variable.
+
+        Returns:
+            Current value of the named expression.
+
+        Raises:
+            KeyError: If name doesn't correspond to any observable or variable.
+        """
         if name in self.observables:
             return self.observables[name].evaluate(self)
         elif name in self.variables:
@@ -219,6 +280,12 @@ class System:
             )
 
     def __setitem__(self, name: str, kappa_str: str):
+        """Set or update an observable or variable from a Kappa string.
+
+        Args:
+            name: Name to assign to the expression.
+            kappa_str: Kappa expression string.
+        """
         expr = Expression.from_kappa(kappa_str)
         self._track_expression(expr)
         if name in self.variables:
@@ -228,6 +295,7 @@ class System:
 
     @property
     def names(self) -> dict[str, set[str]]:
+        """The names of all observables and variables."""
         return {
             "observables": set(self.observables),
             "variables": set(self.variables),
@@ -235,6 +303,11 @@ class System:
 
     @property
     def tallies_str(self) -> str:
+        """A formatted string showing how many times each rule has been applied.
+
+        Returns:
+            Tab-separated string showing applied and failed counts for each rule.
+        """
         return "Rule\tApplied\tFailed\n" + "\n".join(
             f"{rule_str}\t{tallies["applied"]}\t{tallies["failed"]}"
             for rule_str, tallies in self.tallies.items()
@@ -242,6 +315,7 @@ class System:
 
     @property
     def kappa_str(self) -> str:
+        """The system representation in Kappa (.ka style) format."""
         kappa_str = ""
         for var_name, var in self.variables.items():
             kappa_str += f"%var: '{var_name}' {var.kappa_str}\n"
@@ -257,11 +331,20 @@ class System:
         return kappa_str
 
     def to_ka(self, filepath: str) -> None:
-        """Writes system information to a Kappa file."""
+        """Write system information to a Kappa file.
+
+        Args:
+            filepath: Path where to write the Kappa file.
+        """
         with open(filepath, "w") as f:
             f.write(self.kappa_str)
 
     def set_mixture(self, mixture: Mixture) -> None:
+        """Set the system's mixture and update tracking.
+
+        Args:
+            mixture: New mixture to set for the system.
+        """
         self.mixture = mixture
         for rule in self.rules.values():
             self._track_rule(rule)
@@ -271,6 +354,15 @@ class System:
             self._track_expression(variable)
 
     def add_rule(self, name: str, rule: Rule | str) -> None:
+        """Add a new rule to the system.
+
+        Args:
+            name: Name to assign to the rule.
+            rule: Rule object or Kappa string representation.
+
+        Raises:
+            AssertionError: If a rule with the given name already exists.
+        """
         assert name not in self.rules, "Rule {name} already exists in the system"
         if isinstance(rule, str):
             rule = KappaRule.from_kappa(rule)
@@ -278,6 +370,15 @@ class System:
         self.rules[name] = rule
 
     def remove_rule(self, name: str) -> None:
+        """Remove a rule by setting its rate to zero.
+
+        Args:
+            name: Name of the rule to remove.
+
+        Raises:
+            AssertionError: If the rule already has zero rate.
+            KeyError: If no rule with the given name exists.
+        """
         assert self.rules[name].rate(self) > 0, "Rule {name} is already null"
         try:
             self.rules[name].stochastic_rate = Expression.from_kappa("0")
@@ -286,29 +387,49 @@ class System:
             raise e
 
     def _track_rule(self, rule: Rule) -> None:
-        """Track any components mentioned in the left hand side of a `Rule`"""
+        """Track components mentioned in the left hand side of a Rule.
+
+        Args:
+            rule: Rule whose components should be tracked.
+        """
         if isinstance(rule, KappaRule):
             for component in rule.left.components:
                 # TODO: For efficiency check for isomorphism with already-tracked components
                 self.mixture.track_component(component)
 
     def _track_expression(self, expression: Expression) -> None:
-        """
-        Tracks the `Component`s in the given expression.
-        NOTE: doesn't track patterns nested by indirection - see the `filter` method.
+        """Track the Components in the given expression.
+
+        Note:
+            Doesn't track patterns nested by indirection - see the filter method.
         """
         for component_expr in expression.filter("component_pattern"):
             self.mixture.track_component(component_expr.attrs["value"])
 
     @cached_property
     def rule_reactivities(self) -> list[float]:
+        """The reactivity of each rule in the system.
+
+        Returns:
+            List of reactivities corresponding to system rules.
+        """
         return [rule.reactivity(self) for rule in self.rules.values()]
 
     @property
     def reactivity(self) -> float:
+        """The total reactivity of the system.
+
+        Returns:
+            Sum of all rule reactivities.
+        """
         return sum(self.rule_reactivities)
 
     def wait(self) -> None:
+        """Advance simulation time according to exponential distribution.
+
+        Raises:
+            RuntimeWarning: If system has no reactivity (infinite wait time).
+        """
         try:
             self.time += random.expovariate(self.reactivity)
         except ZeroDivisionError:
@@ -317,6 +438,11 @@ class System:
             )
 
     def choose_rule(self) -> Optional[Rule]:
+        """Choose a rule to apply based on reactivity weights.
+
+        Returns:
+            Selected rule, or None if no rules have positive reactivity.
+        """
         try:
             return random.choices(
                 list(self.rules.values()), weights=self.rule_reactivities
@@ -326,6 +452,11 @@ class System:
             return None
 
     def apply_rule(self, rule: Rule) -> None:
+        """Apply a rule to the mixture and update tallies.
+
+        Args:
+            rule: Rule to apply to the current mixture.
+        """
         update = rule.select(self.mixture)
         if update is not None:
             self.tallies[str(rule)]["applied"] += 1
@@ -335,6 +466,7 @@ class System:
             self.tallies[str(rule)]["failed"] += 1
 
     def update(self) -> None:
+        """Perform one simulation step."""
         self.wait()
         if (rule := self.choose_rule()) is not None:
             self.apply_rule(rule)
@@ -342,9 +474,17 @@ class System:
             self.monitor.update()
 
     def update_via_kasim(self, time: float) -> None:
-        """
-        Simulates for `time` additional time units in KaSim.
-        NOTE: some features may not be compatible between Kappybara and KaSim.
+        """Simulate for a given amount of time using KaSim.
+
+        Note:
+            KaSim must be installed and in the PATH.
+            Some features may not be compatible between Kappybara and KaSim.
+
+        Args:
+            time: Additional time units to simulate.
+
+        Raises:
+            AssertionError: If KaSim is not found in PATH.
         """
         assert shutil.which(
             "KaSim"
@@ -375,14 +515,27 @@ class System:
 
 
 class Monitor:
+    """Records the history of the values of observables in a system.
+
+    Attributes:
+        system: The system being monitored.
+        history: Dictionary mapping observable names to their value history.
+    """
+
     system: System
     history: dict[str, list[Optional[float]]]
 
     def __init__(self, system: System):
+        """Initialize a monitor for the given system.
+
+        Args:
+            system: System to monitor.
+        """
         self.system = system
         self.history = {"time": []} | {obs_name: [] for obs_name in system.observables}
 
     def update(self) -> None:
+        """Record current time and observable values."""
         self.history["time"].append(self.system.time)
         for obs_name in self.system.observables:
             if obs_name not in self.history:
@@ -390,6 +543,18 @@ class Monitor:
             self.history[obs_name].append(self.system[obs_name])
 
     def measure(self, observable_name: str, time: Optional[float] = None):
+        """Get the value of an observable at a specific time.
+
+        Args:
+            observable_name: Name of the observable to measure.
+            time: Time at which to measure. If None, uses latest time.
+
+        Returns:
+            Value of the observable at the specified time.
+
+        Raises:
+            AssertionError: If simulation hasn't reached the specified time.
+        """
         times: list[int] = list(self.history["time"])
         if time is None:
             time = times[-1]
@@ -402,9 +567,19 @@ class Monitor:
 
     @property
     def dataframe(self) -> pd.DataFrame:
+        """Get the history of observable values as a pandas DataFrame.
+
+        Returns:
+            DataFrame with time and observable columns.
+        """
         return pd.DataFrame(self.history)
 
     def plot(self) -> matplotlib.figure.Figure:
+        """Make a plot of all observables over time.
+
+        Returns:
+            Matplotlib figure showing trajectories of observables.
+        """
         fig, ax = plt.subplots()
         for obs_name in self.system.observables:
             ax.plot(self.history["time"], self.history[obs_name], label=obs_name)

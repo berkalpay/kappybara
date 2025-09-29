@@ -9,9 +9,14 @@ from kappybara.algebra import Expression
 
 
 class KappaParser:
-    """Don't instantiate: use `kappa_parser`"""
+    """Parser for Kappa language files and expressions.
+
+    Note:
+        Don't instantiate directly: use the global kappa_parser instance.
+    """
 
     def __init__(self):
+        """Initialize the Lark parser with Kappa grammar."""
         self._parser = Lark.open(
             str(Path(__file__).parent / "kappa.lark"),
             rel_to=__file__,
@@ -37,6 +42,14 @@ kappa_parser = KappaParser()
 
 @dataclass
 class SiteBuilder(Visitor):
+    """Builds Site objects from Lark parse trees.
+
+    Attributes:
+        parsed_site_name: Name of the site being built.
+        parsed_state: Internal state of the site.
+        parsed_partner: Partner specification for the site.
+    """
+
     parsed_site_name: str
     parsed_state: str
     parsed_partner: Partner
@@ -59,10 +72,6 @@ class SiteBuilder(Visitor):
             case "#":
                 self.parsed_state = "#"
             case str(state):
-                # TODO: check if this is a legal option as specified by the agent signature
-                # this object would need to hold the agent type this site is being built for and do some checks against that
-                # NOTE: Actually probably ignore the above. According to Walter Kappa models shouldn't require explicitly
-                # declared agent signatures in the first place.
                 self.parsed_state = str(state)
             case Tree(data="unspecified"):
                 self.parsed_state = "?"
@@ -103,6 +112,13 @@ class SiteBuilder(Visitor):
 
 @dataclass
 class AgentBuilder(Visitor):
+    """Builds Agent objects from Lark parse trees.
+
+    Attributes:
+        parsed_type: Type name of the agent.
+        parsed_interface: List of sites belonging to the agent.
+    """
+
     parsed_type: str
     parsed_interface: list[Site]
 
@@ -133,6 +149,12 @@ class AgentBuilder(Visitor):
 
 @dataclass
 class PatternBuilder(Visitor):
+    """Builds Pattern objects from Lark parse trees.
+
+    Attributes:
+        parsed_agents: List of agents in the pattern.
+    """
+
     parsed_agents: list[Agent]
 
     def __init__(self, tree: ParseTree):
@@ -154,6 +176,16 @@ class PatternBuilder(Visitor):
 
 @dataclass
 class RuleBuilder(Visitor):
+    """Builds Rule objects from Lark parse trees.
+
+    Attributes:
+        parsed_label: Optional label for the rule.
+        left_agents: Agents on the left side of the rule.
+        right_agents: Agents on the right side of the rule.
+        parsed_rates: Rate expressions for the rule.
+        tree_data: Type of rule being built.
+    """
+
     parsed_label: Optional[str]
     left_agents: list[Optional[Agent]]
     right_agents: list[Optional[Agent]]
@@ -250,17 +282,12 @@ class RuleBuilder(Visitor):
 
 
 class LarkTreetoExpression(Transformer_NonRecursive):
-    """
-    Transforms a Lark ParseTree (rooted at 'algebraic_expression') into an Expression.
+    """Transforms a Lark ParseTree into an Expression object.
 
-    NOTE: We use a `Transformer` to parse algebraic expressions, as opposed to `Visitor`
-    as with most other Lark objects, because we want to preserve the tree structure of
-    the original `ParseTree`, and this is the most convenient way to do so.
-
-    TODO: This doesn't need to use `Transformer_NonRecursive` anymore; I made some changes
-    to the Lark grammar that make it easier to parse. If we switch back to using regular
-    `Transformer` we can clean up all the methods below to avoid having to explicitly call
-    `transform` on all the children.
+    Note:
+        Uses a Transformer to preserve the tree structure of the original
+        ParseTree. This doesn't need to use Transformer_NonRecursive anymore
+        due to grammar changes, but methods explicitly call transform on children.
     """
 
     def algebraic_expression(self, children):
@@ -367,18 +394,21 @@ class LarkTreetoExpression(Transformer_NonRecursive):
 
     # --- Default Fallthrough ---
     def __default__(self, data, children, meta):
-        # TODO fix
-        # if isinstance(node, Tree):
-        #     raise NotImplementedError(f"Unsupported Expression type: {node.data}")
-        # return node
         return Tree(data, children, meta)
 
 
 def parse_tree_to_expression(tree: Tree) -> Expression:
-    """
-    Convert a Lark ParseTree (rooted at algebraic_expression) to Expression.
-    Since there isn't extra logic when converting algebraic expressions,
-    we can convert from the Lark representation in-place, without creating
-    a new object, hence the different design pattern (Transformer instead of Visitor)
+    """Convert a Lark ParseTree to an Expression object.
+
+    Note:
+        Since there isn't extra logic when converting algebraic expressions,
+        we can convert from the Lark representation in-place, without creating
+        a new object, hence a Transformer instead of Visitor.
+
+    Args:
+        tree: Lark ParseTree rooted at algebraic_expression.
+
+    Returns:
+        Expression object representing the parsed expression.
     """
     return LarkTreetoExpression().transform(tree)
