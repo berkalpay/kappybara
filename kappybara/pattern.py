@@ -391,6 +391,7 @@ class Component(Counted):
             AssertionError: If agents list is empty or n_copies < 1.
             NotImplementedError: If n_copies != 1 (not yet supported).
         """
+        super().__init__()
         assert agents
         assert n_copies >= 1
         if n_copies != 1:
