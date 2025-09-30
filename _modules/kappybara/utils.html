@@ -1,0 +1,649 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kappybara.utils &#8212; Kappybara</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/kappybara/utils';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Kappybara</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">kappybara.utils</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for kappybara.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Self</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Hashable</span>
+
+
+<div class="viewcode-block" id="rejection_sample">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.rejection_sample">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rejection_sample</span><span class="p">(</span><span class="n">population</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">excluded</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">max_attempts</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">):</span>
+    <span class="n">population</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">population</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Sequence is empty&quot;</span><span class="p">)</span>
+    <span class="n">excluded_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">excluded</span><span class="p">)</span>
+
+    <span class="c1"># Fast rejection sampling (O(1) average case for small exclusion sets)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_attempts</span><span class="p">):</span>
+        <span class="n">choice</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">population</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluded_ids</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">choice</span>
+
+    <span class="c1"># Fallback to O(n) scan only if necessary (rare for small exclusion sets)</span>
+    <span class="n">valid_choices</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">population</span> <span class="k">if</span> <span class="nb">id</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">excluded_ids</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">valid_choices</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No valid elements to choose from&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">valid_choices</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="OrderedSet">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.OrderedSet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OrderedSet</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">items</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">)</span>
+
+<div class="viewcode-block" id="OrderedSet.add">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.OrderedSet.add">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="OrderedSet.remove">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.OrderedSet.remove">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Counted">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.Counted">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Counted</span><span class="p">:</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">Counted</span><span class="o">.</span><span class="n">counter</span>
+        <span class="n">Counted</span><span class="o">.</span><span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">hash</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- Indexed sets ---</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># Member type of `IndexedSet`</span>
+
+
+<div class="viewcode-block" id="SetProperty">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.SetProperty">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SetProperty</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class should be initialized with a function or lambda which</span>
+<span class="sd">    takes a set member as input, and returns a collection or iterable of</span>
+<span class="sd">    values associated with that member that you want to index by.</span>
+
+<span class="sd">    Example initialization:</span>
+<span class="sd">    ```</span>
+<span class="sd">    @dataclass</span>
+<span class="sd">    class SportsTeam:</span>
+<span class="sd">        name: str</span>
+<span class="sd">        members: list[str]</span>
+
+<span class="sd">    members_alt = SetProperty(lambda team: team.members) # If someone can belong to multiple teams (default)</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Hashable</span><span class="p">]],</span> <span class="n">is_unique</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">fn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_unique</span> <span class="o">=</span> <span class="n">is_unique</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Hashable</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Property">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.Property">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Property</span><span class="p">(</span><span class="n">SetProperty</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class should be initialized with a function or lambda which</span>
+<span class="sd">    takes a set member as input, and returns a single object which is</span>
+<span class="sd">    the corresponding property value of a set member.</span>
+
+<span class="sd">    An example of initializing a `Property`</span>
+<span class="sd">    ```</span>
+<span class="sd">    @dataclass</span>
+<span class="sd">    class Fruit:</span>
+<span class="sd">        color: str</span>
+
+<span class="sd">    my_property = Property(lambda fruit: fruit.color) # Equivalent using a lambda function</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Hashable</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span></div>
+
+
+
+<div class="viewcode-block" id="IndexedSet">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.IndexedSet">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">IndexedSet</span><span class="p">(</span><span class="nb">set</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A subclass of the built-in `set`, with support for indexing</span>
+<span class="sd">    by arbitrary properties of set members, as well as integer</span>
+<span class="sd">    indexing to allow for random sampling.</span>
+
+<span class="sd">    Credit https://stackoverflow.com/a/15993515 for the integer indexing logic.</span>
+
+<span class="sd">    If you know for some property that you should only get a single</span>
+<span class="sd">    set member back when using `lookup`, mark that property as unique</span>
+<span class="sd">    when you create it.</span>
+
+<span class="sd">    NOTE: although this class is indexable due to the implementation</span>
+<span class="sd">    of `__getitem__`, member ordering is not stable across insertions</span>
+<span class="sd">    and deletions.</span>
+
+<span class="sd">    Example usage:</span>
+<span class="sd">    ```</span>
+<span class="sd">    @dataclass</span>
+<span class="sd">    class SportsTeam:</span>
+<span class="sd">        name: str</span>
+<span class="sd">        jersey_color: str</span>
+<span class="sd">        members: list[str]</span>
+
+<span class="sd">    teams: IndexedSet[SportsTeam] = IndexedSet()</span>
+<span class="sd">    teams.create_index(&quot;name&quot;, Property(lambda team: team.name, is_unique=True))</span>
+<span class="sd">    teams.create_index(&quot;color&quot;, Property(lambda team: team.jersey_color))</span>
+
+<span class="sd">    [...] # populate the set with teams</span>
+
+<span class="sd">    teams.lookup(&quot;name&quot;, &quot;Manchester&quot;) # Returns the team whose name is &quot;Manchester&quot;</span>
+<span class="sd">    teams.lookup(&quot;color&quot;, &quot;blue&quot;)    # Returns all teams with blue jerseys</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SetProperty</span><span class="p">]</span>
+    <span class="n">indices</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">defaultdict</span><span class="p">[</span><span class="n">Hashable</span><span class="p">,</span> <span class="n">Self</span><span class="p">]]</span>
+
+    <span class="n">_item_to_pos</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">_item_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]):</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span> <span class="o">=</span> <span class="n">iterable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_to_pos</span> <span class="o">=</span> <span class="p">{</span><span class="n">item</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">iterable</span><span class="p">)}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="IndexedSet.add">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.add">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c1"># Update integer index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_to_pos</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="c1"># Update property indices</span>
+        <span class="k">for</span> <span class="n">prop_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">prop_name</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_unique</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">][</span><span class="n">val</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">][</span><span class="n">val</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IndexedSet.remove">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.remove">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c1"># Update integer index</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_to_pos</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">last_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">last_item</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_item_to_pos</span><span class="p">[</span><span class="n">last_item</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos</span>
+
+        <span class="c1"># Update property indices</span>
+        <span class="k">for</span> <span class="n">prop_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">:</span>
+            <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">prop_name</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">][</span><span class="n">val</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="c1"># If the index entry is now empty, delete it</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">][</span><span class="n">val</span><span class="p">]:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">][</span><span class="n">val</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="IndexedSet.lookup">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.lookup">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lookup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">value</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_unique</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">matches</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">matches</span></div>
+
+
+<div class="viewcode-block" id="IndexedSet.remove_by">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.remove_by">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_by</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prop_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove all set members whose property `prop_name` matches or contains `value`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">]:</span>
+            <span class="k">return</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">prop_name</span><span class="p">][</span><span class="n">value</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">match</span> <span class="ow">in</span> <span class="bp">self</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">match</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="IndexedSet.create_index">
+<a class="viewcode-back" href="../../api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.create_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prop</span><span class="p">:</span> <span class="n">SetProperty</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a function which maps a set member to an `Any`-typed value, create</span>
+<span class="sd">        a reverse-index mapping a property value to the set of the members of `self`</span>
+<span class="sd">        with that property. This index is updated when adding new members or removing</span>
+<span class="sd">        existing ones, but please note that if you mutate the internal state of an</span>
+<span class="sd">        existing set member, this object will not reflect those updates unless you</span>
+<span class="sd">        take the care to update the indices manually.</span>
+
+<span class="sd">        NOTE: mutating set members outside of interface calls can invalidate indices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">properties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">properties</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">prop</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">IndexedSet</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">prop</span><span class="p">(</span><span class="n">el</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">prop</span><span class="o">.</span><span class="n">is_unique</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">val</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">val</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">el</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Kappybara Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

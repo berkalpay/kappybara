@@ -1,0 +1,21 @@
+﻿kappybara.rule
+==============
+
+.. automodule:: kappybara.rule
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      kinetic_to_stochastic_on_rate
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      KappaRule
+      KappaRuleBimolecular
+      KappaRuleUnimolecular
+      Rule
+   

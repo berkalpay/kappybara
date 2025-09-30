@@ -1,0 +1,900 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>kappybara.system &#8212; Kappybara</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/kappybara.system';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="kappybara.mixture" href="kappybara.mixture.html" />
+    <link rel="prev" title="API reference" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Kappybara</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">kappybara.system</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kappybara.mixture.html">kappybara.mixture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kappybara.rule.html">kappybara.rule</a></li>
+<li class="toctree-l1"><a class="reference internal" href="kappybara.pattern.html">kappybara.pattern</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="kappybara.algebra.html">kappybara.algebra</a></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="kappybara.utils.html">kappybara.utils</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">kappybara.system</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-kappybara.system">
+<span id="kappybara-system"></span><h1>kappybara.system<a class="headerlink" href="#module-kappybara.system" title="Link to this heading">#</a></h1>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#kappybara.system.Monitor" title="kappybara.system.Monitor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Monitor</span></code></a>(system)</p></td>
+<td><p>Records the history of the values of observables in a system.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#kappybara.system.System" title="kappybara.system.System"><code class="xref py py-obj docutils literal notranslate"><span class="pre">System</span></code></a>([mixture, rules, observables, ...])</p></td>
+<td><p>A Kappa system containing agents, rules, observables, and variables for simulation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="kappybara.system.Monitor">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.system.</span></span><span class="sig-name descname"><span class="pre">Monitor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#Monitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.Monitor" title="Link to this definition">#</a></dt>
+<dd><p>Records the history of the values of observables in a system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>system</strong> (<a class="reference internal" href="#kappybara.system.System" title="kappybara.system.System"><em>System</em></a>)</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.Monitor.system">
+<span class="sig-name descname"><span class="pre">system</span></span><a class="headerlink" href="#kappybara.system.Monitor.system" title="Link to this definition">#</a></dt>
+<dd><p>The system being monitored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#kappybara.system.System" title="kappybara.system.System">kappybara.system.System</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.Monitor.history">
+<span class="sig-name descname"><span class="pre">history</span></span><a class="headerlink" href="#kappybara.system.Monitor.history" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary mapping observable names to their value history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, list[float | None]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.system.Monitor.dataframe">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataframe</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataFrame</span></em><a class="headerlink" href="#kappybara.system.Monitor.dataframe" title="Link to this definition">#</a></dt>
+<dd><p>Get the history of observable values as a pandas DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame with time and observable columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.Monitor.measure">
+<span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observable_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#Monitor.measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.Monitor.measure" title="Link to this definition">#</a></dt>
+<dd><p>Get the value of an observable at a specific time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observable_name</strong> (<em>str</em>) – Name of the observable to measure.</p></li>
+<li><p><strong>time</strong> (<em>float</em><em> | </em><em>None</em>) – Time at which to measure. If None, uses latest time.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the observable at the specified time.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If simulation hasn’t reached the specified time.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.Monitor.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#Monitor.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.Monitor.plot" title="Link to this definition">#</a></dt>
+<dd><p>Make a plot of all observables over time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Matplotlib figure showing trajectories of observables.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Figure</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">system</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#kappybara.system.System" title="kappybara.system.System"><span class="pre">System</span></a></em><a class="headerlink" href="#id1" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.Monitor.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#Monitor.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.Monitor.update" title="Link to this definition">#</a></dt>
+<dd><p>Record current time and observable values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="kappybara.system.System">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.system.</span></span><span class="sig-name descname"><span class="pre">System</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System" title="Link to this definition">#</a></dt>
+<dd><p>A Kappa system containing agents, rules, observables, and variables for simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mixture</strong> (<a class="reference internal" href="kappybara.mixture.html#kappybara.mixture.Mixture" title="kappybara.mixture.Mixture"><em>Mixture</em></a>)</p></li>
+<li><p><strong>rules</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="kappybara.rule.html#kappybara.rule.Rule" title="kappybara.rule.Rule"><em>Rule</em></a><em>]</em>)</p></li>
+<li><p><strong>observables</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="kappybara.algebra.html#kappybara.algebra.Expression" title="kappybara.algebra.Expression"><em>Expression</em></a><em>]</em>)</p></li>
+<li><p><strong>variables</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><a class="reference internal" href="kappybara.algebra.html#kappybara.algebra.Expression" title="kappybara.algebra.Expression"><em>Expression</em></a><em>]</em>)</p></li>
+<li><p><strong>monitor</strong> (<a class="reference internal" href="#kappybara.system.Monitor" title="kappybara.system.Monitor"><em>Monitor</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.mixture">
+<span class="sig-name descname"><span class="pre">mixture</span></span><a class="headerlink" href="#kappybara.system.System.mixture" title="Link to this definition">#</a></dt>
+<dd><p>The current state of agents and their connections.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="kappybara.mixture.html#kappybara.mixture.Mixture" title="kappybara.mixture.Mixture">kappybara.mixture.Mixture</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.rules">
+<span class="sig-name descname"><span class="pre">rules</span></span><a class="headerlink" href="#kappybara.system.System.rules" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary mapping rule names to Rule objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <a class="reference internal" href="kappybara.rule.html#kappybara.rule.Rule" title="kappybara.rule.Rule">kappybara.rule.Rule</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.observables">
+<span class="sig-name descname"><span class="pre">observables</span></span><a class="headerlink" href="#kappybara.system.System.observables" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary mapping observable names to expressions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <a class="reference internal" href="kappybara.algebra.html#kappybara.algebra.Expression" title="kappybara.algebra.Expression">kappybara.algebra.Expression</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.variables">
+<span class="sig-name descname"><span class="pre">variables</span></span><a class="headerlink" href="#kappybara.system.System.variables" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary mapping variable names to expressions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, <a class="reference internal" href="kappybara.algebra.html#kappybara.algebra.Expression" title="kappybara.algebra.Expression">kappybara.algebra.Expression</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.monitor">
+<span class="sig-name descname"><span class="pre">monitor</span></span><a class="headerlink" href="#kappybara.system.System.monitor" title="Link to this definition">#</a></dt>
+<dd><p>Optional Monitor object for tracking simulation history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#kappybara.system.Monitor" title="kappybara.system.Monitor">kappybara.system.Monitor</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.time">
+<span class="sig-name descname"><span class="pre">time</span></span><a class="headerlink" href="#kappybara.system.System.time" title="Link to this definition">#</a></dt>
+<dd><p>Current simulation time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="kappybara.system.System.tallies">
+<span class="sig-name descname"><span class="pre">tallies</span></span><a class="headerlink" href="#kappybara.system.System.tallies" title="Link to this definition">#</a></dt>
+<dd><p>Dictionary tracking rule application counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>collections.defaultdict[str, dict[str, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.add_rule">
+<span class="sig-name descname"><span class="pre">add_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.add_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.add_rule" title="Link to this definition">#</a></dt>
+<dd><p>Add a new rule to the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name to assign to the rule.</p></li>
+<li><p><strong>rule</strong> (<a class="reference internal" href="kappybara.rule.html#kappybara.rule.Rule" title="kappybara.rule.Rule"><em>Rule</em></a><em> | </em><em>str</em>) – Rule object or Kappa string representation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If a rule with the given name already exists.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.apply_rule">
+<span class="sig-name descname"><span class="pre">apply_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rule</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.apply_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.apply_rule" title="Link to this definition">#</a></dt>
+<dd><p>Apply a rule to the mixture and update tallies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>rule</strong> (<a class="reference internal" href="kappybara.rule.html#kappybara.rule.Rule" title="kappybara.rule.Rule"><em>Rule</em></a>) – Rule to apply to the current mixture.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.choose_rule">
+<span class="sig-name descname"><span class="pre">choose_rule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.choose_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.choose_rule" title="Link to this definition">#</a></dt>
+<dd><p>Choose a rule to apply based on reactivity weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Selected rule, or None if no rules have positive reactivity.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="kappybara.rule.html#kappybara.rule.Rule" title="kappybara.rule.Rule"><em>Rule</em></a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.from_ka">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ka_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.from_ka"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.from_ka" title="Link to this definition">#</a></dt>
+<dd><p>Create a System from a Kappa (.ka style) string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ka_str</strong> (<em>str</em>) – Kappa language string containing a system definition.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new System instance parsed from the string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Self</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.from_kappa">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.from_kappa" title="Link to this definition">#</a></dt>
+<dd><p>Create a System from Kappa strings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mixture</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>] </em><em>| </em><em>None</em>) – Dictionary mapping agent patterns to initial counts.</p></li>
+<li><p><strong>rules</strong> (<em>Iterable</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em>) – Iterable of rule strings in Kappa format.</p></li>
+<li><p><strong>observables</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – List of observable expressions or dict mapping names to expressions.</p></li>
+<li><p><strong>variables</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>] </em><em>| </em><em>None</em>) – Dictionary mapping variable names to expressions.</p></li>
+<li><p><strong>*args</strong> – Additional arguments passed to System constructor.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to System constructor.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new System instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Self</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.system.System.kappa_str">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.system.System.kappa_str" title="Link to this definition">#</a></dt>
+<dd><p>The system representation in Kappa (.ka style) format.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">mixture</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="kappybara.mixture.html#kappybara.mixture.Mixture" title="kappybara.mixture.Mixture"><span class="pre">Mixture</span></a></em><a class="headerlink" href="#id2" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">monitor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#kappybara.system.Monitor" title="kappybara.system.Monitor"><span class="pre">Monitor</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id3" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.system.System.names">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#kappybara.system.System.names" title="Link to this definition">#</a></dt>
+<dd><p>The names of all observables and variables.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">observables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="kappybara.algebra.html#kappybara.algebra.Expression" title="kappybara.algebra.Expression"><span class="pre">Expression</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id4" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.system.System.reactivity">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reactivity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#kappybara.system.System.reactivity" title="Link to this definition">#</a></dt>
+<dd><p>The total reactivity of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Sum of all rule reactivities.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.read_ka">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read_ka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.read_ka"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.read_ka" title="Link to this definition">#</a></dt>
+<dd><p>Read and parse a Kappa .ka file to create a System.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path to the Kappa file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new System instance parsed from the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Self</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.remove_rule">
+<span class="sig-name descname"><span class="pre">remove_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.remove_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.remove_rule" title="Link to this definition">#</a></dt>
+<dd><p>Remove a rule by setting its rate to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of the rule to remove.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AssertionError</strong> – If the rule already has zero rate.</p></li>
+<li><p><strong>KeyError</strong> – If no rule with the given name exists.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.system.System.rule_reactivities">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rule_reactivities</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#kappybara.system.System.rule_reactivities" title="Link to this definition">#</a></dt>
+<dd><p>The reactivity of each rule in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of reactivities corresponding to system rules.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">rules</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="kappybara.rule.html#kappybara.rule.Rule" title="kappybara.rule.Rule"><span class="pre">Rule</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id5" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.set_mixture">
+<span class="sig-name descname"><span class="pre">set_mixture</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.set_mixture"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.set_mixture" title="Link to this definition">#</a></dt>
+<dd><p>Set the system’s mixture and update tracking.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mixture</strong> (<a class="reference internal" href="kappybara.mixture.html#kappybara.mixture.Mixture" title="kappybara.mixture.Mixture"><em>Mixture</em></a>) – New mixture to set for the system.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">tallies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">defaultdict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id6" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.system.System.tallies_str">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tallies_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.system.System.tallies_str" title="Link to this definition">#</a></dt>
+<dd><p>A formatted string showing how many times each rule has been applied.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tab-separated string showing applied and failed counts for each rule.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#id7" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.to_ka">
+<span class="sig-name descname"><span class="pre">to_ka</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.to_ka"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.to_ka" title="Link to this definition">#</a></dt>
+<dd><p>Write system information to a Kappa file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path where to write the Kappa file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.update" title="Link to this definition">#</a></dt>
+<dd><p>Perform one simulation step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.update_via_kasim">
+<span class="sig-name descname"><span class="pre">update_via_kasim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.update_via_kasim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.update_via_kasim" title="Link to this definition">#</a></dt>
+<dd><p>Simulate for a given amount of time using KaSim.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>KaSim must be installed and in the PATH.
+Some features may not be compatible between Kappybara and KaSim.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>float</em>) – Additional time units to simulate.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If KaSim is not found in PATH.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">variables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="kappybara.algebra.html#kappybara.algebra.Expression" title="kappybara.algebra.Expression"><span class="pre">Expression</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#id8" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.system.System.wait">
+<span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/system.html#System.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.system.System.wait" title="Link to this definition">#</a></dt>
+<dd><p>Advance simulation time according to exponential distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>RuntimeWarning</strong> – If system has no reactivity (infinite wait time).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">API reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="kappybara.mixture.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">kappybara.mixture</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Kappybara Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

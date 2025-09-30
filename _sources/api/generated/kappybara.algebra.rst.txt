@@ -1,0 +1,18 @@
+﻿kappybara.algebra
+=================
+
+.. automodule:: kappybara.algebra
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      parse_operator
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Expression
+   

@@ -1,0 +1,882 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kappybara.rule &#8212; Kappybara</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/kappybara/rule';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Kappybara</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">kappybara.rule</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for kappybara.rule</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">prod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.pattern</span><span class="w"> </span><span class="kn">import</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Site</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.mixture</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mixture</span><span class="p">,</span> <span class="n">ComponentMixture</span><span class="p">,</span> <span class="n">MixtureUpdate</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.algebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">Expression</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">rejection_sample</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+
+
+<span class="c1"># Useful constants</span>
+<span class="n">AVOGADRO</span> <span class="o">=</span> <span class="mf">6.02214e23</span>
+<span class="n">DIFFUSION_RATE</span> <span class="o">=</span> <span class="mf">1e9</span>
+<span class="n">KDS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;weak&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;moderate&quot;</span><span class="p">:</span> <span class="mf">1e-7</span><span class="p">,</span> <span class="s2">&quot;strong&quot;</span><span class="p">:</span> <span class="mf">1e-8</span><span class="p">}</span>
+<span class="n">VOLUMES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;fibro&quot;</span><span class="p">:</span> <span class="mf">2.25e-12</span><span class="p">,</span> <span class="s2">&quot;yeast&quot;</span><span class="p">:</span> <span class="mf">4.2e-14</span><span class="p">}</span>
+<span class="n">ROOM_TEMPERATURE</span> <span class="o">=</span> <span class="mf">273.15</span> <span class="o">+</span> <span class="mi">25</span>
+
+
+<div class="viewcode-block" id="kinetic_to_stochastic_on_rate">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.kinetic_to_stochastic_on_rate">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">kinetic_to_stochastic_on_rate</span><span class="p">(</span>
+    <span class="n">k_on</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">DIFFUSION_RATE</span><span class="p">,</span> <span class="n">volume</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">molecularity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a kinetic on-rate constant to a stochastic one.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        k_on: Kinetic on-rate constant.</span>
+<span class="sd">        volume: Reaction volume.</span>
+<span class="sd">        molecularity: Number of reactants.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Stochastic rate constant.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">k_on</span> <span class="o">/</span> <span class="p">(</span><span class="n">AVOGADRO</span> <span class="o">*</span> <span class="n">volume</span> <span class="o">**</span> <span class="p">(</span><span class="n">molecularity</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Rule">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.Rule">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Rule</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Abstract base class for all rule types.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Rule.reactivity">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.Rule.reactivity">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reactivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;System&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the total reactivity of this rule in the given system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            system: System containing the mixture and parameters.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Product of number of embeddings and reaction rate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_embeddings</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">mixture</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="n">system</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Rule.rate">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.Rule.rate">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;System&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the stochastic rate of the rule.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            system: System containing parameters for rate evaluation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Stochastic rate constant.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Rule.n_embeddings">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.Rule.n_embeddings">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">Mixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Count the number of ways this rule can be applied to the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Number of valid embeddings for this rule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Rule.select">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.Rule.select">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">Mixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MixtureUpdate</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select agents in the mixture and specify the update.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Don&#39;t modify anything in mixture directly except for changing</span>
+<span class="sd">            internal sites of agents. A null event is represented by returning None.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MixtureUpdate specifying the transformation, or None for null event.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="KappaRule">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KappaRule</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard Kappa rule with left-hand side, right-hand side, and rate.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        left: Left-hand side pattern.</span>
+<span class="sd">        right: Right-hand side pattern.</span>
+<span class="sd">        stochastic_rate: Rate expression for the rule.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">left</span><span class="p">:</span> <span class="n">Pattern</span>
+    <span class="n">right</span><span class="p">:</span> <span class="n">Pattern</span>
+    <span class="n">stochastic_rate</span><span class="p">:</span> <span class="n">Expression</span>
+
+<div class="viewcode-block" id="KappaRule.list_from_kappa">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule.list_from_kappa">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_from_kappa</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kappa_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Self</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse Kappa string into a list of rules.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Forward-reverse rules (with &quot;&lt;-&gt;&quot;) represent two rules.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kappa_str: Kappa rule string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of parsed rules.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="n">kappa_parser</span><span class="p">,</span> <span class="n">RuleBuilder</span>
+
+        <span class="n">input_tree</span> <span class="o">=</span> <span class="n">kappa_parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">kappa_str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">input_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;kappa_input&quot;</span>
+        <span class="n">rule_tree</span> <span class="o">=</span> <span class="n">input_tree</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">RuleBuilder</span><span class="p">(</span><span class="n">rule_tree</span><span class="p">)</span><span class="o">.</span><span class="n">objects</span></div>
+
+
+<div class="viewcode-block" id="KappaRule.from_kappa">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule.from_kappa">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_kappa</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">kappa_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse a single Kappa rule from string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            kappa_str: Kappa rule string.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Parsed rule.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If the string represents more than one rule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rules</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">list_from_kappa</span><span class="p">(</span><span class="n">kappa_str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">),</span> <span class="s2">&quot;The given rule expression represents more than one rule.&quot;</span>
+        <span class="k">return</span> <span class="n">rules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">l</span> <span class="o">==</span> <span class="n">r</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;The left-hand side of this rule has </span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2"> slots, but the right-hand side has </span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">yield from</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kappa_str</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kappa_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The rule representation in Kappa format.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Kappa string representation of the rule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stochastic_rate</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="KappaRule.rate">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule.rate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;System&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the stochastic rate expression.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            system: System containing variables for rate evaluation.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Evaluated rate value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stochastic_rate</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">system</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KappaRule.n_embeddings">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule.n_embeddings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">Mixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Count embeddings in the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Number of ways to embed all rule components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">prod</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">mixture</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">component</span><span class="p">))</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KappaRule.select">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule.select">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">ComponentMixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MixtureUpdate</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select agents in the mixture and specify the update.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Can change the internal states of agents in the mixture but</span>
+<span class="sd">            records everything else in the MixtureUpdate.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MixtureUpdate specifying the transformation, or None for invalid match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rule_embedding</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Agent</span><span class="p">,</span> <span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="n">component_embeddings</span> <span class="o">=</span> <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">component_embeddings</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;A rule with no valid embeddings was selected: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">component_embedding</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">component_embeddings</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">rule_agent</span> <span class="ow">in</span> <span class="n">component_embedding</span><span class="p">:</span>
+                <span class="n">mixture_agent</span> <span class="o">=</span> <span class="n">component_embedding</span><span class="p">[</span><span class="n">rule_agent</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">mixture_agent</span> <span class="ow">in</span> <span class="n">rule_embedding</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="kc">None</span>  <span class="c1"># Invalid match: two selected components intersect</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">rule_embedding</span><span class="p">[</span><span class="n">rule_agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">mixture_agent</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_produce_update</span><span class="p">(</span><span class="n">rule_embedding</span><span class="p">,</span> <span class="n">mixture</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_produce_update</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">selection_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Agent</span><span class="p">,</span> <span class="n">Agent</span><span class="p">],</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">ComponentMixture</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MixtureUpdate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Produce an update specification from selected agents.</span>
+
+<span class="sd">        Takes the agents that have been chosen to be transformed by this rule,</span>
+<span class="sd">        and specifies an update to the mixture without actually applying it.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            selection_map: Mapping from rule agents to mixture agents.</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MixtureUpdate specifying the transformation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">selection</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">agent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">selection_map</span><span class="p">[</span><span class="n">agent</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span>
+        <span class="p">]</span>  <span class="c1"># Select agents in the mixture matching the rule, in order</span>
+        <span class="n">new_selection</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Agent</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span>
+            <span class="n">selection</span>
+        <span class="p">)</span>  <span class="c1"># The new/modified agents used to make the appropriate edges</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="n">MixtureUpdate</span><span class="p">()</span>
+
+        <span class="c1"># Manage agents</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="n">l_agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">r_agent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">agent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">selection</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">match</span> <span class="n">l_agent</span><span class="p">,</span> <span class="n">r_agent</span><span class="p">:</span>
+                <span class="k">case</span> <span class="kc">None</span><span class="p">,</span> <span class="n">Agent</span><span class="p">():</span>
+                    <span class="n">new_selection</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">create_agent</span><span class="p">(</span><span class="n">r_agent</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">Agent</span><span class="p">(),</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">update</span><span class="o">.</span><span class="n">remove_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">Agent</span><span class="p">(),</span> <span class="n">Agent</span><span class="p">()</span> <span class="k">if</span> <span class="n">l_agent</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                    <span class="n">update</span><span class="o">.</span><span class="n">remove_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+                    <span class="n">new_selection</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">update</span><span class="o">.</span><span class="n">create_agent</span><span class="p">(</span><span class="n">r_agent</span><span class="p">)</span>
+                <span class="k">case</span> <span class="n">Agent</span><span class="p">(),</span> <span class="n">Agent</span><span class="p">()</span> <span class="k">if</span> <span class="n">l_agent</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">r_agent</span><span class="o">.</span><span class="n">type</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">r_site</span> <span class="ow">in</span> <span class="n">r_agent</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">r_site</span><span class="o">.</span><span class="n">stated</span><span class="p">:</span>
+                            <span class="n">agent</span><span class="p">[</span><span class="n">r_site</span><span class="o">.</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">r_site</span><span class="o">.</span><span class="n">state</span>
+                            <span class="k">if</span> <span class="n">r_site</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="n">l_agent</span><span class="p">[</span><span class="n">r_site</span><span class="o">.</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+                                <span class="n">update</span><span class="o">.</span><span class="n">register_changed_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+                    <span class="n">new_selection</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">agent</span>
+                <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># Manage explicitly referenced edges</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r_agent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">r_agent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">agent</span> <span class="o">=</span> <span class="n">new_selection</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">r_site</span> <span class="ow">in</span> <span class="n">r_agent</span><span class="p">:</span>
+                <span class="n">site</span> <span class="o">=</span> <span class="n">agent</span><span class="p">[</span><span class="n">r_site</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+                <span class="k">match</span> <span class="n">r_site</span><span class="o">.</span><span class="n">partner</span><span class="p">:</span>
+                    <span class="k">case</span> <span class="n">Site</span><span class="p">()</span> <span class="k">as</span> <span class="n">r_partner</span><span class="p">:</span>
+                        <span class="n">partner_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">r_partner</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+                        <span class="n">partner</span> <span class="o">=</span> <span class="n">new_selection</span><span class="p">[</span><span class="n">partner_idx</span><span class="p">][</span><span class="n">r_partner</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+                        <span class="n">update</span><span class="o">.</span><span class="n">connect_sites</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">partner</span><span class="p">)</span>
+                    <span class="k">case</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                        <span class="n">update</span><span class="o">.</span><span class="n">disconnect_site</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+                    <span class="k">case</span> <span class="n">x</span> <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">x</span> <span class="o">!=</span> <span class="s2">&quot;?&quot;</span>
+                        <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">r_site</span><span class="o">.</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">partner</span>
+                    <span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Site partners of type </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2"> are unsupported for right-hand rule patterns, unless they remain unchanged from the left-hand side.&quot;</span>
+                        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">update</span></div>
+
+
+
+<div class="viewcode-block" id="KappaRuleUnimolecular">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KappaRuleUnimolecular</span><span class="p">(</span><span class="n">KappaRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unimolecular Kappa rule that acts within a single component.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        component_weights: Cache of embedding weights per component.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the rule and component weights cache.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kappa_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the rule representation in Kappa format.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Kappa string representation with unimolecular rate syntax.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2"> @ 0 </span><span class="se">{{</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stochastic_rate</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="KappaRuleUnimolecular.n_embeddings">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular.n_embeddings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">ComponentMixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Count embeddings in the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Total number of valid embeddings across all components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">mixture</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">prod</span><span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">mixture</span><span class="o">.</span><span class="n">embeddings_in_component</span><span class="p">(</span><span class="n">match_component</span><span class="p">,</span> <span class="n">component</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">match_component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="n">weight</span>
+        <span class="k">return</span> <span class="n">count</span></div>
+
+
+<div class="viewcode-block" id="KappaRuleUnimolecular.select">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular.select">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">ComponentMixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MixtureUpdate</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select agents in the mixture and specify the update.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            n_embeddings must be called before this method so that the</span>
+<span class="sd">            component_weights cache is up-to-date.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MixtureUpdate specifying the transformation, or None for invalid match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">components_ordered</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">)</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components_ordered</span><span class="p">]</span>
+        <span class="n">selected_component</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">components_ordered</span><span class="p">,</span> <span class="n">weights</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">selection_map</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Agent</span><span class="p">,</span> <span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="n">choices</span> <span class="o">=</span> <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings_in_component</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">selected_component</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;A rule with no valid embeddings was selected: </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">component_selection</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">component_selection</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">component_selection</span><span class="p">[</span><span class="n">agent</span><span class="p">]</span> <span class="ow">in</span> <span class="n">selection_map</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">selection_map</span><span class="p">[</span><span class="n">agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">component_selection</span><span class="p">[</span><span class="n">agent</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_produce_update</span><span class="p">(</span><span class="n">selection_map</span><span class="p">,</span> <span class="n">mixture</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="KappaRuleBimolecular">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">KappaRuleBimolecular</span><span class="p">(</span><span class="n">KappaRule</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bimolecular Kappa rule.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        component_weights: Cache of embedding weights per component.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the rule and validate it has exactly 2 components.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="p">),</span> <span class="s2">&quot;Bimolecular rule patterns must consist of exactly 2 components.&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kappa_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The rule representation in Kappa format.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Kappa string representation with bimolecular rate syntax.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">kappa_str</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{0}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="KappaRuleBimolecular.n_embeddings">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular.n_embeddings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">ComponentMixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Count embeddings in the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Total number of valid bimolecular embeddings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">mixture</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="n">n_match1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings_in_component</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">component</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">n_match2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mixture</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span>
+                <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings_in_component</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">component</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">n_match1</span> <span class="o">*</span> <span class="n">n_match2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="n">weight</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="n">weight</span>
+
+        <span class="k">return</span> <span class="n">count</span></div>
+
+
+<div class="viewcode-block" id="KappaRuleBimolecular.select">
+<a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular.select">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">ComponentMixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MixtureUpdate</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Select agents in the mixture and specify the update.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            n_embeddings must be called before this method so that the</span>
+<span class="sd">            component_weights cache is up-to-date.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Current mixture state.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            MixtureUpdate specifying the transformation, or None for invalid match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">components_ordered</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">component_weights</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">components_ordered</span><span class="p">]</span>
+        <span class="n">selected_component</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">components_ordered</span><span class="p">,</span> <span class="n">weights</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">match1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
+            <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings_in_component</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">selected_component</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">match2</span> <span class="o">=</span> <span class="n">rejection_sample</span><span class="p">(</span>
+            <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">mixture</span><span class="o">.</span><span class="n">embeddings_in_component</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">selected_component</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_produce_update</span><span class="p">(</span><span class="n">match1</span> <span class="o">|</span> <span class="n">match2</span><span class="p">,</span> <span class="n">mixture</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Kappybara Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

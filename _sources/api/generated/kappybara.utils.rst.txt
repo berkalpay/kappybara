@@ -1,0 +1,22 @@
+﻿kappybara.utils
+===============
+
+.. automodule:: kappybara.utils
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      rejection_sample
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Counted
+      IndexedSet
+      OrderedSet
+      Property
+      SetProperty
+   

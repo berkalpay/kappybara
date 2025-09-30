@@ -1,0 +1,17 @@
+﻿kappybara.pattern
+=================
+
+.. automodule:: kappybara.pattern
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Agent
+      Component
+      Embedding
+      Pattern
+      Site
+      SiteType
+   

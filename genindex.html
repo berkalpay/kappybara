@@ -1,9 +1,8 @@
 
-
 <!DOCTYPE html>
 
 
-<html data-content_root="" >
+<html lang="en" data-content_root="./" >
 
   <head>
     <meta charset="utf-8" />
@@ -14,36 +13,39 @@
   
   <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
   
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="None"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -51,32 +53,16 @@
 
   
   
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
   
   <div id="pst-scroll-pixel-helper"></div>
-
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -84,7 +70,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -92,20 +77,27 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
   
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
-  </label>
+  </button>
   
   
   <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
 
+  
+    
   
 
 <a class="navbar-brand logo" href="index.html">
@@ -126,28 +118,22 @@
     <div class="me-auto navbar-header-items__center">
       
         <div class="navbar-item">
-<nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api/index.html">
-                        API reference
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API reference
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -159,29 +145,21 @@
         <div class="navbar-item navbar-persistent--container">
           
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
         </div>
       
       
         <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
       
     </div>
     
@@ -190,27 +168,29 @@ document.write(`
   
     <div class="navbar-persistent--mobile">
 
- <script>
- document.write(`
-   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
     </div>
   
 
   
 </div>
 
-    </nav>
+    </header>
   
+
   <div class="bd-container">
     <div class="bd-container__inner bd-page-width">
       
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -219,31 +199,28 @@ document.write(`
     
       <div class="sidebar-header-items__center">
         
-          <div class="navbar-item">
-<nav class="navbar-nav">
-  <p class="sidebar-header-items__title"
-     role="heading"
-     aria-level="1"
-     aria-label="Site Navigation">
-    Site Navigation
-  </p>
+          
+          
+            <div class="navbar-item">
+<nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="examples/index.html">
-                        Examples
-                      </a>
-                    </li>
-                
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
 
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="api/index.html">
-                        API reference
-                      </a>
-                    </li>
-                
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api/index.html">
+    API reference
+  </a>
+</li>
+
   </ul>
 </nav></div>
+          
         
       </div>
     
@@ -253,15 +230,11 @@ document.write(`
         
           <div class="navbar-item">
 
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script></div>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
         
       </div>
     
@@ -269,33 +242,649 @@ document.write(`
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
       
-      <main id="main-content" class="bd-main">
+      <main id="main-content" class="bd-main" role="main">
         
         
           <div class="bd-content">
             <div class="bd-article-container">
               
-              <div class="bd-header-article"></div>
+              <div class="bd-header-article d-print-none"></div>
               
               
               
                 
 <div id="searchbox"></div>
-                <article class="bd-article" role="main">
+                <article class="bd-article">
                   
 
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture._embeddings">_embeddings (kappybara.mixture.Mixture attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture._max_embedding_width">_max_embedding_width (kappybara.mixture.Mixture attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.add">add() (kappybara.mixture.Mixture method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.add">(kappybara.pattern.Component method)</a>
+</li>
+        <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.add">(kappybara.utils.IndexedSet method)</a>
+</li>
+        <li><a href="api/generated/kappybara.utils.html#kappybara.utils.OrderedSet.add">(kappybara.utils.OrderedSet method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.add_rule">add_rule() (kappybara.system.System method)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent">Agent (class in kappybara.pattern)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#id3">agent (kappybara.pattern.Site attribute)</a>, <a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.agent">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.SiteType.agent_name">agent_name (kappybara.pattern.SiteType attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id3">agents (kappybara.mixture.Mixture attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.agents">[1]</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#id0">(kappybara.pattern.Component attribute)</a>, <a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.agents">[1]</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#id2">(kappybara.pattern.Pattern attribute)</a>, <a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.agents">[1]</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#id4">agents_changed (kappybara.mixture.MixtureUpdate attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.agents_changed">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id5">agents_to_add (kappybara.mixture.MixtureUpdate attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.agents_to_add">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.agents_to_kappa_str">agents_to_kappa_str() (kappybara.pattern.Pattern static method)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id6">agents_to_remove (kappybara.mixture.MixtureUpdate attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.agents_to_remove">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.apply_rule">apply_rule() (kappybara.system.System method)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.apply_update">apply_update() (kappybara.mixture.ComponentMixture method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.apply_update">(kappybara.mixture.Mixture method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression.attrs">attrs (kappybara.algebra.Expression attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.bound">bound (kappybara.pattern.Site property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.choose_rule">choose_rule() (kappybara.system.System method)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component">Component (class in kappybara.pattern)</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular.component_weights">component_weights (kappybara.rule.KappaRuleBimolecular attribute)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular.component_weights">(kappybara.rule.KappaRuleUnimolecular attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture">ComponentMixture (class in kappybara.mixture)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id0">components (kappybara.mixture.ComponentMixture attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.components">[1]</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.components">(kappybara.pattern.Pattern property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.connect_sites">connect_sites() (kappybara.mixture.MixtureUpdate method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.Counted">Counted (class in kappybara.utils)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.Counted.counter">counter (kappybara.utils.Counted attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.coupled">coupled (kappybara.pattern.Site property)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.create_agent">create_agent() (kappybara.mixture.MixtureUpdate method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.create_index">create_index() (kappybara.utils.IndexedSet method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.Monitor.dataframe">dataframe (kappybara.system.Monitor property)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.depth_first_traversal">depth_first_traversal (kappybara.pattern.Agent property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.detached">detached() (kappybara.pattern.Agent method)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.diameter">diameter (kappybara.pattern.Component property)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.disconnect_site">disconnect_site() (kappybara.mixture.MixtureUpdate method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Edge">Edge (class in kappybara.mixture)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id7">edges_to_add (kappybara.mixture.MixtureUpdate attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.edges_to_add">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id8">edges_to_remove (kappybara.mixture.MixtureUpdate attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.edges_to_remove">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Embedding">Embedding (class in kappybara.pattern)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.embeddings">embeddings() (kappybara.mixture.Mixture method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.embeddings">(kappybara.pattern.Component method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.embeddings_in_component">embeddings_in_component() (kappybara.mixture.ComponentMixture method)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.embeds_in">embeds_in() (kappybara.pattern.Agent method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.embeds_in">(kappybara.pattern.Site method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression.evaluate">evaluate() (kappybara.algebra.Expression method)</a>
+</li>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression">Expression (class in kappybara.algebra)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression.filter">filter() (kappybara.algebra.Expression method)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.from_ka">from_ka() (kappybara.system.System class method)</a>
+</li>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression.from_kappa">from_kappa() (kappybara.algebra.Expression class method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.from_kappa">(kappybara.mixture.Mixture class method)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.from_kappa">(kappybara.pattern.Agent class method)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.from_kappa">(kappybara.pattern.Component class method)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.from_kappa">(kappybara.pattern.Pattern class method)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.from_kappa">(kappybara.rule.KappaRule class method)</a>
+</li>
+        <li><a href="api/generated/kappybara.system.html#kappybara.system.System.from_kappa">(kappybara.system.System class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.grouped">grouped() (in module kappybara.mixture)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#id0">history (kappybara.system.Monitor attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.Monitor.history">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet">IndexedSet (class in kappybara.utils)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.indices">indices (kappybara.utils.IndexedSet attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.instantiable">instantiable (kappybara.pattern.Agent property)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.instantiate">instantiate() (kappybara.mixture.Mixture method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.interface">interface (kappybara.pattern.Agent attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.isomorphic">isomorphic() (kappybara.pattern.Agent method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.isomorphic">(kappybara.pattern.Component method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.isomorphisms">isomorphisms() (kappybara.pattern.Component method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.kappa_partner_str">kappa_partner_str (kappybara.pattern.Site property)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.kappa_state_str">kappa_state_str (kappybara.pattern.Site property)</a>
+</li>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression.kappa_str">kappa_str (kappybara.algebra.Expression property)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.kappa_str">(kappybara.mixture.Mixture property)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.kappa_str">(kappybara.pattern.Agent property)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.kappa_str">(kappybara.pattern.Component property)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.kappa_str">(kappybara.pattern.Pattern property)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.kappa_str">(kappybara.pattern.Site property)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.kappa_str">(kappybara.rule.KappaRule property)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular.kappa_str">(kappybara.rule.KappaRuleBimolecular property)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular.kappa_str">(kappybara.rule.KappaRuleUnimolecular property)</a>
+</li>
+        <li><a href="api/generated/kappybara.system.html#kappybara.system.System.kappa_str">(kappybara.system.System property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule">KappaRule (class in kappybara.rule)</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular">KappaRuleBimolecular (class in kappybara.rule)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular">KappaRuleUnimolecular (class in kappybara.rule)</a>
+</li>
+      <li>
+    kappybara.algebra
+
+      <ul>
+        <li><a href="api/generated/kappybara.algebra.html#module-kappybara.algebra">module</a>
+</li>
+      </ul></li>
+      <li>
+    kappybara.mixture
+
+      <ul>
+        <li><a href="api/generated/kappybara.mixture.html#module-kappybara.mixture">module</a>
+</li>
+      </ul></li>
+      <li>
+    kappybara.pattern
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#module-kappybara.pattern">module</a>
+</li>
+      </ul></li>
+      <li>
+    kappybara.rule
+
+      <ul>
+        <li><a href="api/generated/kappybara.rule.html#module-kappybara.rule">module</a>
+</li>
+      </ul></li>
+      <li>
+    kappybara.system
+
+      <ul>
+        <li><a href="api/generated/kappybara.system.html#module-kappybara.system">module</a>
+</li>
+      </ul></li>
+      <li>
+    kappybara.utils
+
+      <ul>
+        <li><a href="api/generated/kappybara.utils.html#module-kappybara.utils">module</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.kinetic_to_stochastic_on_rate">kinetic_to_stochastic_on_rate() (in module kappybara.rule)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.label">label (kappybara.pattern.Site attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#id0">left (kappybara.rule.KappaRule attribute)</a>, <a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.left">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.list_from_kappa">list_from_kappa() (kappybara.rule.KappaRule class method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.lookup">lookup() (kappybara.utils.IndexedSet method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.Monitor.measure">measure() (kappybara.system.Monitor method)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture">Mixture (class in kappybara.mixture)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#id2">mixture (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.mixture">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate">MixtureUpdate (class in kappybara.mixture)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="api/generated/kappybara.algebra.html#module-kappybara.algebra">kappybara.algebra</a>
+</li>
+        <li><a href="api/generated/kappybara.mixture.html#module-kappybara.mixture">kappybara.mixture</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#module-kappybara.pattern">kappybara.pattern</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#module-kappybara.rule">kappybara.rule</a>
+</li>
+        <li><a href="api/generated/kappybara.system.html#module-kappybara.system">kappybara.system</a>
+</li>
+        <li><a href="api/generated/kappybara.utils.html#module-kappybara.utils">kappybara.utils</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.Monitor">Monitor (class in kappybara.system)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#id3">monitor (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.monitor">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#id1">n_copies (kappybara.pattern.Component attribute)</a>, <a href="api/generated/kappybara.pattern.html#kappybara.pattern.Component.n_copies">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.n_embeddings">n_embeddings() (kappybara.rule.KappaRule method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular.n_embeddings">(kappybara.rule.KappaRuleBimolecular method)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular.n_embeddings">(kappybara.rule.KappaRuleUnimolecular method)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.Rule.n_embeddings">(kappybara.rule.Rule method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.names">names (kappybara.system.System property)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.neighborhood">neighborhood() (in module kappybara.mixture)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.neighbors">neighbors (kappybara.pattern.Agent property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#id4">observables (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.observables">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.OrderedSet">OrderedSet (class in kappybara.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.parse_operator">parse_operator() (in module kappybara.algebra)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.partner">partner (kappybara.pattern.Site attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern">Pattern (class in kappybara.pattern)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.Monitor.plot">plot() (kappybara.system.Monitor method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.properties">properties (kappybara.utils.IndexedSet attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.Property">Property (class in kappybara.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.rate">rate() (kappybara.rule.KappaRule method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.Rule.rate">(kappybara.rule.Rule method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.reactivity">reactivity (kappybara.system.System property)</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.Rule.reactivity">reactivity() (kappybara.rule.Rule method)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.read_ka">read_ka() (kappybara.system.System class method)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.register_changed_agent">register_changed_agent() (kappybara.mixture.MixtureUpdate method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.rejection_sample">rejection_sample() (in module kappybara.utils)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.remove">remove() (kappybara.mixture.Mixture method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.remove">(kappybara.utils.IndexedSet method)</a>
+</li>
+        <li><a href="api/generated/kappybara.utils.html#kappybara.utils.OrderedSet.remove">(kappybara.utils.OrderedSet method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.remove_agent">remove_agent() (kappybara.mixture.MixtureUpdate method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.IndexedSet.remove_by">remove_by() (kappybara.utils.IndexedSet method)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.remove_rule">remove_rule() (kappybara.system.System method)</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#id1">right (kappybara.rule.KappaRule attribute)</a>, <a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.right">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.Rule">Rule (class in kappybara.rule)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.rule_reactivities">rule_reactivities (kappybara.system.System property)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#id5">rules (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.rules">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.select">select() (kappybara.rule.KappaRule method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular.select">(kappybara.rule.KappaRuleBimolecular method)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular.select">(kappybara.rule.KappaRuleUnimolecular method)</a>
+</li>
+        <li><a href="api/generated/kappybara.rule.html#kappybara.rule.Rule.select">(kappybara.rule.Rule method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.set_mixture">set_mixture() (kappybara.system.System method)</a>
+</li>
+      <li><a href="api/generated/kappybara.utils.html#kappybara.utils.SetProperty">SetProperty (class in kappybara.utils)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site">Site (class in kappybara.pattern)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#id1">site1 (kappybara.mixture.Edge attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.Edge.site1">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#id2">site2 (kappybara.mixture.Edge attribute)</a>, <a href="api/generated/kappybara.mixture.html#kappybara.mixture.Edge.site2">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.SiteType.site_name">site_name (kappybara.pattern.SiteType attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.sites">sites (kappybara.pattern.Agent property)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.SiteType">SiteType (class in kappybara.pattern)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.state">state (kappybara.pattern.Site attribute)</a>
+</li>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.stated">stated (kappybara.pattern.Site property)</a>
+</li>
+      <li><a href="api/generated/kappybara.rule.html#id2">stochastic_rate (kappybara.rule.KappaRule attribute)</a>, <a href="api/generated/kappybara.rule.html#kappybara.rule.KappaRule.stochastic_rate">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System">System (class in kappybara.system)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#id1">system (kappybara.system.Monitor attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.Monitor.system">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#id6">tallies (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.tallies">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.tallies_str">tallies_str (kappybara.system.System property)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#id7">time (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.time">[1]</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.to_ka">to_ka() (kappybara.system.System method)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.touched_after">touched_after (kappybara.mixture.MixtureUpdate property)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.touched_before">touched_before (kappybara.mixture.MixtureUpdate property)</a>
+</li>
+      <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.track_component">track_component() (kappybara.mixture.ComponentMixture method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.track_component">(kappybara.mixture.Mixture method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.algebra.html#kappybara.algebra.Expression.type">type (kappybara.algebra.Expression attribute)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.type">(kappybara.pattern.Agent attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Agent.underspecified">underspecified (kappybara.pattern.Agent property)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.underspecified">(kappybara.pattern.Pattern property)</a>
+</li>
+        <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.underspecified">(kappybara.pattern.Site property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.pattern.html#kappybara.pattern.Site.undetermined">undetermined (kappybara.pattern.Site property)</a>
+</li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.Monitor.update">update() (kappybara.system.Monitor method)</a>
+
+      <ul>
+        <li><a href="api/generated/kappybara.system.html#kappybara.system.System.update">(kappybara.system.System method)</a>
+</li>
+      </ul></li>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.update_via_kasim">update_via_kasim() (kappybara.system.System method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#id8">variables (kappybara.system.System attribute)</a>, <a href="api/generated/kappybara.system.html#kappybara.system.System.variables">[1]</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/generated/kappybara.system.html#kappybara.system.System.wait">wait() (kappybara.system.System method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 
 
                 </article>
@@ -304,7 +893,7 @@ document.write(`
               
               
               
-                <footer class="prev-next-footer">
+                <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
 </div>
@@ -325,8 +914,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -346,7 +935,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
     <br/>
   </p>
 </div>
@@ -359,7 +948,8 @@ document.write(`
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

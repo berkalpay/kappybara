@@ -1,0 +1,22 @@
+﻿kappybara.mixture
+=================
+
+.. automodule:: kappybara.mixture
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      grouped
+      neighborhood
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ComponentMixture
+      Edge
+      Mixture
+      MixtureUpdate
+   

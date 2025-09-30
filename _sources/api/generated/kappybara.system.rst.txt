@@ -1,0 +1,13 @@
+﻿kappybara.system
+================
+
+.. automodule:: kappybara.system
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Monitor
+      System
+   

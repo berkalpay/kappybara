@@ -1,0 +1,1051 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kappybara.mixture &#8212; Kappybara</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/kappybara/mixture';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Kappybara</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">kappybara.mixture</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for kappybara.mixture</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Self</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.pattern</span><span class="w"> </span><span class="kn">import</span> <span class="n">Site</span><span class="p">,</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">Embedding</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">SetProperty</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">IndexedSet</span>
+
+
+<div class="viewcode-block" id="Edge">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Edge">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Edge</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents bonds between sites.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Edge(x, y) is the same as Edge(y, x).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        site1: First site in the bond.</span>
+<span class="sd">        site2: Second site in the bond.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">site1</span><span class="p">:</span> <span class="n">Site</span>
+    <span class="n">site2</span><span class="p">:</span> <span class="n">Site</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">site1</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">site1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">site2</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">site2</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">site1</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">site2</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">site2</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">site1</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">frozenset</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">site1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">site2</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="Mixture">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Mixture</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A collection of agents and their connections.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        agents: Indexed set of all agents in the mixture.</span>
+<span class="sd">        _embeddings: Cache of embeddings for tracked components.</span>
+<span class="sd">        _max_embedding_width: Maximum diameter of tracked components.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">agents</span><span class="p">:</span> <span class="n">IndexedSet</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span>
+    <span class="n">_embeddings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="n">IndexedSet</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]]</span>
+    <span class="n">_max_embedding_width</span><span class="p">:</span> <span class="nb">int</span>
+
+<div class="viewcode-block" id="Mixture.from_kappa">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.from_kappa">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_kappa</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a mixture from Kappa pattern strings and counts.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            patterns: Dictionary mapping pattern strings to copy counts.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            New Mixture with instantiated patterns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">real_patterns</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">patterns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">real_patterns</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Pattern</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">pattern</span><span class="p">)]</span> <span class="o">*</span> <span class="n">count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">real_patterns</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Pattern</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a new mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            patterns: Optional collection of patterns to instantiate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span> <span class="o">=</span> <span class="n">IndexedSet</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_embedding_width</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">Property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">patterns</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Component</span><span class="p">]:</span>
+        <span class="k">yield from</span> <span class="n">ComponentMixture</span><span class="p">([</span><span class="n">Pattern</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">))])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kappa_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The mixture representation in Kappa format.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Kappa string with %init declarations for each component type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;%init: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">group</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">group</span><span class="p">,</span> <span class="n">components</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="n">component</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Mixture.instantiate">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.instantiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instantiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="n">Pattern</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n_copies</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add instances of a pattern to the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pattern: Pattern to instantiate, or Kappa string.</span>
+<span class="sd">            n_copies: Number of copies to create.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If pattern is underspecified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="n">Pattern</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="n">pattern</span><span class="o">.</span><span class="n">underspecified</span>
+        <span class="p">),</span> <span class="s2">&quot;Pattern isn&#39;t specific enough to instantiate.&quot;</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_copies</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">pattern</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">component</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mixture.add">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.add">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a component to the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component: Component to add with its agents and connections.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">component_ordered</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+        <span class="n">new_agents</span> <span class="o">=</span> <span class="p">[</span><span class="n">agent</span><span class="o">.</span><span class="n">detached</span><span class="p">()</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">component_ordered</span><span class="p">]</span>
+        <span class="n">new_edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">agent</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">component_ordered</span><span class="p">):</span>
+            <span class="c1"># Duplicate the proper link structure</span>
+            <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">agent</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">site</span><span class="o">.</span><span class="n">coupled</span><span class="p">:</span>
+                    <span class="n">partner</span> <span class="o">=</span> <span class="n">site</span><span class="o">.</span><span class="n">partner</span>
+                    <span class="n">i_partner</span> <span class="o">=</span> <span class="n">component_ordered</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">partner</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+                    <span class="n">new_site</span> <span class="o">=</span> <span class="n">new_agents</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">site</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+                    <span class="n">new_partner</span> <span class="o">=</span> <span class="n">new_agents</span><span class="p">[</span><span class="n">i_partner</span><span class="p">][</span><span class="n">partner</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
+                    <span class="n">new_edges</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">new_site</span><span class="p">,</span> <span class="n">new_partner</span><span class="p">))</span>
+
+        <span class="n">update</span> <span class="o">=</span> <span class="n">MixtureUpdate</span><span class="p">(</span><span class="n">agents_to_add</span><span class="o">=</span><span class="n">new_agents</span><span class="p">,</span> <span class="n">edges_to_add</span><span class="o">=</span><span class="n">new_edges</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_update</span><span class="p">(</span><span class="n">update</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mixture.remove">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.remove">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a component from the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component: Component to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="n">MixtureUpdate</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">component</span><span class="p">:</span>
+            <span class="n">update</span><span class="o">.</span><span class="n">remove_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apply_update</span><span class="p">(</span><span class="n">update</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Mixture.embeddings">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.embeddings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IndexedSet</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get embeddings of a tracked component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component: Component to get embeddings for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Set of embeddings for the component.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: If component is not being tracked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">add_note</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Undeclared component: </span><span class="si">{</span><span class="n">component</span><span class="si">}</span><span class="s2">. To embed it, first use `track_component`.&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span></div>
+
+
+<div class="viewcode-block" id="Mixture.track_component">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.track_component">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">track_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start tracking embeddings of a component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component: Component pattern to track.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_embedding_width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">diameter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_embedding_width</span><span class="p">)</span>
+        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">IndexedSet</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">embeddings</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">SetProperty</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="n">embeddings</span></div>
+
+
+<div class="viewcode-block" id="Mixture.apply_update">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.Mixture.apply_update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="s2">&quot;MixtureUpdate&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a collection of changes to the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            update: MixtureUpdate specifying changes to apply.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">touched_before</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tracked</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">remove_by</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">edges_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">agents_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">agents_to_add</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">update</span><span class="o">.</span><span class="n">edges_to_add</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="c1"># NOTE: the current implementation doesn&#39;t directly mutate agent type</span>
+
+        <span class="n">update_region</span> <span class="o">=</span> <span class="n">neighborhood</span><span class="p">(</span><span class="n">update</span><span class="o">.</span><span class="n">touched_after</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_embedding_width</span><span class="p">)</span>
+
+        <span class="n">update_region</span> <span class="o">=</span> <span class="n">IndexedSet</span><span class="p">(</span><span class="n">update_region</span><span class="p">)</span>
+        <span class="n">update_region</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="n">Property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">type</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">component_pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="n">new_embeddings</span> <span class="o">=</span> <span class="n">component_pattern</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">update_region</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">new_embeddings</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">component_pattern</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">component_pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_component</span><span class="p">(</span><span class="n">component_pattern</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an agent to the mixture.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Calling these private functions isn&#39;t guaranteed to keep indexes</span>
+<span class="sd">            up to date, which is why they shouldn&#39;t be used externally.</span>
+<span class="sd">            The provided agent should not have any bound sites.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Agent to add (should have empty sites).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If agent has bound sites or isn&#39;t instantiable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">partner</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">agent</span><span class="p">)</span>  <span class="c1"># Check all sites are unbound</span>
+        <span class="k">assert</span> <span class="n">agent</span><span class="o">.</span><span class="n">instantiable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an agent from the mixture.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Any bonds associated with agent must be removed first.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Agent to remove (should have empty sites).</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If agent has bound sites.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">site</span><span class="o">.</span><span class="n">partner</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span> <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">agent</span><span class="p">)</span>  <span class="c1"># Check all sites are unbound</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Edge</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a bond between two sites.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            edge: Edge specifying the bond to create.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If either agent is not in the mixture.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span>
+        <span class="k">assert</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span>
+        <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">partner</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span>
+        <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">partner</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Edge</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a bond between two sites.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            edge: Edge specifying the bond to remove.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If the edge doesn&#39;t exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">partner</span> <span class="o">==</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span>
+        <span class="k">assert</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">partner</span> <span class="o">==</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span>
+        <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">partner</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+        <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">partner</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ComponentMixture">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ComponentMixture</span><span class="p">(</span><span class="n">Mixture</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A mixture that explicitly tracks connected components.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        components: Indexed set of all components in the mixture.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">components</span><span class="p">:</span> <span class="n">IndexedSet</span><span class="p">[</span><span class="n">Component</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Pattern</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a component-tracking mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            patterns: Optional collection of patterns to instantiate.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">IndexedSet</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+            <span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">SetProperty</span><span class="p">(</span><span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="n">is_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">patterns</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Component</span><span class="p">]:</span>
+        <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+
+<div class="viewcode-block" id="ComponentMixture.embeddings_in_component">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.embeddings_in_component">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">embeddings_in_component</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">match_pattern</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span> <span class="n">mixture_component</span><span class="p">:</span> <span class="n">Component</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="n">Agent</span><span class="p">,</span> <span class="n">Agent</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get embeddings of a pattern within a specific component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            match_pattern: Pattern to find embeddings for.</span>
+<span class="sd">            mixture_component: Component to search within.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of embeddings within the specified component.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">match_pattern</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="n">mixture_component</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ComponentMixture.track_component">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.track_component">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">track_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start tracking embeddings of a component pattern.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            component: Component pattern to track.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">track_component</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">component</span><span class="p">]</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span>
+            <span class="s2">&quot;component&quot;</span><span class="p">,</span>
+            <span class="n">Property</span><span class="p">(</span><span class="k">lambda</span> <span class="n">e</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">values</span><span class="p">())))),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ComponentMixture.apply_update">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.ComponentMixture.apply_update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">update</span><span class="p">:</span> <span class="s2">&quot;MixtureUpdate&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a collection of changes to the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            update: MixtureUpdate specifying changes to apply.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">apply_update</span><span class="p">(</span><span class="n">update</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">component_pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">track_component</span><span class="p">(</span><span class="n">component_pattern</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an agent as a new single-agent component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Agent to add.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_add_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="n">Component</span><span class="p">([</span><span class="n">agent</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an agent and its component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Agent to remove.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If agent is part of a multi-agent component.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_remove_agent</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="n">component</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">agent</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Edge</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an edge, potentially merging components.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            edge: Edge to add between sites.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_add_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+        <span class="c1"># If the agents are in different components, merge the components</span>
+        <span class="c1"># TODO: incremental mincut</span>
+        <span class="n">component1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+        <span class="n">component2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">component1</span> <span class="o">==</span> <span class="n">component2</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Ensure `component2` is the smaller of the 2</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">component2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">component1</span><span class="p">):</span>
+            <span class="n">component1</span><span class="p">,</span> <span class="n">component2</span> <span class="o">=</span> <span class="n">component2</span><span class="p">,</span> <span class="n">component1</span>
+
+        <span class="n">relocated</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">tracked</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="n">relocated</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="n">component2</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">relocated</span><span class="p">[</span><span class="n">tracked</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">component2</span><span class="p">)</span>  <span class="c1"># NOTE: invokes a redundant linear time pass</span>
+        <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="n">component2</span><span class="p">:</span>
+            <span class="n">component1</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+            <span class="c1"># TODO: better semantics for this type of operation</span>
+            <span class="c1">#       Operate on diffs to set property.. ?</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="s2">&quot;agent&quot;</span><span class="p">][</span><span class="n">agent</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">component1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">tracked</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="c1"># TODO: refactor when we can register IndexedSet item updates, including</span>
+            <span class="c1"># cached property evaluations</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">relocated</span><span class="p">[</span><span class="n">tracked</span><span class="p">]:</span>
+                <span class="k">assert</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span>
+                    <span class="o">==</span> <span class="n">component1</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Edge</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove an edge, potentially splitting components.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            edge: Edge to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_remove_edge</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+        <span class="n">agent1</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span>
+        <span class="n">agent2</span><span class="p">:</span> <span class="n">Agent</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span>
+        <span class="n">old_component</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">agent1</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">old_component</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="n">agent2</span><span class="p">)</span>
+
+        <span class="c1"># Create a new component if the old one got disconnected</span>
+        <span class="n">maybe_new_component</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">agent1</span><span class="o">.</span><span class="n">depth_first_traversal</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">agent2</span> <span class="ow">in</span> <span class="n">maybe_new_component</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># The old component is still connected, do nothing</span>
+
+        <span class="n">new_component1</span> <span class="o">=</span> <span class="n">maybe_new_component</span>
+        <span class="n">new_component2</span> <span class="o">=</span> <span class="n">Component</span><span class="p">(</span><span class="n">agent2</span><span class="o">.</span><span class="n">depth_first_traversal</span><span class="p">)</span>
+
+        <span class="n">relocated</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">tracked</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="n">relocated</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;component&quot;</span><span class="p">,</span> <span class="n">old_component</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">relocated</span><span class="p">[</span><span class="n">tracked</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="c1"># TODO: need to do manual updates to the indices in `components`</span>
+        <span class="c1"># to do this more efficiently</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_component</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_component1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_component2</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">tracked</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">:</span>
+            <span class="c1"># TODO: refactor when we can register IndexedSet item updates, including</span>
+            <span class="c1"># cached property evaluations</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">relocated</span><span class="p">[</span><span class="n">tracked</span><span class="p">]:</span>
+                <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">lookup</span><span class="p">(</span><span class="s2">&quot;agent&quot;</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">values</span><span class="p">())))</span> <span class="ow">in</span> <span class="p">[</span>
+                    <span class="n">new_component1</span><span class="p">,</span>
+                    <span class="n">new_component2</span><span class="p">,</span>
+                <span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_embeddings</span><span class="p">[</span><span class="n">tracked</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="MixtureUpdate">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MixtureUpdate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Specifies changes to be applied to a mixture.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        agents_to_add: Agents to be added to the mixture.</span>
+<span class="sd">        agents_to_remove: Agents to be removed from the mixture.</span>
+<span class="sd">        edges_to_add: Edges to be created.</span>
+<span class="sd">        edges_to_remove: Edges to be removed.</span>
+<span class="sd">        agents_changed: Agents with internal state changes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">agents_to_add</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">agents_to_remove</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">edges_to_add</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+    <span class="n">edges_to_remove</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Edge</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>
+    <span class="n">agents_changed</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">Agent</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">set</span><span class="p">)</span>  <span class="c1"># Agents changed internally</span>
+
+<div class="viewcode-block" id="MixtureUpdate.create_agent">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.create_agent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Agent</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new agent based on a template.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Sites in the created agent will be emptied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Template agent to base the new agent on.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            New agent with empty sites.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_agent</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">detached</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents_to_add</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_agent</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_agent</span></div>
+
+
+<div class="viewcode-block" id="MixtureUpdate.remove_agent">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.remove_agent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Specify to remove an agent and its edges from the mixture.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Agent to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">site</span> <span class="ow">in</span> <span class="n">agent</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">site</span><span class="o">.</span><span class="n">coupled</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_remove</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">partner</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MixtureUpdate.connect_sites">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.connect_sites">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect_sites</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site1</span><span class="p">:</span> <span class="n">Site</span><span class="p">,</span> <span class="n">site2</span><span class="p">:</span> <span class="n">Site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Specify to create an edge between two sites.</span>
+
+<span class="sd">        If the sites are bound to other sites, indicates to remove those edges.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            site1: First site to connect.</span>
+<span class="sd">            site2: Second site to connect.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">site1</span><span class="o">.</span><span class="n">coupled</span> <span class="ow">and</span> <span class="n">site1</span><span class="o">.</span><span class="n">partner</span> <span class="o">!=</span> <span class="n">site2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_site</span><span class="p">(</span><span class="n">site1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">site2</span><span class="o">.</span><span class="n">coupled</span> <span class="ow">and</span> <span class="n">site2</span><span class="o">.</span><span class="n">partner</span> <span class="o">!=</span> <span class="n">site1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_site</span><span class="p">(</span><span class="n">site2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">site1</span><span class="o">.</span><span class="n">partner</span> <span class="o">==</span> <span class="n">site2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_add</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">site1</span><span class="p">,</span> <span class="n">site2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MixtureUpdate.disconnect_site">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.disconnect_site">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect_site</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="n">Site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Specify that a site should be unbound.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            site: Site to disconnect from its partner.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">site</span><span class="o">.</span><span class="n">coupled</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_remove</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">site</span><span class="p">,</span> <span class="n">site</span><span class="o">.</span><span class="n">partner</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MixtureUpdate.register_changed_agent">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.MixtureUpdate.register_changed_agent">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_changed_agent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">agent</span><span class="p">:</span> <span class="n">Agent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register an agent as having internal state changes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            agent: Agent that has been internally modified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">agents_changed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">agent</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">touched_after</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">Agent</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The agents that will be changed or added after this update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Set of agents affected by the update.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">touched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents_changed</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents_to_add</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_add</span><span class="p">:</span>
+            <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+            <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_remove</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents_to_remove</span><span class="p">:</span>  <span class="c1"># TODO make agents_to_remove a set</span>
+                <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents_to_remove</span><span class="p">:</span>
+                <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">touched</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">touched_before</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">Agent</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The agents that will be changed or removed by this update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Set of agents affected before the update is applied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">touched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents_changed</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">agents_to_remove</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_remove</span><span class="p">:</span>
+            <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+            <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges_to_add</span><span class="p">:</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">site1</span><span class="o">.</span><span class="n">agent</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">site2</span><span class="o">.</span><span class="n">agent</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents_to_add</span><span class="p">:</span>  <span class="c1"># TODO make agents_to_add a set</span>
+                <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents_to_add</span><span class="p">:</span>
+                <span class="n">touched</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">touched</span></div>
+
+
+
+<div class="viewcode-block" id="neighborhood">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.neighborhood">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">neighborhood</span><span class="p">(</span><span class="n">agents</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Agent</span><span class="p">],</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">Agent</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get all agents within a distance radius of the given agents.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        agents: Starting agents for the neighborhood.</span>
+<span class="sd">        radius: Maximum distance to include.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Set of all agents within the specified radius.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">frontier</span> <span class="o">=</span> <span class="n">agents</span>
+    <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">frontier</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">radius</span><span class="p">):</span>
+        <span class="n">new_frontier</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">cur</span> <span class="ow">in</span> <span class="n">frontier</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">cur</span><span class="o">.</span><span class="n">neighbors</span><span class="p">:</span>
+                <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="n">new_frontier</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+
+        <span class="n">frontier</span> <span class="o">=</span> <span class="n">new_frontier</span>
+    <span class="k">return</span> <span class="n">seen</span></div>
+
+
+
+<div class="viewcode-block" id="grouped">
+<a class="viewcode-back" href="../../api/generated/kappybara.mixture.html#kappybara.mixture.grouped">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">grouped</span><span class="p">(</span><span class="n">components</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Component</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Component</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Group components by isomorphism.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        components: Components to group.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary mapping representative components to lists of isomorphic components.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grouped</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Component</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Component</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">grouped</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">component</span><span class="o">.</span><span class="n">isomorphic</span><span class="p">(</span><span class="n">group</span><span class="p">):</span>
+                <span class="n">grouped</span><span class="p">[</span><span class="n">group</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">grouped</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">component</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">grouped</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Kappybara Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

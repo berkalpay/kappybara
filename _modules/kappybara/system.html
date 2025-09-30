@@ -1,0 +1,1013 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kappybara.system &#8212; Kappybara</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/kappybara/system';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Kappybara</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">kappybara.system</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for kappybara.system</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Self</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.figure</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.mixture</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mixture</span><span class="p">,</span> <span class="n">ComponentMixture</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.rule</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rule</span><span class="p">,</span> <span class="n">KappaRule</span><span class="p">,</span> <span class="n">KappaRuleUnimolecular</span><span class="p">,</span> <span class="n">KappaRuleBimolecular</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.pattern</span><span class="w"> </span><span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Pattern</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.algebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">Expression</span>
+
+
+<div class="viewcode-block" id="System">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">System</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Kappa system containing agents, rules, observables, and variables for simulation.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mixture: The current state of agents and their connections.</span>
+<span class="sd">        rules: Dictionary mapping rule names to Rule objects.</span>
+<span class="sd">        observables: Dictionary mapping observable names to expressions.</span>
+<span class="sd">        variables: Dictionary mapping variable names to expressions.</span>
+<span class="sd">        monitor: Optional Monitor object for tracking simulation history.</span>
+<span class="sd">        time: Current simulation time.</span>
+<span class="sd">        tallies: Dictionary tracking rule application counts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mixture</span><span class="p">:</span> <span class="n">Mixture</span>
+    <span class="n">rules</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Rule</span><span class="p">]</span>
+    <span class="n">observables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]</span>
+    <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]</span>
+    <span class="n">monitor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Monitor&quot;</span><span class="p">]</span>
+    <span class="n">time</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">tallies</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+
+<div class="viewcode-block" id="System.read_ka">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.read_ka">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_ka</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read and parse a Kappa .ka file to create a System.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath: Path to the Kappa file.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new System instance parsed from the file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_ka</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="System.from_ka">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.from_ka">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_ka</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ka_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a System from a Kappa (.ka style) string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ka_str: Kappa language string containing a system definition.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new System instance parsed from the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.grammar</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+            <span class="n">kappa_parser</span><span class="p">,</span>
+            <span class="n">parse_tree_to_expression</span><span class="p">,</span>
+            <span class="n">PatternBuilder</span><span class="p">,</span>
+            <span class="n">RuleBuilder</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">input_tree</span> <span class="o">=</span> <span class="n">kappa_parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">ka_str</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">input_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;kappa_input&quot;</span>
+
+        <span class="n">variables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">observables</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">rules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Rule</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">system_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">inits</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">input_tree</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="n">tag</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">data</span>
+
+            <span class="k">if</span> <span class="n">tag</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;f_rule&quot;</span><span class="p">,</span> <span class="s2">&quot;fr_rule&quot;</span><span class="p">,</span> <span class="s2">&quot;ambi_rule&quot;</span><span class="p">,</span> <span class="s2">&quot;ambi_fr_rule&quot;</span><span class="p">]:</span>
+                <span class="n">new_rules</span> <span class="o">=</span> <span class="n">RuleBuilder</span><span class="p">(</span><span class="n">child</span><span class="p">)</span><span class="o">.</span><span class="n">objects</span>
+                <span class="n">rules</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_rules</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;variable_declaration&quot;</span><span class="p">:</span>
+                <span class="n">name_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">name_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declared_variable_name&quot;</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">name_tree</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">expr_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">expr_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;algebraic_expression&quot;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">parse_tree_to_expression</span><span class="p">(</span><span class="n">expr_tree</span><span class="p">)</span>
+
+                <span class="n">variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;plot_declaration&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;observable_declaration&quot;</span><span class="p">:</span>
+                <span class="n">label_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">label_tree</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">label_tree</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">expr_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">expr_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;algebraic_expression&quot;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">parse_tree_to_expression</span><span class="p">(</span><span class="n">expr_tree</span><span class="p">)</span>
+
+                <span class="n">observables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;signature_declaration&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;init_declaration&quot;</span><span class="p">:</span>
+                <span class="n">expr_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">expr_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;algebraic_expression&quot;</span>
+                <span class="n">amount</span> <span class="o">=</span> <span class="n">parse_tree_to_expression</span><span class="p">(</span><span class="n">expr_tree</span><span class="p">)</span>
+
+                <span class="n">pattern_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">pattern_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;declared_token_name&quot;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+                <span class="k">assert</span> <span class="n">pattern_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;pattern&quot;</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">PatternBuilder</span><span class="p">(</span><span class="n">pattern_tree</span><span class="p">)</span><span class="o">.</span><span class="n">object</span>
+
+                <span class="n">inits</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">amount</span><span class="p">,</span> <span class="n">pattern</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;declared_token&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;definition&quot;</span><span class="p">:</span>
+                <span class="n">reserved_name_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">reserved_name_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;reserved_name&quot;</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">reserved_name_tree</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&#39;</span><span class="se">\&quot;</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">value_tree</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">assert</span> <span class="n">value_tree</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="s2">&quot;value&quot;</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value_tree</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+                <span class="n">system_params</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">elif</span> <span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;pattern&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported input type: </span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">system</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">observables</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">init</span> <span class="ow">in</span> <span class="n">inits</span><span class="p">:</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="n">init</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">init</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">system</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">system</span></div>
+
+
+<div class="viewcode-block" id="System.from_kappa">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.from_kappa">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_kappa</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">mixture</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">observables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a System from Kappa strings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Dictionary mapping agent patterns to initial counts.</span>
+<span class="sd">            rules: Iterable of rule strings in Kappa format.</span>
+<span class="sd">            observables: List of observable expressions or dict mapping names to expressions.</span>
+<span class="sd">            variables: Dictionary mapping variable names to expressions.</span>
+<span class="sd">            *args: Additional arguments passed to System constructor.</span>
+<span class="sd">            **kwargs: Additional keyword arguments passed to System constructor.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A new System instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">real_rules</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">rules</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">:</span>
+                <span class="n">real_rules</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">KappaRule</span><span class="o">.</span><span class="n">list_from_kappa</span><span class="p">(</span><span class="n">rule</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">observables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">real_observables</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">observables</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">real_observables</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="sa">f</span><span class="s2">&quot;o</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">Expression</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">observables</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">real_observables</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">Expression</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">obs</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="n">observables</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+
+        <span class="n">real_variables</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">variables</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">Expression</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="kc">None</span> <span class="k">if</span> <span class="n">mixture</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Mixture</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">mixture</span><span class="p">),</span>
+            <span class="n">real_rules</span><span class="p">,</span>
+            <span class="n">real_observables</span><span class="p">,</span>
+            <span class="n">real_variables</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">mixture</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mixture</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rules</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Rule</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">observables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Expression</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">monitor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a new System.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: Initial mixture state.</span>
+<span class="sd">            rules: Collection of rules to apply.</span>
+<span class="sd">            observables: Dictionary of observable expressions.</span>
+<span class="sd">            variables: Dictionary of variable expressions.</span>
+<span class="sd">            monitor: Whether to enable monitoring of simulation history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{}</span> <span class="k">if</span> <span class="n">rules</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;r</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">rule</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rule</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rules</span><span class="p">)}</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mixture</span><span class="p">,</span> <span class="n">ComponentMixture</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KappaRuleUnimolecular</span><span class="p">,</span> <span class="n">KappaRuleBimolecular</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="n">patterns</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">mixture</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">Pattern</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">mixture</span><span class="o">.</span><span class="n">agents</span><span class="p">))]</span>
+            <span class="n">mixture</span> <span class="o">=</span> <span class="n">ComponentMixture</span><span class="p">(</span><span class="n">patterns</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mixture</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mixture</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">ComponentMixture</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span><span class="n">KappaRuleUnimolecular</span><span class="p">,</span> <span class="n">KappaRuleBimolecular</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span>
+                <span class="p">)</span>
+                <span class="k">else</span> <span class="n">Mixture</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observables</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">observables</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">observables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">variables</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">variables</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_mixture</span><span class="p">(</span><span class="n">mixture</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;applied&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">monitor</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">Monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kappa_str</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the value of an observable or variable.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name of the observable or variable.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Current value of the named expression.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyError: If name doesn&#39;t correspond to any observable or variable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">observables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Name </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> doesn&#39;t correspond to a declared observable or variable&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">kappa_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set or update an observable or variable from a Kappa string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name to assign to the expression.</span>
+<span class="sd">            kappa_str: Kappa expression string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">expr</span> <span class="o">=</span> <span class="n">Expression</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">kappa_str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_track_expression</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">expr</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Set new expressions as observables</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">expr</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The names of all observables and variables.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;observables&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">observables</span><span class="p">),</span>
+            <span class="s2">&quot;variables&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">),</span>
+        <span class="p">}</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tallies_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A formatted string showing how many times each rule has been applied.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tab-separated string showing applied and failed counts for each rule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Rule</span><span class="se">\t</span><span class="s2">Applied</span><span class="se">\t</span><span class="s2">Failed</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rule_str</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">tallies</span><span class="p">[</span><span class="s2">&quot;applied&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">tallies</span><span class="p">[</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">rule_str</span><span class="p">,</span> <span class="n">tallies</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">kappa_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The system representation in Kappa (.ka style) format.&quot;&quot;&quot;</span>
+        <span class="n">kappa_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">kappa_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;%var: &#39;</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">KappaRule</span><span class="p">)</span>
+            <span class="n">kappa_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">rule</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">obs_name</span><span class="p">,</span> <span class="n">obs</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observables</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">obs_str</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;|</span><span class="si">{</span><span class="n">obs</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s2">|&quot;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">Component</span><span class="p">)</span> <span class="k">else</span> <span class="n">obs</span><span class="o">.</span><span class="n">kappa_str</span>
+            <span class="p">)</span>
+            <span class="n">kappa_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;%obs: &#39;</span><span class="si">{</span><span class="n">obs_name</span><span class="si">}</span><span class="s2">&#39; </span><span class="si">{</span><span class="n">obs_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">kappa_str</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">kappa_str</span>
+        <span class="k">return</span> <span class="n">kappa_str</span>
+
+<div class="viewcode-block" id="System.to_ka">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.to_ka">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_ka</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write system information to a Kappa file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath: Path where to write the Kappa file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kappa_str</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="System.set_mixture">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.set_mixture">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_mixture</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mixture</span><span class="p">:</span> <span class="n">Mixture</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the system&#39;s mixture and update tracking.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mixture: New mixture to set for the system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span> <span class="o">=</span> <span class="n">mixture</span>
+        <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_track_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">observable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">observables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_track_expression</span><span class="p">(</span><span class="n">observable</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_track_expression</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="System.add_rule">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.add_rule">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">Rule</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new rule to the system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name to assign to the rule.</span>
+<span class="sd">            rule: Rule object or Kappa string representation.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If a rule with the given name already exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">,</span> <span class="s2">&quot;Rule </span><span class="si">{name}</span><span class="s2"> already exists in the system&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">rule</span> <span class="o">=</span> <span class="n">KappaRule</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_track_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">rule</span></div>
+
+
+<div class="viewcode-block" id="System.remove_rule">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.remove_rule">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a rule by setting its rate to zero.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Name of the rule to remove.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If the rule already has zero rate.</span>
+<span class="sd">            KeyError: If no rule with the given name exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Rule </span><span class="si">{name}</span><span class="s2"> is already null&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">stochastic_rate</span> <span class="o">=</span> <span class="n">Expression</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span><span class="s2">&quot;0&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">e</span><span class="o">.</span><span class="n">add_note</span><span class="p">(</span><span class="s2">&quot;No rule </span><span class="si">{name}</span><span class="s2"> exists in the system&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_track_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">Rule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Track components mentioned in the left hand side of a Rule.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rule: Rule whose components should be tracked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rule</span><span class="p">,</span> <span class="n">KappaRule</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">rule</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+                <span class="c1"># TODO: For efficiency check for isomorphism with already-tracked components</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">track_component</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_track_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="n">Expression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Track the Components in the given expression.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Doesn&#39;t track patterns nested by indirection - see the filter method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">component_expr</span> <span class="ow">in</span> <span class="n">expression</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="s2">&quot;component_pattern&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">track_component</span><span class="p">(</span><span class="n">component_expr</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rule_reactivities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The reactivity of each rule in the system.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of reactivities corresponding to system rules.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">rule</span><span class="o">.</span><span class="n">reactivity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">rule</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reactivity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The total reactivity of the system.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Sum of all rule reactivities.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_reactivities</span><span class="p">)</span>
+
+<div class="viewcode-block" id="System.wait">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.wait">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Advance simulation time according to exponential distribution.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeWarning: If system has no reactivity (infinite wait time).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">expovariate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reactivity</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;system has no reactivity: infinite wait time&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="System.choose_rule">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.choose_rule">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">choose_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Rule</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Choose a rule to apply based on reactivity weights.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Selected rule, or None if no rules have positive reactivity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span>
+                <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rules</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span> <span class="n">weights</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rule_reactivities</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;system has no reactivity: no rule applied&quot;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="System.apply_rule">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.apply_rule">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rule</span><span class="p">:</span> <span class="n">Rule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply a rule to the mixture and update tallies.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rule: Rule to apply to the current mixture.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="n">rule</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">update</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">rule</span><span class="p">)][</span><span class="s2">&quot;applied&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">apply_update</span><span class="p">(</span><span class="n">update</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;rule_reactivities&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">rule</span><span class="p">)][</span><span class="s2">&quot;failed&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="System.update">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform one simulation step.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">rule</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choose_rule</span><span class="p">())</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_rule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="System.update_via_kasim">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.System.update_via_kasim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_via_kasim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simulate for a given amount of time using KaSim.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            KaSim must be installed and in the PATH.</span>
+<span class="sd">            Some features may not be compatible between Kappybara and KaSim.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            time: Additional time units to simulate.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If KaSim is not found in PATH.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span>
+            <span class="s2">&quot;KaSim&quot;</span>
+        <span class="p">),</span> <span class="s2">&quot;To update via KaSim, it must be installed and in the PATH.&quot;</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdirname</span><span class="p">:</span>
+            <span class="c1"># Run KaSim on the current system</span>
+            <span class="n">output_ka_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdirname</span><span class="p">,</span> <span class="s2">&quot;out.ka&quot;</span><span class="p">)</span>
+            <span class="n">output_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;%mod: alarm </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s1"> do $SNAPSHOT &quot;</span><span class="si">{</span><span class="n">output_ka_path</span><span class="si">}</span><span class="s1">&quot;;&#39;</span>
+            <span class="n">input_ka_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tmpdirname</span><span class="p">,</span> <span class="s2">&quot;in.ka&quot;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_ka_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="se">\n</span><span class="si">{</span><span class="n">output_cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;KaSim </span><span class="si">{</span><span class="n">input_ka_path</span><span class="si">}</span><span class="s2"> -l </span><span class="si">{</span><span class="n">time</span><span class="si">}</span><span class="s2"> -d </span><span class="si">{</span><span class="n">tmpdirname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Read the KaSim output</span>
+            <span class="n">output_kappa_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_ka_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%i</span><span class="s2">nit&quot;</span><span class="p">):</span>
+                        <span class="n">split</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+                        <span class="n">output_kappa_str</span> <span class="o">+=</span> <span class="n">split</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">split</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Apply the update</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_mixture</span><span class="p">(</span><span class="n">System</span><span class="o">.</span><span class="n">from_ka</span><span class="p">(</span><span class="n">output_kappa_str</span><span class="p">)</span><span class="o">.</span><span class="n">mixture</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+=</span> <span class="n">time</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Monitor">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.Monitor">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Monitor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Records the history of the values of observables in a system.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        system: The system being monitored.</span>
+<span class="sd">        history: Dictionary mapping observable names to their value history.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">system</span><span class="p">:</span> <span class="n">System</span>
+    <span class="n">history</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="n">System</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a monitor for the given system.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            system: System to monitor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">system</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="p">[]}</span> <span class="o">|</span> <span class="p">{</span><span class="n">obs_name</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">obs_name</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">observables</span><span class="p">}</span>
+
+<div class="viewcode-block" id="Monitor.update">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.Monitor.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record current time and observable values.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">obs_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">observables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obs_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">obs_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">obs_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="p">[</span><span class="n">obs_name</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Monitor.measure">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.Monitor.measure">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">measure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">observable_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the value of an observable at a specific time.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            observable_name: Name of the observable to measure.</span>
+<span class="sd">            time: Time at which to measure. If None, uses latest time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Value of the observable at the specified time.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError: If simulation hasn&#39;t reached the specified time.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">times</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">time</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="s2">&quot;Simulation hasn&#39;t reached time </span><span class="si">{time}</span><span class="s2">&quot;</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">time</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">observable_name</span><span class="p">][</span><span class="n">i</span><span class="p">]</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the history of observable values as a pandas DataFrame.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            DataFrame with time and observable columns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Monitor.plot">
+<a class="viewcode-back" href="../../api/generated/kappybara.system.html#kappybara.system.Monitor.plot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">Figure</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Make a plot of all observables over time.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Matplotlib figure showing trajectories of observables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">obs_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">observables</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">obs_name</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">obs_name</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Observable&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fig</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Kappybara Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
