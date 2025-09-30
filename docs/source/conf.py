@@ -37,3 +37,4 @@ napoleon_google_docstring = True
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {"secondary_sidebar_items": []}
 html_static_path = ["_static"]
+html_title = "Kappybara"
