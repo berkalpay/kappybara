@@ -574,17 +574,28 @@ class Monitor:
         """
         return pd.DataFrame(self.history)
 
-    def plot(self) -> matplotlib.figure.Figure:
+    def plot(self, combined: bool = False) -> matplotlib.figure.Figure:
         """Make a plot of all observables over time.
+
+        Args:
+            combined: Whether to plot all observables on the same axes.
 
         Returns:
             Matplotlib figure showing trajectories of observables.
         """
-        fig, ax = plt.subplots()
-        for obs_name in self.system.observables:
-            ax.plot(self.history["time"], self.history[obs_name], label=obs_name)
-        plt.legend()
-        plt.xlabel("Time")
-        plt.ylabel("Observable")
-        plt.margins(0, 0)
+        if combined:
+            fig, ax = plt.subplots()
+            for obs_name in self.system.observables:
+                ax.plot(self.history["time"], self.history[obs_name], label=obs_name)
+            plt.legend()
+            plt.xlabel("Time")
+            plt.ylabel("Observable")
+            plt.margins(0, 0)
+        else:
+            fig, axs = plt.subplots(len(self.system.observables), 1, sharex=True)
+            for i, obs_name in enumerate(self.system.observables):
+                axs[i].plot(self.history["time"], self.history[obs_name], color="black")
+                axs[i].set_title(obs_name)
+                if i == len(self.system.observables) - 1:
+                    axs[i].set_xlabel("Time")
         return fig
