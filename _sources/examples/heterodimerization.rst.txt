@@ -69,7 +69,7 @@ Finally, let's plot the history of the quantities we tracked:
 
     import matplotlib.pyplot as plt
 
-    system.monitor.plot()
+    system.monitor.plot(combined=True)
     for time in times:
         plt.axvline(time, color="black", linestyle="dotted")
     plt.show()
