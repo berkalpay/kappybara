@@ -35,6 +35,16 @@ napoleon_google_docstring = True
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "pydata_sphinx_theme"
-html_theme_options = {"secondary_sidebar_items": []}
+html_theme_options = {
+    "secondary_sidebar_items": [],
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/berkalpay/kappybara",
+            "icon": "fa-brands fa-github",
+            "type": "fontawesome",
+        }
+    ],
+}
 html_static_path = ["_static"]
 html_title = "Kappybara"
