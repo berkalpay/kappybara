@@ -1,15 +1,10 @@
 # kappybara
 
-## Installation
-Kappybara will be made available on PyPI.
-In the meantime, install using
-```
-pip install .
-```
+See our website: [kappybara.io](https://kappybara.io).
 
 
 ## Development
-With `pip` also install:
+Developer requirements can be installed via:
 ```
 pip install -r requirements.txt
 ```
