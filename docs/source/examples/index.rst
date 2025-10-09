@@ -1,4 +1,8 @@
 Examples
 ========
 
-:doc:`Heterodimerization (intro example) <heterodimerization>`
+.. toctree::
+   :maxdepth: 1
+
+   reversible_binding
+   lac_operon
