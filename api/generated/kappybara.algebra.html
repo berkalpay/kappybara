@@ -41,6 +41,7 @@
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/kappybara.algebra';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -352,7 +353,7 @@
   <section id="module-kappybara.algebra">
 <span id="kappybara-algebra"></span><h1>kappybara.algebra<a class="headerlink" href="#module-kappybara.algebra" title="Link to this heading">#</a></h1>
 <p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#kappybara.algebra.parse_operator" title="kappybara.algebra.parse_operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_operator</span></code></a>(kappa_operator)</p></td>
 <td><p>Convert a Kappa string operator to a Python function.</p></td>
@@ -361,7 +362,7 @@
 </table>
 </div>
 <p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#kappybara.algebra.Expression" title="kappybara.algebra.Expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Expression</span></code></a>(type, **attrs)</p></td>
 <td><p>Algebraic expressions as specified by the Kappa language.</p></td>
@@ -371,7 +372,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="kappybara.algebra.Expression">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.algebra.</span></span><span class="sig-name descname"><span class="pre">Expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/algebra.html#Expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.algebra.Expression" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.algebra.</span></span><span class="sig-name descname"><span class="pre">Expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/algebra.html#Expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.algebra.Expression" title="Link to this definition">#</a></dt>
 <dd><p>Algebraic expressions as specified by the Kappa language.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="kappybara.algebra.Expression.type">
@@ -425,7 +426,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="kappybara.algebra.Expression.from_kappa">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/algebra.html#Expression.from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.algebra.Expression.from_kappa" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/algebra.html#Expression.from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.algebra.Expression.from_kappa" title="Link to this definition">#</a></dt>
 <dd><p>Parse an Expression from a Kappa string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -445,7 +446,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="kappybara.algebra.Expression.kappa_str">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.algebra.Expression.kappa_str" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.algebra.Expression.kappa_str" title="Link to this definition">#</a></dt>
 <dd><p>Get the expression representation in Kappa format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -548,7 +549,7 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

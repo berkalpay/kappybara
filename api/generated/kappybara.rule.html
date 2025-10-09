@@ -41,6 +41,7 @@
     <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'api/generated/kappybara.rule';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -352,7 +353,7 @@
   <section id="module-kappybara.rule">
 <span id="kappybara-rule"></span><h1>kappybara.rule<a class="headerlink" href="#module-kappybara.rule" title="Link to this heading">#</a></h1>
 <p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#kappybara.rule.kinetic_to_stochastic_on_rate" title="kappybara.rule.kinetic_to_stochastic_on_rate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kinetic_to_stochastic_on_rate</span></code></a>([k_on, ...])</p></td>
 <td><p>Convert a kinetic on-rate constant to a stochastic one.</p></td>
@@ -361,7 +362,7 @@
 </table>
 </div>
 <p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#kappybara.rule.KappaRule" title="kappybara.rule.KappaRule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KappaRule</span></code></a>(left, right, stochastic_rate)</p></td>
 <td><p>Standard Kappa rule with left-hand side, right-hand side, and rate.</p></td>
@@ -380,7 +381,7 @@
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRule">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">KappaRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRule" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">KappaRule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRule" title="Link to this definition">#</a></dt>
 <dd><p>Standard Kappa rule with left-hand side, right-hand side, and rate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -426,7 +427,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRule.from_kappa">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRule.from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRule.from_kappa" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRule.from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRule.from_kappa" title="Link to this definition">#</a></dt>
 <dd><p>Parse a single Kappa rule from string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -446,7 +447,7 @@
 
 <dl class="py property">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRule.kappa_str">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.rule.KappaRule.kappa_str" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.rule.KappaRule.kappa_str" title="Link to this definition">#</a></dt>
 <dd><p>The rule representation in Kappa format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -462,7 +463,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRule.list_from_kappa">
-<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRule.list_from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRule.list_from_kappa" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">list_from_kappa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kappa_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRule.list_from_kappa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRule.list_from_kappa" title="Link to this definition">#</a></dt>
 <dd><p>Parse Kappa string into a list of rules.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -551,7 +552,7 @@ records everything else in the MixtureUpdate.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRuleBimolecular">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">KappaRuleBimolecular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRuleBimolecular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRuleBimolecular" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">KappaRuleBimolecular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRuleBimolecular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRuleBimolecular" title="Link to this definition">#</a></dt>
 <dd><p>Bimolecular Kappa rule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -570,7 +571,7 @@ records everything else in the MixtureUpdate.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRuleBimolecular.kappa_str">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.rule.KappaRuleBimolecular.kappa_str" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.rule.KappaRuleBimolecular.kappa_str" title="Link to this definition">#</a></dt>
 <dd><p>The rule representation in Kappa format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -622,7 +623,7 @@ component_weights cache is up-to-date.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRuleUnimolecular">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">KappaRuleUnimolecular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRuleUnimolecular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRuleUnimolecular" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">KappaRuleUnimolecular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stochastic_rate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#KappaRuleUnimolecular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.KappaRuleUnimolecular" title="Link to this definition">#</a></dt>
 <dd><p>Unimolecular Kappa rule that acts within a single component.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -641,7 +642,7 @@ component_weights cache is up-to-date.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="kappybara.rule.KappaRuleUnimolecular.kappa_str">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.rule.KappaRuleUnimolecular.kappa_str" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">kappa_str</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#kappybara.rule.KappaRuleUnimolecular.kappa_str" title="Link to this definition">#</a></dt>
 <dd><p>Get the rule representation in Kappa format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -693,11 +694,11 @@ component_weights cache is up-to-date.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="kappybara.rule.Rule">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">kappybara.rule.</span></span><span class="sig-name descname"><span class="pre">Rule</span></span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule" title="Link to this definition">#</a></dt>
 <dd><p>Abstract base class for all rule types.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="kappybara.rule.Rule.n_embeddings">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule.n_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule.n_embeddings" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule.n_embeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule.n_embeddings" title="Link to this definition">#</a></dt>
 <dd><p>Count the number of ways this rule can be applied to the mixture.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -714,7 +715,7 @@ component_weights cache is up-to-date.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="kappybara.rule.Rule.rate">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule.rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule.rate" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">system</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule.rate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule.rate" title="Link to this definition">#</a></dt>
 <dd><p>Get the stochastic rate of the rule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -748,7 +749,7 @@ component_weights cache is up-to-date.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="kappybara.rule.Rule.select">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule.select" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mixture</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/rule.html#Rule.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.rule.Rule.select" title="Link to this definition">#</a></dt>
 <dd><p>Select agents in the mixture and specify the update.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -860,7 +861,7 @@ internal sites of agents. A null event is represented by returning None.</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
     <br/>
   </p>
 </div>

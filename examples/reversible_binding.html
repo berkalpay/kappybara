@@ -1,0 +1,751 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Reversible binding &#8212; Kappybara</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/reversible_binding';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="The lac operon" href="lac_operon.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Kappybara</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/berkalpay/kappybara" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/berkalpay/kappybara" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Reversible binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lac_operon.html">The lac operon</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Reversible binding</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Reversible-binding">
+<h1>Reversible binding<a class="headerlink" href="#Reversible-binding" title="Link to this heading">#</a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We can initialize a system of a simple reversible binding interaction as follows:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+
+<span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">from_kappa</span><span class="p">(</span>
+    <span class="n">mixture</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;A(x[.])&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;B(x[.])&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
+    <span class="n">rules</span><span class="o">=</span><span class="p">[</span>
+        <span class="s2">&quot;A(x[.]), B(x[.]) -&gt; A(x[1]), B(x[1]) @ 1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;A(x[1]), B(x[1]) -&gt; A(x[.]), B(x[.]) @ 1&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">observables</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AB&quot;</span><span class="p">:</span> <span class="s2">&quot;|A(x[1]), B(x[1])|&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">kappybara</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">system</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> System
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> system = <span class="ansi-yellow-bg">System</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">from_kappa</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">      4</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">mixture</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">{</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">A(x[.])</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">100</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">B(x[.])</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">100</span><span class="ansi-yellow-bg">}</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      5</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">rules</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">[</span>
+<span class="ansi-green-fg">      6</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">A(x[.]), B(x[.]) -&gt; A(x[1]), B(x[1]) @ 1</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      7</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">A(x[1]), B(x[1]) -&gt; A(x[.]), B(x[.]) @ 1</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      9</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">observables</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">{</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">AB</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">|A(x[1]), B(x[1])|</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">}</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     10</span> <span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/system.py:179</span>, in <span class="ansi-cyan-fg">System.from_kappa</span><span class="ansi-blue-fg">(cls, mixture, rules, observables, variables, *args, **kwargs)</span>
+<span class="ansi-green-fg">    177</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> rules <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">    178</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> rule <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> rules:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">179</span>         real_rules.extend(<span class="ansi-yellow-bg">KappaRule</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">list_from_kappa</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">rule</span><span class="ansi-yellow-bg">)</span>)
+<span class="ansi-green-fg">    181</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> observables <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">    182</span>     real_observables = {}
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/rule.py:122</span>, in <span class="ansi-cyan-fg">KappaRule.list_from_kappa</span><span class="ansi-blue-fg">(cls, kappa_str)</span>
+<span class="ansi-green-fg">    109</span> <span style="color: rgb(175,0,255)">@classmethod</span>
+<span class="ansi-green-fg">    110</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">list_from_kappa</span>(<span style="color: rgb(0,135,0)">cls</span>, kappa_str: <span style="color: rgb(0,135,0)">str</span>) -&gt; <span style="color: rgb(0,135,0)">list</span>[Self]:
+<span class="ansi-green-fg">    111</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Parse Kappa string into a list of rules.</span>
+<span class="ansi-green-fg">    112</span>
+<span class="ansi-green-fg">    113</span> <span class="ansi-yellow-fg">    Note:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    120</span> <span class="ansi-yellow-fg">        List of parsed rules.</span>
+<span class="ansi-green-fg">    121</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">122</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">kappybara</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">grammar</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> kappa_parser, RuleBuilder
+<span class="ansi-green-fg">    124</span>     input_tree = kappa_parser.parse(kappa_str)
+<span class="ansi-green-fg">    125</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> input_tree.data == <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">kappa_input</span><span class="ansi-yellow-fg">&#34;</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:40</span>
+<span class="ansi-green-fg">     36</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">open</span>(filepath, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> file:
+<span class="ansi-green-fg">     37</span>             <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>._parser.parse(file.read())
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">40</span> kappa_parser = <span class="ansi-yellow-bg">KappaParser</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">     43</span> <span style="color: rgb(175,0,255)">@dataclass</span>
+<span class="ansi-green-fg">     44</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">SiteBuilder</span>(Visitor):
+<span class="ansi-green-fg">     45</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Builds Site objects from Lark parse trees.</span>
+<span class="ansi-green-fg">     46</span>
+<span class="ansi-green-fg">     47</span> <span class="ansi-yellow-fg">    Attributes:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     50</span> <span class="ansi-yellow-fg">        parsed_partner: Partner specification for the site.</span>
+<span class="ansi-green-fg">     51</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:20</span>, in <span class="ansi-cyan-fg">KappaParser.__init__</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">     18</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__init__</span>(<span style="color: rgb(0,135,0)">self</span>):
+<span class="ansi-green-fg">     19</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Initialize the Lark parser with Kappa grammar.&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">20</span>     <span style="color: rgb(0,135,0)">self</span>._parser = <span class="ansi-yellow-bg">Lark</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">     21</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">str</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">Path</span><span class="ansi-yellow-bg">(</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">parent</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">/</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa.lark</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     22</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">rel_to</span><span class="ansi-yellow-bg">=</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     23</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">parser</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">earley</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     24</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># The basic lexer isn&#39;t required and isn&#39;t usually recommended</span>
+<span class="ansi-green-fg">     25</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lexer</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">dynamic</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     26</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">start</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa_input</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     27</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># Disabling these slightly improves speed</span>
+<span class="ansi-green-fg">     28</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">propagate_positions</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     29</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">maybe_placeholders</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     30</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/lark/lark.py:593</span>, in <span class="ansi-cyan-fg">Lark.open</span><span class="ansi-blue-fg">(cls, grammar_filename, rel_to, **options)</span>
+<span class="ansi-green-fg">    591</span>     basepath = os.path.dirname(rel_to)
+<span class="ansi-green-fg">    592</span>     grammar_filename = os.path.join(basepath, grammar_filename)
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">593</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">grammar_filename</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-fg ansi-yellow-bg">utf8</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-bg">)</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+<span class="ansi-green-fg">    594</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">cls</span>(f, **options)
+
+<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/kappa.lark&#39;
+</pre></div></div>
+</div>
+<p>or equivalently from a .ka-style string:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">from_ka</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    %init: 100 A(x[.])</span>
+<span class="sd">    %init: 100 B(x[.])</span>
+
+<span class="sd">    %obs: &#39;AB&#39; |A(x[1]), B(x[1])|</span>
+
+<span class="sd">    A(x[.]), B(x[.]) &lt;-&gt; A(x[1]), B(x[1]) @ 1, 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> system = <span class="ansi-yellow-bg">System</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">from_ka</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">      2</span> <span class="ansi-yellow-bg" style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">      3</span> <span class="ansi-yellow-fg ansi-yellow-bg">    %init: 100 A(x[.])</span>
+<span class="ansi-green-fg">      4</span> <span class="ansi-yellow-fg ansi-yellow-bg">    %init: 100 B(x[.])</span>
+<span class="ansi-green-fg">      5</span>
+<span class="ansi-green-fg">      6</span> <span class="ansi-yellow-fg ansi-yellow-bg">    %obs: &#39;AB&#39; |A(x[1]), B(x[1])|</span>
+<span class="ansi-green-fg">      7</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-yellow-fg ansi-yellow-bg">    A(x[.]), B(x[.]) &lt;-&gt; A(x[1]), B(x[1]) @ 1, 1</span>
+<span class="ansi-green-fg">      9</span> <span class="ansi-yellow-fg ansi-yellow-bg">    &#34;&#34;&#34;</span>
+<span class="ansi-green-fg">     10</span> <span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/system.py:64</span>, in <span class="ansi-cyan-fg">System.from_ka</span><span class="ansi-blue-fg">(cls, ka_str)</span>
+<span class="ansi-green-fg">     54</span> <span style="color: rgb(175,0,255)">@classmethod</span>
+<span class="ansi-green-fg">     55</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">from_ka</span>(<span style="color: rgb(0,135,0)">cls</span>, ka_str: <span style="color: rgb(0,135,0)">str</span>) -&gt; Self:
+<span class="ansi-green-fg">     56</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Create a System from a Kappa (.ka style) string.</span>
+<span class="ansi-green-fg">     57</span>
+<span class="ansi-green-fg">     58</span> <span class="ansi-yellow-fg">    Args:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     62</span> <span class="ansi-yellow-fg">        A new System instance parsed from the string.</span>
+<span class="ansi-green-fg">     63</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">64</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">kappybara</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">grammar</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
+<span class="ansi-green-fg">     65</span>         kappa_parser,
+<span class="ansi-green-fg">     66</span>         parse_tree_to_expression,
+<span class="ansi-green-fg">     67</span>         PatternBuilder,
+<span class="ansi-green-fg">     68</span>         RuleBuilder,
+<span class="ansi-green-fg">     69</span>     )
+<span class="ansi-green-fg">     71</span>     input_tree = kappa_parser.parse(ka_str)
+<span class="ansi-green-fg">     72</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> input_tree.data == <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">kappa_input</span><span class="ansi-yellow-fg">&#34;</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:40</span>
+<span class="ansi-green-fg">     36</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">open</span>(filepath, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> file:
+<span class="ansi-green-fg">     37</span>             <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>._parser.parse(file.read())
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">40</span> kappa_parser = <span class="ansi-yellow-bg">KappaParser</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">     43</span> <span style="color: rgb(175,0,255)">@dataclass</span>
+<span class="ansi-green-fg">     44</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">SiteBuilder</span>(Visitor):
+<span class="ansi-green-fg">     45</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Builds Site objects from Lark parse trees.</span>
+<span class="ansi-green-fg">     46</span>
+<span class="ansi-green-fg">     47</span> <span class="ansi-yellow-fg">    Attributes:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     50</span> <span class="ansi-yellow-fg">        parsed_partner: Partner specification for the site.</span>
+<span class="ansi-green-fg">     51</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:20</span>, in <span class="ansi-cyan-fg">KappaParser.__init__</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">     18</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__init__</span>(<span style="color: rgb(0,135,0)">self</span>):
+<span class="ansi-green-fg">     19</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Initialize the Lark parser with Kappa grammar.&#34;&#34;&#34;</span>
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">20</span>     <span style="color: rgb(0,135,0)">self</span>._parser = <span class="ansi-yellow-bg">Lark</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">     21</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">str</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">Path</span><span class="ansi-yellow-bg">(</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">parent</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">/</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa.lark</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     22</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">rel_to</span><span class="ansi-yellow-bg">=</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     23</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">parser</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">earley</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     24</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># The basic lexer isn&#39;t required and isn&#39;t usually recommended</span>
+<span class="ansi-green-fg">     25</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lexer</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">dynamic</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     26</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">start</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa_input</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     27</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># Disabling these slightly improves speed</span>
+<span class="ansi-green-fg">     28</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">propagate_positions</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     29</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">maybe_placeholders</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     30</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/lark/lark.py:593</span>, in <span class="ansi-cyan-fg">Lark.open</span><span class="ansi-blue-fg">(cls, grammar_filename, rel_to, **options)</span>
+<span class="ansi-green-fg">    591</span>     basepath = os.path.dirname(rel_to)
+<span class="ansi-green-fg">    592</span>     grammar_filename = os.path.join(basepath, grammar_filename)
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">593</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">grammar_filename</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-fg ansi-yellow-bg">utf8</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-bg">)</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
+<span class="ansi-green-fg">    594</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">cls</span>(f, **options)
+
+<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/kappa.lark&#39;
+</pre></div></div>
+</div>
+<p>100 instances of molecules of type A and of type B, each with an empty binding domain x are created, and we track the number of AB complexes.</p>
+<p>We’re going to simulate this system and plot its behavior, marking certain times of interest. We’ll first simulate until time 1:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">times</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
+<span class="ansi-green-fg">      1</span> times = []
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">while</span> <span class="ansi-yellow-bg">system</span>.time &lt; <span class="ansi-green-fg">1</span>:
+<span class="ansi-green-fg">      3</span>     system.update()
+<span class="ansi-green-fg">      4</span> times.append(system.time)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
+</pre></div></div>
+</div>
+<p>We’ll now manually instantiate 50 new A and B molecules each, start tracking the number of free A, and simulate until there are no more than 10 free A in the mixture:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="s2">&quot;A(x[.]), B(x[.])&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+
+<span class="n">system</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;|A(x[.])|&quot;</span>
+<span class="k">while</span> <span class="n">system</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">system</span>.mixture.instantiate(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A(x[.]), B(x[.])</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-green-fg">50</span>)
+<span class="ansi-green-fg">      3</span> system[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>] = <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">|A(x[.])|</span><span class="ansi-yellow-fg">&#34;</span>
+<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">while</span> system[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>] &gt; <span class="ansi-green-fg">10</span>:
+
+<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
+</pre></div></div>
+</div>
+<p>Now let’s simulate some more time:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 1</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">while</span> <span class="ansi-yellow-bg">system</span>.time &lt; <span class="ansi-green-fg">2</span>:
+<span class="ansi-green-fg">      2</span>     system.update()
+<span class="ansi-green-fg">      3</span> times.append(<span class="ansi-green-fg">2</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
+</pre></div></div>
+</div>
+<p>The default simulator provides the most features since it’s written directly in Python, but models can be offloaded to <a class="reference external" href="https://github.com/Kappa-Dev/KappaTools">KaSim</a>, a compiled Kappa simulator, for faster simulation. For example, we could’ve run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">update_via_kasim</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, let’s plot the history of the quantities we tracked:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">combined</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">times</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;dotted&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 3</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> <span class="ansi-yellow-bg">system</span>.monitor.plot(combined=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
+<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> time <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> times:
+<span class="ansi-green-fg">      5</span>     plt.axvline(time, color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">black</span><span class="ansi-yellow-fg">&#34;</span>, linestyle=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">dotted</span><span class="ansi-yellow-fg">&#34;</span>)
+
+<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
+</pre></div></div>
+</div>
+<p>Above it can be seen that the system equilibrates relatively early, new A is added, and the number of AB complexes increases.</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Examples</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lac_operon.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">The lac operon</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Kappybara Developers.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
