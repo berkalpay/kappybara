@@ -10,6 +10,9 @@ dependencies = [
     "matplotlib>=3.10.3",
 ]
 
+[tool.setuptools.package-data]
+kappybara = ["*.lark"]
+
 [tool.uv]
 dev-dependencies = [
   "kappybara",
