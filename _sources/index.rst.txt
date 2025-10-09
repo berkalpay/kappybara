@@ -3,7 +3,7 @@ Kappybara
 #########
 
 A Python simulator of rule-based models built on top of the Kappa language.
-See the :doc:`intro example <examples/heterodimerization>` for how Kappybara can be used to simulate a molecular system.
+Visit the :doc:`examples <examples/index>` gallery to see how Kappybara can be used to simulate a molecular system.
 
 Kappybara is available via pip:
 
