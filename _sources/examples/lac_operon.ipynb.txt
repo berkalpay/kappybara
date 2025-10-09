@@ -1,0 +1,129 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# The lac operon\n",
+    "\n",
+    "The *E. coli* lac operon controls the production of enzymes needed to metabolize lactose and is regulated in large part by lactose availability.\n",
+    "This example model includes\n",
+    "- LacI (I) repression of the lac operon via blocking of the operator (O),\n",
+    "- lactose (L) transport by LacY (Y) permease,\n",
+    "- conversion of lactose to allolactose (A) by LacZ β-galactosidase (Z),\n",
+    "- and allolactose-mediated derepression of the operon."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import random\n",
+    "random.seed(0)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from kappybara.system import System\n",
+    "\n",
+    "system = System.from_ka(\n",
+    "    \"\"\"\n",
+    "    %init: 1 O(i[.])\n",
+    "    %init: 1 I(o[.])\n",
+    "    %init: 10 Y()\n",
+    "    %init: 10 Z(l[.])\n",
+    "\n",
+    "    %obs: 'Extracellular lactose' |L(loc{out})| / 100\n",
+    "    %obs: 'LacY' |Y()|\n",
+    "    %obs: 'Free Lac operon' |O(i[.])|\n",
+    "\n",
+    "    I(o[.]), O(i[.]) <-> I(o[1]), O(i[1]) @ 1, 0.1  // Repress the lac operon\n",
+    "    Y(), L(loc{out}) -> Y(), L(loc{in}) @ 0.01  // Transport lactose into the cell\n",
+    "    Z(l[.]), L(loc{in}) -> Z(l[.]), A(z[.], i[.]) @ 1  // Convert lactose into allolactose\n",
+    "    A(i[.]), I(o[.]) <-> A(i[1]), I(o[1]) @ 1, 0.1  // Deactivate the repressor by allolactose\n",
+    "    O(i[.]), ., . -> O(i[.]), Z(l[.]), Y() @ 1 // Express the lac operon\n",
+    "    L(loc{in}) -> E() @ 1  // Metabolize lactose\n",
+    "\n",
+    "    // Degradation\n",
+    "    A() -> . @ 0.1\n",
+    "    Y() -> . @ 0.5\n",
+    "    Z() -> . @ 0.5\n",
+    "    \"\"\"\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We simulate the system first without lactose, then add extracellular lactose to observe the regulatory response."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Simulate a while with no extracellular lactose\n",
+    "while system.time < 300:\n",
+    "    system.update()\n",
+    "\n",
+    "# Add extracellular lactose and continue simulating\n",
+    "system.mixture.instantiate(\"L(loc{out})\", 1000)\n",
+    "while system.time < 800:\n",
+    "   system.update()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "system.monitor.plot();"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Without lactose, the operon remains mostly repressed.\n",
+    "When extracellular lactose is added,\n",
+    "- existing LacY transports some lactose into the cell,\n",
+    "- intracellular lactose is converted to allolactose by LacZ,\n",
+    "- allolactose inactivates the LacI repressor,\n",
+    "- derepressing the operon and leading to increased LacY and LacZ production.\n",
+    "\n",
+    "As lactose is metabolized the operon is again repressed."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
