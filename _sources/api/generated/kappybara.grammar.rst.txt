@@ -1,0 +1,23 @@
+﻿kappybara.grammar
+=================
+
+.. automodule:: kappybara.grammar
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      parse_tree_to_expression
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      AgentBuilder
+      KappaParser
+      LarkTreetoExpression
+      PatternBuilder
+      RuleBuilder
+      SiteBuilder
+   

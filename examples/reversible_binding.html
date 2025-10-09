@@ -357,7 +357,7 @@
 </div>
 </div>
 <p>We can initialize a system of a simple reversible binding interaction as follows:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -374,81 +374,8 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[2]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">kappybara</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">system</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> System
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> system = <span class="ansi-yellow-bg">System</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">from_kappa</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">mixture</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">{</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">A(x[.])</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">100</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">B(x[.])</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-green-fg ansi-yellow-bg">100</span><span class="ansi-yellow-bg">}</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      5</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">rules</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">[</span>
-<span class="ansi-green-fg">      6</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">A(x[.]), B(x[.]) -&gt; A(x[1]), B(x[1]) @ 1</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      7</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">A(x[1]), B(x[1]) -&gt; A(x[.]), B(x[.]) @ 1</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">]</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      9</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">observables</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">{</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">AB</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">:</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">|A(x[1]), B(x[1])|</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">}</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     10</span> <span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/system.py:179</span>, in <span class="ansi-cyan-fg">System.from_kappa</span><span class="ansi-blue-fg">(cls, mixture, rules, observables, variables, *args, **kwargs)</span>
-<span class="ansi-green-fg">    177</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> rules <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">    178</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> rule <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> rules:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">179</span>         real_rules.extend(<span class="ansi-yellow-bg">KappaRule</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">list_from_kappa</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">rule</span><span class="ansi-yellow-bg">)</span>)
-<span class="ansi-green-fg">    181</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> observables <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">    182</span>     real_observables = {}
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/rule.py:122</span>, in <span class="ansi-cyan-fg">KappaRule.list_from_kappa</span><span class="ansi-blue-fg">(cls, kappa_str)</span>
-<span class="ansi-green-fg">    109</span> <span style="color: rgb(175,0,255)">@classmethod</span>
-<span class="ansi-green-fg">    110</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">list_from_kappa</span>(<span style="color: rgb(0,135,0)">cls</span>, kappa_str: <span style="color: rgb(0,135,0)">str</span>) -&gt; <span style="color: rgb(0,135,0)">list</span>[Self]:
-<span class="ansi-green-fg">    111</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Parse Kappa string into a list of rules.</span>
-<span class="ansi-green-fg">    112</span>
-<span class="ansi-green-fg">    113</span> <span class="ansi-yellow-fg">    Note:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    120</span> <span class="ansi-yellow-fg">        List of parsed rules.</span>
-<span class="ansi-green-fg">    121</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">122</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">kappybara</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">grammar</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> kappa_parser, RuleBuilder
-<span class="ansi-green-fg">    124</span>     input_tree = kappa_parser.parse(kappa_str)
-<span class="ansi-green-fg">    125</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> input_tree.data == <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">kappa_input</span><span class="ansi-yellow-fg">&#34;</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:40</span>
-<span class="ansi-green-fg">     36</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">open</span>(filepath, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> file:
-<span class="ansi-green-fg">     37</span>             <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>._parser.parse(file.read())
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">40</span> kappa_parser = <span class="ansi-yellow-bg">KappaParser</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">     43</span> <span style="color: rgb(175,0,255)">@dataclass</span>
-<span class="ansi-green-fg">     44</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">SiteBuilder</span>(Visitor):
-<span class="ansi-green-fg">     45</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Builds Site objects from Lark parse trees.</span>
-<span class="ansi-green-fg">     46</span>
-<span class="ansi-green-fg">     47</span> <span class="ansi-yellow-fg">    Attributes:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     50</span> <span class="ansi-yellow-fg">        parsed_partner: Partner specification for the site.</span>
-<span class="ansi-green-fg">     51</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:20</span>, in <span class="ansi-cyan-fg">KappaParser.__init__</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-fg">     18</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__init__</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">     19</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Initialize the Lark parser with Kappa grammar.&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">20</span>     <span style="color: rgb(0,135,0)">self</span>._parser = <span class="ansi-yellow-bg">Lark</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">     21</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">str</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">Path</span><span class="ansi-yellow-bg">(</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">parent</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">/</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa.lark</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     22</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">rel_to</span><span class="ansi-yellow-bg">=</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     23</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">parser</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">earley</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     24</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># The basic lexer isn&#39;t required and isn&#39;t usually recommended</span>
-<span class="ansi-green-fg">     25</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lexer</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">dynamic</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     26</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">start</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa_input</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     27</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># Disabling these slightly improves speed</span>
-<span class="ansi-green-fg">     28</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">propagate_positions</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     29</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">maybe_placeholders</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     30</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/lark/lark.py:593</span>, in <span class="ansi-cyan-fg">Lark.open</span><span class="ansi-blue-fg">(cls, grammar_filename, rel_to, **options)</span>
-<span class="ansi-green-fg">    591</span>     basepath = os.path.dirname(rel_to)
-<span class="ansi-green-fg">    592</span>     grammar_filename = os.path.join(basepath, grammar_filename)
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">593</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">grammar_filename</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-fg ansi-yellow-bg">utf8</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-bg">)</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
-<span class="ansi-green-fg">    594</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">cls</span>(f, **options)
-
-<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/kappa.lark&#39;
-</pre></div></div>
-</div>
 <p>or equivalently from a .ka-style string:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
@@ -465,81 +392,9 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[3]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> system = <span class="ansi-yellow-bg">System</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">from_ka</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">      2</span> <span class="ansi-yellow-bg" style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">      3</span> <span class="ansi-yellow-fg ansi-yellow-bg">    %init: 100 A(x[.])</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-yellow-fg ansi-yellow-bg">    %init: 100 B(x[.])</span>
-<span class="ansi-green-fg">      5</span>
-<span class="ansi-green-fg">      6</span> <span class="ansi-yellow-fg ansi-yellow-bg">    %obs: &#39;AB&#39; |A(x[1]), B(x[1])|</span>
-<span class="ansi-green-fg">      7</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-yellow-fg ansi-yellow-bg">    A(x[.]), B(x[.]) &lt;-&gt; A(x[1]), B(x[1]) @ 1, 1</span>
-<span class="ansi-green-fg">      9</span> <span class="ansi-yellow-fg ansi-yellow-bg">    &#34;&#34;&#34;</span>
-<span class="ansi-green-fg">     10</span> <span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/system.py:64</span>, in <span class="ansi-cyan-fg">System.from_ka</span><span class="ansi-blue-fg">(cls, ka_str)</span>
-<span class="ansi-green-fg">     54</span> <span style="color: rgb(175,0,255)">@classmethod</span>
-<span class="ansi-green-fg">     55</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">from_ka</span>(<span style="color: rgb(0,135,0)">cls</span>, ka_str: <span style="color: rgb(0,135,0)">str</span>) -&gt; Self:
-<span class="ansi-green-fg">     56</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Create a System from a Kappa (.ka style) string.</span>
-<span class="ansi-green-fg">     57</span>
-<span class="ansi-green-fg">     58</span> <span class="ansi-yellow-fg">    Args:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     62</span> <span class="ansi-yellow-fg">        A new System instance parsed from the string.</span>
-<span class="ansi-green-fg">     63</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">64</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">kappybara</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">grammar</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> (
-<span class="ansi-green-fg">     65</span>         kappa_parser,
-<span class="ansi-green-fg">     66</span>         parse_tree_to_expression,
-<span class="ansi-green-fg">     67</span>         PatternBuilder,
-<span class="ansi-green-fg">     68</span>         RuleBuilder,
-<span class="ansi-green-fg">     69</span>     )
-<span class="ansi-green-fg">     71</span>     input_tree = kappa_parser.parse(ka_str)
-<span class="ansi-green-fg">     72</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> input_tree.data == <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">kappa_input</span><span class="ansi-yellow-fg">&#34;</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:40</span>
-<span class="ansi-green-fg">     36</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span style="color: rgb(0,135,0)">open</span>(filepath, <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">r</span><span class="ansi-yellow-fg">&#34;</span>) <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> file:
-<span class="ansi-green-fg">     37</span>             <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>._parser.parse(file.read())
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">40</span> kappa_parser = <span class="ansi-yellow-bg">KappaParser</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">     43</span> <span style="color: rgb(175,0,255)">@dataclass</span>
-<span class="ansi-green-fg">     44</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">SiteBuilder</span>(Visitor):
-<span class="ansi-green-fg">     45</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Builds Site objects from Lark parse trees.</span>
-<span class="ansi-green-fg">     46</span>
-<span class="ansi-green-fg">     47</span> <span class="ansi-yellow-fg">    Attributes:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     50</span> <span class="ansi-yellow-fg">        parsed_partner: Partner specification for the site.</span>
-<span class="ansi-green-fg">     51</span> <span class="ansi-yellow-fg">    &#34;&#34;&#34;</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/grammar.py:20</span>, in <span class="ansi-cyan-fg">KappaParser.__init__</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-fg">     18</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__init__</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">     19</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">&#34;&#34;&#34;Initialize the Lark parser with Kappa grammar.&#34;&#34;&#34;</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">20</span>     <span style="color: rgb(0,135,0)">self</span>._parser = <span class="ansi-yellow-bg">Lark</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">     21</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">str</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">Path</span><span class="ansi-yellow-bg">(</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">parent</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">/</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa.lark</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     22</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">rel_to</span><span class="ansi-yellow-bg">=</span><span class="ansi-blue-fg ansi-yellow-bg">__file__</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     23</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">parser</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">earley</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     24</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># The basic lexer isn&#39;t required and isn&#39;t usually recommended</span>
-<span class="ansi-green-fg">     25</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">lexer</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">dynamic</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     26</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">start</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-fg ansi-yellow-bg">kappa_input</span><span class="ansi-yellow-fg ansi-yellow-bg">&#34;</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     27</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># Disabling these slightly improves speed</span>
-<span class="ansi-green-fg">     28</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">propagate_positions</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     29</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">maybe_placeholders</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     30</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/lark/lark.py:593</span>, in <span class="ansi-cyan-fg">Lark.open</span><span class="ansi-blue-fg">(cls, grammar_filename, rel_to, **options)</span>
-<span class="ansi-green-fg">    591</span>     basepath = os.path.dirname(rel_to)
-<span class="ansi-green-fg">    592</span>     grammar_filename = os.path.join(basepath, grammar_filename)
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">593</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">grammar_filename</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-fg ansi-yellow-bg">utf8</span><span class="ansi-yellow-fg ansi-yellow-bg">&#39;</span><span class="ansi-yellow-bg">)</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
-<span class="ansi-green-fg">    594</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">cls</span>(f, **options)
-
-<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/opt/hostedtoolcache/Python/3.12.11/x64/lib/python3.12/site-packages/kappybara/kappa.lark&#39;
-</pre></div></div>
-</div>
 <p>100 instances of molecules of type A and of type B, each with an empty binding domain x are created, and we track the number of AB complexes.</p>
 <p>We’re going to simulate this system and plot its behavior, marking certain times of interest. We’ll first simulate until time 1:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
@@ -550,24 +405,8 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> times = []
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">while</span> <span class="ansi-yellow-bg">system</span>.time &lt; <span class="ansi-green-fg">1</span>:
-<span class="ansi-green-fg">      3</span>     system.update()
-<span class="ansi-green-fg">      4</span> times.append(system.time)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
-</pre></div></div>
-</div>
 <p>We’ll now manually instantiate 50 new A and B molecules each, start tracking the number of free A, and simulate until there are no more than 10 free A in the mixture:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -580,23 +419,8 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[5]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">system</span>.mixture.instantiate(<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A(x[.]), B(x[.])</span><span class="ansi-yellow-fg">&#34;</span>, <span class="ansi-green-fg">50</span>)
-<span class="ansi-green-fg">      3</span> system[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>] = <span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">|A(x[.])|</span><span class="ansi-yellow-fg">&#34;</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">while</span> system[<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">A</span><span class="ansi-yellow-fg">&#34;</span>] &gt; <span class="ansi-green-fg">10</span>:
-
-<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
-</pre></div></div>
-</div>
 <p>Now let’s simulate some more time:</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
@@ -605,21 +429,6 @@
 <span class="n">times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">while</span> <span class="ansi-yellow-bg">system</span>.time &lt; <span class="ansi-green-fg">2</span>:
-<span class="ansi-green-fg">      2</span>     system.update()
-<span class="ansi-green-fg">      3</span> times.append(<span class="ansi-green-fg">2</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
-</pre></div></div>
 </div>
 <p>The default simulator provides the most features since it’s written directly in Python, but models can be offloaded to <a class="reference external" href="https://github.com/Kappa-Dev/KappaTools">KaSim</a>, a compiled Kappa simulator, for faster simulation. For example, we could’ve run:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">update_via_kasim</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -643,17 +452,8 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<div class="highlight"><pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">matplotlib</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">pyplot</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">as</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">plt</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> <span class="ansi-yellow-bg">system</span>.monitor.plot(combined=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-fg">      4</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> time <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> times:
-<span class="ansi-green-fg">      5</span>     plt.axvline(time, color=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">black</span><span class="ansi-yellow-fg">&#34;</span>, linestyle=<span class="ansi-yellow-fg">&#34;</span><span class="ansi-yellow-fg">dotted</span><span class="ansi-yellow-fg">&#34;</span>)
-
-<span class="ansi-red-fg">NameError</span>: name &#39;system&#39; is not defined
-</pre></div></div>
+<img alt="../_images/examples_reversible_binding_14_0.png" src="../_images/examples_reversible_binding_14_0.png" />
+</div>
 </div>
 <p>Above it can be seen that the system equilibrates relatively early, new A is added, and the number of AB complexes increases.</p>
 </section>
