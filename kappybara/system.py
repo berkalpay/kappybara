@@ -353,17 +353,22 @@ class System:
         for variable in self.variables.values():
             self._track_expression(variable)
 
-    def add_rule(self, name: str, rule: Rule | str) -> None:
+    def add_rule(self, rule: Rule | str, name: Optional[str] = None) -> None:
         """Add a new rule to the system.
 
         Args:
-            name: Name to assign to the rule.
             rule: Rule object or Kappa string representation.
+            name: Name to assign to the rule. If None, a default name is generated.
 
         Raises:
             AssertionError: If a rule with the given name already exists.
         """
+        if name is None:
+            name = f"r{len(self.rules)}"
+            while name in self.rules:
+                name = f"r{int(name[1:]) + 1}"
         assert name not in self.rules, "Rule {name} already exists in the system"
+
         if isinstance(rule, str):
             rule = KappaRule.from_kappa(rule)
         self._track_rule(rule)
