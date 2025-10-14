@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chemostat &#8212; Kappybara</title>
+    <title>Linear polymerization &#8212; Kappybara</title>
   
   
   
@@ -45,11 +45,11 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/chemostat';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/linear_polymerization';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="API reference" href="../api/index.html" />
-    <link rel="prev" title="The lac operon" href="lac_operon.html" />
+    <link rel="next" title="The lac operon" href="lac_operon.html" />
+    <link rel="prev" title="Reversible binding" href="reversible_binding.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -284,9 +284,9 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="reversible_binding.html">Reversible binding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="linear_polymerization.html">Linear polymerization</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Linear polymerization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lac_operon.html">The lac operon</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chemostat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chemostat.html">Chemostat</a></li>
 </ul>
 </div>
 </nav></div>
@@ -330,7 +330,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chemostat</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Linear polymerization</span></li>
   </ul>
 </nav>
 </div>
@@ -347,15 +347,15 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Chemostat">
-<h1>Chemostat<a class="headerlink" href="#Chemostat" title="Link to this heading">#</a></h1>
-<p>A chemostat can maintain a concentration of nutrients in a container by flowing in and flowing out nutrients each at a constant rate. Here we will set up a simulatable chemostat with a clonal and unevolving unicellular organism, and adjust the flow rate to observe the effect on the growth rate of the cells. More specifically, we will assume that a cell <code class="docutils literal notranslate"><span class="pre">C</span></code> replicates following metabolism of three units of the nutrient <code class="docutils literal notranslate"><span class="pre">N</span></code>, and that cells die memorylessly at a constant stochastic rate.</p>
+  <section id="Linear-polymerization">
+<h1>Linear polymerization<a class="headerlink" href="#Linear-polymerization" title="Link to this heading">#</a></h1>
+<p>This example demonstrates a simple polymerization process in which monomers <code class="docutils literal notranslate"><span class="pre">M</span></code> can bind each other to form linear chains. There’s a lower rate of depolymerization, and chains can be terminated by capping agents <code class="docutils literal notranslate"><span class="pre">C</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
-<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -367,62 +367,94 @@
 
 <span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">from_ka</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    %init: 10 C(n{0})  // Start with a few cells</span>
+<span class="sd">    %init: 1000 M(l[.], r[.])</span>
 
-<span class="sd">    %obs: &#39;C&#39; |C()|</span>
+<span class="sd">    %obs: &#39;Free monomer&#39; |M(l[.], r[.])|</span>
 
-<span class="sd">    . -&gt; N() @ 1  // Nutrient inflow</span>
-<span class="sd">    N() -&gt; . @ 0.1  // Nutrient outflow</span>
+<span class="sd">    M(r[.]), M(l[.]) -&gt; M(r[1]), M(l[1]) @ 1  // Polymerization</span>
+<span class="sd">    M(r[1]), M(l[1]) -&gt; M(r[.]), M(l[.]) @ 0.1  // Depolymerization</span>
 
-<span class="sd">    // Metabolism</span>
-<span class="sd">    C(n{0}), N() -&gt; C(n{1}), . @ 0.5</span>
-<span class="sd">    C(n{1}), N() -&gt; C(n{2}), . @ 0.5</span>
-<span class="sd">    C(n{2}), N() -&gt; C(n{3}), . @ 0.5</span>
+<span class="sd">    // Chain capping</span>
+<span class="sd">    M(r[.]), C(m[.]) -&gt; M(r[1]), C(m[1]) @ 0.05</span>
+<span class="sd">    M(l[.]), C(m[.]) -&gt; M(l[1]), C(m[1]) @ 0.05</span>
 
-<span class="sd">    C(n{3}), . -&gt; C(n{0}), C(n{0}) @ 0.1 // Cell division</span>
-<span class="sd">    C() -&gt; . @ 0.01  // Cell death</span>
+<span class="sd">    // Cap removal</span>
+<span class="sd">    M(r[1]), C(m[1]) -&gt; M(r[.]), C(m[.]) @ 0.01</span>
+<span class="sd">    M(l[1]), C(m[1]) -&gt; M(l[.]), C(m[.]) @ 0.01</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>If we started with only, say, one cell, it would be reasonably likely that the population would die out before replicating sufficiently to virtually preclude extinction.</p>
-<p>Let’s start the chemostat and observe the population size:</p>
-<div class="nbinput docutils container">
+<p>Simulate for a bit:</p>
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
     <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/examples_chemostat_5_0.png" src="../_images/examples_chemostat_5_0.png" />
-</div>
-</div>
-<p>Now let’s increase inflow of the nutrient without changing the outflow rate and observe that the population size increases:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s2">&quot;. -&gt; N() @ 1&quot;</span><span class="p">)</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
-    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">polymer_len_plot</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">mixture</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">component</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Polymer length&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Count&quot;</span><span class="p">);</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Free monomers: </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;Free monomer&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">polymer_len_plot</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Free monomers: 0
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_chemostat_7_0.png" src="../_images/examples_chemostat_7_0.png" />
+<img alt="../_images/examples_linear_polymerization_5_1.png" src="../_images/examples_linear_polymerization_5_1.png" />
+</div>
+</div>
+<p>Now let’s add some of the capping agent:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">mixture</span><span class="o">.</span><span class="n">instantiate</span><span class="p">(</span><span class="s2">&quot;C(m[.])&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Free monomers: </span><span class="si">{</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;Free monomer&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">polymer_len_plot</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+Free monomers: 1
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_linear_polymerization_7_1.png" src="../_images/examples_linear_polymerization_7_1.png" />
 </div>
 </div>
 </section>
@@ -438,20 +470,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="lac_operon.html"
+       href="reversible_binding.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">The lac operon</p>
+        <p class="prev-next-title">Reversible binding</p>
       </div>
     </a>
     <a class="right-next"
-       href="../api/index.html"
+       href="lac_operon.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API reference</p>
+        <p class="prev-next-title">The lac operon</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
