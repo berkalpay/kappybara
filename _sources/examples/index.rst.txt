@@ -6,3 +6,4 @@ Examples
 
    reversible_binding
    lac_operon
+   chemostat

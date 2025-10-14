@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API reference &#8212; Kappybara</title>
+    <title>Chemostat &#8212; Kappybara</title>
   
   
   
@@ -31,6 +31,7 @@
 <link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -42,11 +43,13 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'api/index';</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/chemostat';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="kappybara.system" href="generated/kappybara.system.html" />
-    <link rel="prev" title="Chemostat" href="../examples/chemostat.html" />
+    <link rel="next" title="API reference" href="../api/index.html" />
+    <link rel="prev" title="The lac operon" href="lac_operon.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -125,15 +128,15 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
     Examples
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
     API reference
   </a>
 </li>
@@ -223,15 +226,15 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../examples/index.html">
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
     Examples
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api/index.html">
     API reference
   </a>
 </li>
@@ -279,18 +282,10 @@
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.system.html">kappybara.system</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.mixture.html">kappybara.mixture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.rule.html">kappybara.rule</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.pattern.html">kappybara.pattern</a></li>
-</ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.grammar.html">kappybara.grammar</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.algebra.html">kappybara.algebra</a></li>
-</ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="generated/kappybara.utils.html">kappybara.utils</a></li>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="reversible_binding.html">Reversible binding</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lac_operon.html">The lac operon</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chemostat</a></li>
 </ul>
 </div>
 </nav></div>
@@ -331,7 +326,10 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">API reference</span></li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chemostat</span></li>
   </ul>
 </nav>
 </div>
@@ -348,43 +346,83 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="api-reference">
-<h1>API reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/kappybara.system.html#module-kappybara.system" title="kappybara.system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.system</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/kappybara.mixture.html#module-kappybara.mixture" title="kappybara.mixture"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.mixture</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/kappybara.rule.html#module-kappybara.rule" title="kappybara.rule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.rule</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/kappybara.pattern.html#module-kappybara.pattern" title="kappybara.pattern"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.pattern</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+  <section id="Chemostat">
+<h1>Chemostat<a class="headerlink" href="#Chemostat" title="Link to this heading">#</a></h1>
+<p>A chemostat can maintain a concentration of nutrients in a container by flowing in and flowing out nutrients each at a constant rate. Here we will set up a simulatable chemostat with a clonal and unevolving unicellular organism, and adjust the flow rate to observe the effect on the growth rate of the cells. More specifically, we will assume that a cell <code class="docutils literal notranslate"><span class="pre">C</span></code> replicates following metabolism of three units of the nutrient <code class="docutils literal notranslate"><span class="pre">N</span></code>, and that cells die memorylessly at a constant stochastic rate.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
 </div>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/kappybara.grammar.html#module-kappybara.grammar" title="kappybara.grammar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.grammar</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/kappybara.algebra.html#module-kappybara.algebra" title="kappybara.algebra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.algebra</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/kappybara.utils.html#module-kappybara.utils" title="kappybara.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kappybara.utils</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">System</span>
+
+<span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">from_ka</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    %init: 10 C(n{0})  // Start with a few cells</span>
+
+<span class="sd">    %obs: &#39;C&#39; |C()|</span>
+
+<span class="sd">    . -&gt; N() @ 1  // Nutrient inflow</span>
+<span class="sd">    N() -&gt; . @ 0.1  // Nutrient outflow</span>
+
+<span class="sd">    // Metabolism</span>
+<span class="sd">    C(n{0}), N() -&gt; C(n{1}), . @ 0.5</span>
+<span class="sd">    C(n{1}), N() -&gt; C(n{2}), . @ 0.5</span>
+<span class="sd">    C(n{2}), N() -&gt; C(n{3}), . @ 0.5</span>
+
+<span class="sd">    C(n{3}), . -&gt; C(n{0}), C(n{0}) @ 0.1 // Cell division</span>
+<span class="sd">    C() -&gt; . @ 0.01  // Cell death</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>If we started with only, say, one cell, it would be reasonably likely that the population would die out before replicating sufficiently to virtually preclude extinction.</p>
+<p>Let’s start the chemostat and observe the population size:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_chemostat_5_0.png" src="../_images/examples_chemostat_5_0.png" />
+</div>
+</div>
+<p>Now let’s increase inflow of the nutrient without changing the outflow rate and observe that the population size increases:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s2">&quot;. -&gt; N() @ 1&quot;</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_chemostat_7_0.png" src="../_images/examples_chemostat_7_0.png" />
+</div>
 </div>
 </section>
 
@@ -399,20 +437,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../examples/chemostat.html"
+       href="lac_operon.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Chemostat</p>
+        <p class="prev-next-title">The lac operon</p>
       </div>
     </a>
     <a class="right-next"
-       href="generated/kappybara.system.html"
+       href="../api/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">kappybara.system</p>
+        <p class="prev-next-title">API reference</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
