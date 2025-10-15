@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chemostat &#8212; Kappybara</title>
+    <title>The prozone effect &#8212; Kappybara</title>
   
   
   
@@ -45,11 +45,11 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/chemostat';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/prozone_effect';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="API reference" href="../api/index.html" />
-    <link rel="prev" title="The lac operon" href="lac_operon.html" />
+    <link rel="next" title="Linear polymerization" href="linear_polymerization.html" />
+    <link rel="prev" title="Reversible binding" href="reversible_binding.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -284,10 +284,10 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="reversible_binding.html">Reversible binding</a></li>
-<li class="toctree-l1"><a class="reference internal" href="prozone_effect.html">The prozone effect</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">The prozone effect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="linear_polymerization.html">Linear polymerization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lac_operon.html">The lac operon</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chemostat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chemostat.html">Chemostat</a></li>
 </ul>
 </div>
 </nav></div>
@@ -331,7 +331,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Examples</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Chemostat</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The prozone effect</span></li>
   </ul>
 </nav>
 </div>
@@ -348,9 +348,9 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="Chemostat">
-<h1>Chemostat<a class="headerlink" href="#Chemostat" title="Link to this heading">#</a></h1>
-<p>A chemostat can maintain a concentration of nutrients in a container by flowing in and flowing out nutrients each at a constant rate. Here we will set up a simulatable chemostat with a clonal and unevolving unicellular organism, and adjust the flow rate to observe the effect on the growth rate of the cells. More specifically, we will assume that a cell <code class="docutils literal notranslate"><span class="pre">C</span></code> replicates following metabolism of three units of the nutrient <code class="docutils literal notranslate"><span class="pre">N</span></code>, and that cells die memorylessly at a constant stochastic rate.</p>
+  <section id="The-prozone-effect">
+<h1>The prozone effect<a class="headerlink" href="#The-prozone-effect" title="Link to this heading">#</a></h1>
+<p>The prozone effect, also called the hook effect, refers to when the abundance of a molecular complex first increases then decreases as the relative concentration of a constituent molecule <code class="docutils literal notranslate"><span class="pre">E</span></code> increases. In this example, we will say that a complex is composed of an <code class="docutils literal notranslate"><span class="pre">L</span></code> molecule, an <code class="docutils literal notranslate"><span class="pre">M</span></code> molecule, and an <code class="docutils literal notranslate"><span class="pre">E</span></code> molecule, which connects the former two together.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
@@ -368,32 +368,27 @@
 
 <span class="n">system</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="n">from_ka</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    %init: 10 C(n{0})  // Start with a few cells</span>
+<span class="sd">    %init: 100 L(e[.])</span>
+<span class="sd">    %init: 100 M(e[.])</span>
 
-<span class="sd">    %obs: &#39;C&#39; |C()|</span>
+<span class="sd">    %obs: &#39;E&#39; |E()|</span>
+<span class="sd">    %obs: &#39;Incomplete complexes&#39; |E(l[_], m[.])| + |E(l[.], m[_])|</span>
+<span class="sd">    %obs: &#39;Complete complexes&#39; |E(l[_], m[_])|</span>
 
-<span class="sd">    . -&gt; N() @ 1  // Nutrient inflow</span>
-<span class="sd">    N() -&gt; . @ 0.1  // Nutrient outflow</span>
-
-<span class="sd">    // Metabolism</span>
-<span class="sd">    C(n{0}), N() -&gt; C(n{1}), . @ 0.5</span>
-<span class="sd">    C(n{1}), N() -&gt; C(n{2}), . @ 0.5</span>
-<span class="sd">    C(n{2}), N() -&gt; C(n{3}), . @ 0.5</span>
-
-<span class="sd">    C(n{3}), . -&gt; C(n{0}), C(n{0}) @ 0.1 // Cell division</span>
-<span class="sd">    C() -&gt; . @ 0.01  // Cell death</span>
+<span class="sd">    E(l[.]), L(e[.]) &lt;-&gt; E(l[1]), L(e[1]) @ 1, 1  // Bind L to E</span>
+<span class="sd">    E(m[.]), M(e[.]) &lt;-&gt; E(m[1]), M(e[1]) @ 1, 1  // Bind M to E</span>
+<span class="sd">    . -&gt; E(l[.], m[.]) @ 1  // Inflow of E</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<p>If we started with only, say, one cell, it would be reasonably likely that the population would die out before replicating sufficiently to virtually preclude extinction.</p>
-<p>Let’s start the chemostat and observe the population size:</p>
+<p>We’ve set up the system so that there’s no <code class="docutils literal notranslate"><span class="pre">E</span></code> to start but that it flows in at a constant stochastic rate. Let’s now simulate while tracking the corresponding number of complexes:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">2</span><span class="p">:</span>
     <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
 <span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
 </pre></div>
@@ -403,29 +398,10 @@
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/examples_chemostat_5_0.png" src="../_images/examples_chemostat_5_0.png" />
+<img alt="../_images/examples_prozone_effect_4_0.png" src="../_images/examples_prozone_effect_4_0.png" />
 </div>
 </div>
-<p>Now let’s increase inflow of the nutrient without changing the outflow rate and observe that the population size increases:</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">system</span><span class="o">.</span><span class="n">add_rule</span><span class="p">(</span><span class="s2">&quot;. -&gt; N() @ 1&quot;</span><span class="p">)</span>
-
-<span class="k">while</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">3</span><span class="p">:</span>
-    <span class="n">system</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
-<span class="n">system</span><span class="o">.</span><span class="n">monitor</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<img alt="../_images/examples_chemostat_7_0.png" src="../_images/examples_chemostat_7_0.png" />
-</div>
-</div>
+<p>As we introduce more <code class="docutils literal notranslate"><span class="pre">E</span></code>, at first more complexes can be formed but eventually there are so many <code class="docutils literal notranslate"><span class="pre">E</span></code> that the other components of the complex become more likely to bind separate <code class="docutils literal notranslate"><span class="pre">E</span></code> molecules. The result is that the full complex is less likely to form.</p>
 </section>
 
 
@@ -439,20 +415,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="lac_operon.html"
+       href="reversible_binding.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">The lac operon</p>
+        <p class="prev-next-title">Reversible binding</p>
       </div>
     </a>
     <a class="right-next"
-       href="../api/index.html"
+       href="linear_polymerization.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">API reference</p>
+        <p class="prev-next-title">Linear polymerization</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
