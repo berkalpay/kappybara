@@ -10,6 +10,7 @@ Supported are
    * cached :class:`tracking <kappybara.mixture.Mixture.apply_update>` of rule embeddings for algorithmically efficient simulation :class:`updates <kappybara.system.System.update>`,
    * optional :class:`transfer <kappybara.system.System.update_via_kasim>` to `KaSim <https://github.com/Kappa-Dev/KappaTools>`_ for faster compiled execution.
 Visit the :doc:`examples <examples/index>` gallery to see how Kappybara can be used to simulate systems of molecular interactions such as :doc:`polymerization <examples/linear_polymerization>` and :doc:`gene regulation <examples/lac_operon>`.
+See the `language manual <https://kappalanguage.org/sites/kappalanguage.org/files/inline-files/Kappa_Manual.pdf>`_ for a detailed description of the Kappa language.
 
 Kappybara is available via pip:
 
