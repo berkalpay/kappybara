@@ -23,5 +23,6 @@ Kappybara is available via pip:
    :maxdepth: 2
    :hidden:
 
+   tutorial
    examples/index
    api/index

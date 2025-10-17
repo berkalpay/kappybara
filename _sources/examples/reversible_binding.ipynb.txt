@@ -73,7 +73,7 @@
             "cell_type": "markdown",
             "metadata": {},
             "source": [
-                "100 instances of molecules of type A and of type B, each with an empty binding domain x are created, and we track the number of AB complexes.\n",
+                "100 instances of molecules of type `A` and of type `B`, each with an empty binding domain `x`, are created, and we track the number of `AB` complexes.\n",
                 "\n",
                 "We're going to simulate this system and plot its behavior, marking certain times of interest. We'll first simulate until time 1:"
             ]
@@ -94,7 +94,7 @@
             "cell_type": "markdown",
             "metadata": {},
             "source": [
-                "We'll now manually instantiate 50 new A and B molecules each, start tracking the number of free A, and simulate until there are no more than 10 free A in the mixture:"
+                "We'll now manually instantiate 50 new `A` and `B` molecules each, start tracking the number of free `A`, and simulate until there are no more than 10 free `A` in the mixture:"
             ]
         },
         {
@@ -164,7 +164,8 @@
             "cell_type": "markdown",
             "metadata": {},
             "source": [
-                "Above it can be seen that the system equilibrates relatively early, new A is added, and the number of AB complexes increases."
+                "The system equilibrates relatively early.\n",
+                "Then new `A` is added and the number of `AB` complexes increases, reaching a higher equilibrium concentration."
             ]
         }
     ],
