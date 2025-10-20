@@ -116,16 +116,31 @@ rate : algebraic_expression
 
 variable_declaration : "%var:" declared_variable_name algebraic_expression
 declared_variable_name : LABEL
-!algebraic_expression : defined_constant
-                      | declared_variable_name
-                      | reserved_variable_name
-                      | binary_op_expression
-                      | "(" algebraic_expression ")"
-                      | unary_op_expression
-                      | list_op_expression
-                      | conditional_expression
-                      | SIGNED_FLOAT
-                      | SIGNED_INT
+?algebraic_expression: sum
+
+?sum: product
+    | sum PLUS product
+    | sum MINUS product
+
+?product: power
+    | product MULT power
+    | product DIV power
+    | product MOD power
+
+?power: atom
+    | power POW atom
+
+?atom:
+    | defined_constant
+    | declared_variable_name
+    | reserved_variable_name
+    | unary_op_expression
+    | list_op_expression
+    | conditional_expression
+    | SIGNED_FLOAT
+    | SIGNED_INT
+    | "(" algebraic_expression ")"
+
 reserved_variable_name : "[E]"    -> productive_events
                        | "[E-]"   -> null_events
                        | "[T]"    -> simulated_time
