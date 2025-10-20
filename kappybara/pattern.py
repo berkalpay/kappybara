@@ -514,6 +514,14 @@ class Component(Counted):
             return
         yield from self.embeddings(other, exact=True)
 
+    def automorphisms(self) -> Iterator[dict[Agent, Agent]]:
+        """Calls `self.isomorphisms` on itself.
+
+        Yields:
+            Valid isomorphisms from the component onto itself.
+        """
+        return self.isomorphisms(self)
+
     @property
     def diameter(self) -> int:
         """Get the maximum minimum shortest path between any two agents.
