@@ -119,16 +119,16 @@ declared_variable_name : LABEL
 !algebraic_expression: sum
 
 ?sum: product
-    | sum PLUS product
-    | sum MINUS product
+    | sum PLUS product   -> binary_op_expression
+    | sum MINUS product  -> binary_op_expression
 
 ?product: power
-    | product MULT power
-    | product DIV power
-    | product MOD power
+    | product MULT power -> binary_op_expression
+    | product DIV power  -> binary_op_expression
+    | product MOD power  -> binary_op_expression
 
 ?power: atom
-    | power POW atom
+    | power POW atom     -> binary_op_expression
 
 ?atom:
     | defined_constant
