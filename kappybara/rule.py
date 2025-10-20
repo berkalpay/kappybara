@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from math import prod
 from abc import ABC, abstractmethod
 from typing import Optional, Self, TYPE_CHECKING
+from functools import cached_property
+from copy import deepcopy
 
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, ComponentMixture, MixtureUpdate
@@ -169,6 +171,48 @@ class KappaRule(Rule):
             Kappa string representation of the rule.
         """
         return f"{self.left.kappa_str} -> {self.right.kappa_str} @ {self.stochastic_rate.kappa_str}"
+
+    @cached_property
+    def n_symmetries(self) -> int:
+        """The factor by which this rule will "overcount" embeddings into a mixture,
+        and thus the factor we default to dividing by when calculating rule activities.
+
+        In formal terms, this function computes the number of distinct automorphisms
+        of the graph containing the agents in both `left` and `right`, augmented with
+        edges between positionally corresponding agents.
+
+        If a rule pattern looks like "l1(...), l2(...) -> r1(...), r2(...)",
+        this method draws artifical edges between l1 and r1, and between l2 and r2,
+        then returns the number of symmetries of the resulting graph, by counting
+        how many ways you can map it onto itself.
+
+        Returns:
+            The number of symmetries exhibited by the rule.
+        """
+        left_agents = deepcopy(self.left.agents)
+        right_agents = deepcopy(self.right.agents)
+
+        for i in range(len(left_agents)):
+            l = left_agents[i]
+            r = right_agents[i]
+
+            l_site = Site("__temp__", "?", partner=None)
+            r_site = Site("__temp__", "?", partner=None)
+
+            l_site.agent = l
+            l_site.partner = r_site
+
+            r_site.agent = r
+            r_site.partner = l_site
+
+            l.interface["__temp__"] = l_site
+            r.interface["__temp__"] = r_site
+
+            print(l)
+            print(r)
+
+        pattern = Pattern(left_agents + right_agents)
+        return pattern.n_automorphisms()
 
     def rate(self, system: "System") -> float:
         """Evaluate the stochastic rate expression.
