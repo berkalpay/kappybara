@@ -1,5 +1,6 @@
 from collections import defaultdict
 from functools import cached_property
+from itertools import permutations
 from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
 from kappybara.utils import Counted, IndexedSet, Property
@@ -689,3 +690,37 @@ class Pattern:
             True if any agent is None or underspecified.
         """
         return any(agent is None or agent.underspecified for agent in self.agents)
+
+    def n_isomorphisms(self, other: Self) -> int:
+        """Counts the number of bijections which respect links in the site graph.
+
+        Note:
+            This method has (necssarily) exponential runtime in the number of
+            components; use with caution.
+
+        Args:
+            other: `Pattern` to count isomorphisms with.
+
+        Yields:
+            The number of isomorphisms between the `Patterns`.
+        """
+        if len(self.components) != len(other.components):
+            return 0
+
+        res = 0
+        for perm in permutations(other.components):
+            temp = 1
+            for l, r in zip(self.components, perm):
+                temp *= len(list(l.isomorphisms(r)))
+
+            res += temp
+
+        return res
+
+    def n_automorphisms(self) -> int:
+        """Calls `self.n_isomorphisms` on itself.
+
+        Yields:
+            The number of isomorphisms from the pattern onto itself.
+        """
+        return self.n_isomorphisms(self)
