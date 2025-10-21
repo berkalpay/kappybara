@@ -221,7 +221,6 @@ class System:
             variables: Dictionary of variable expressions.
             monitor: Whether to enable monitoring of simulation history.
         """
-
         self.rules = (
             {} if rules is None else {f"r{i}": rule for i, rule in enumerate(rules)}
         )

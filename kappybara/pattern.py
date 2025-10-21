@@ -520,9 +520,9 @@ class Component(Counted):
         yield from self.embeddings(other, exact=True)
 
     def automorphisms(self) -> Iterator[dict[Agent, Agent]]:
-        """Calls `self.isomorphisms` on itself.
+        """Find the automorphisms of the component.
 
-        Yields:
+        Returns:
             Valid isomorphisms from the component onto itself.
         """
         return self.isomorphisms(self)
@@ -534,8 +534,10 @@ class Component(Counted):
         Note:
             This uses a cached result, and thus should only be used
             for static components, i.e. the ones in rules and observables.
-
             Do not use this for components in a mixture that can change.
+
+        Returns:
+            The number of isomorphisms of the component onto itself.
         """
         return len(list(self.automorphisms()))
 
@@ -711,14 +713,13 @@ class Pattern:
         """Counts the number of bijections which respect links in the site graph.
 
         Note:
-            This method has (necssarily) exponential runtime in the number of
-            components; use with caution.
+            Runtime is exponential in the number of components; use with caution.
 
         Args:
             other: `Pattern` to count isomorphisms with.
 
-        Yields:
-            The number of isomorphisms between the `Patterns`.
+        Returns:
+            The number of isomorphisms between the patterns.
         """
         if len(self.components) != len(other.components):
             return 0
@@ -728,15 +729,13 @@ class Pattern:
             temp = 1
             for l, r in zip(self.components, perm):
                 temp *= len(list(l.isomorphisms(r)))
-
             res += temp
-
         return res
 
     def n_automorphisms(self) -> int:
-        """Calls `self.n_isomorphisms` on itself.
+        """Counts the number of automorphisms of the pattern.
 
-        Yields:
+        Returns:
             The number of isomorphisms from the pattern onto itself.
         """
         return self.n_isomorphisms(self)

@@ -200,5 +200,4 @@ def test_simple_bimolecular_rule_application(n_copies):
 )
 def test_rule_symmetries(rule_str, n_symmetries_expected):
     rule = KappaRule.from_kappa(f"{rule_str} @ 1.0")
-    print(rule)
     assert rule.n_symmetries == n_symmetries_expected

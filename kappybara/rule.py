@@ -180,7 +180,8 @@ class KappaRule(Rule):
 
         Returns:
             Product of number of embeddings and reaction rate, accounting
-            for rule symmetry."""
+            for rule symmetry.
+        """
         return (
             self.n_embeddings(system.mixture) // self.n_symmetries * self.rate(system)
         )
@@ -196,8 +197,8 @@ class KappaRule(Rule):
 
         If a rule pattern looks like "l1(...), l2(...) -> r1(...), r2(...)",
         this method draws artifical edges between l1 and r1, and between l2 and r2,
-        then returns the number of symmetries of the resulting graph, by counting
-        how many ways you can map it onto itself.
+        then returns the number of symmetries of the resulting graph by counting
+        how many ways it can be mapped onto itself.
 
         Returns:
             The number of symmetries exhibited by the rule.
@@ -222,7 +223,6 @@ class KappaRule(Rule):
             r.interface["__temp__"] = r_site
 
         pattern = Pattern(left_agents + right_agents)
-        print(pattern.kappa_str)
         return pattern.n_automorphisms()
 
     def rate(self, system: "System") -> float:
