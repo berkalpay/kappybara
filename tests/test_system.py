@@ -44,6 +44,22 @@ def test_basic_system():
             counts[obs_name].append(system[obs_name])
 
 
+def test_basic_observable_symmetry():
+    system = System.from_ka(
+        """
+        %init: 100 V(v[.])
+
+        %obs: 'monomer' |V(v[.])|
+        %obs: 'dimer' |V(v[1]), V(v[1])|
+        %obs: 'total' 2 * |V(v[1]), V(v[1])| + |V(v[.])|
+
+        V(v[.]), V(v[.]) <-> V(v[1]), V(v[1]) @ 1.0, 1.0
+        """
+    )
+
+    assert system["total"] == 100
+
+
 def test_system_from_kappa():
     system = System.from_ka(
         """
