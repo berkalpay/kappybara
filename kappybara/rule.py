@@ -188,14 +188,10 @@ class KappaRule(Rule):
 
     @cached_property
     def n_symmetries(self) -> int:
-        """The factor by which this rule will "overcount" embeddings into a mixture,
-        and thus the factor we default to dividing by when calculating rule activities.
-
-        In formal terms, this function computes the number of distinct automorphisms
-        of the graph containing the agents in both `left` and `right`, augmented with
-        edges between positionally corresponding agents.
-
-        If a rule pattern looks like "l1(...), l2(...) -> r1(...), r2(...)",
+        """
+        The number of distinct automorphisms of the graph containing both left- and
+        right-hand side agents, augmented with edges between positionally corresponding agents.
+        For example, if a rule looks like "l1(...), l2(...) -> r1(...), r2(...)",
         this method draws artifical edges between l1 and r1, and between l2 and r2,
         then returns the number of symmetries of the resulting graph by counting
         how many ways it can be mapped onto itself.
