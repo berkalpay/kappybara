@@ -223,7 +223,7 @@ class KappaRule(Rule):
             r.interface["__temp__"] = r_site
 
         pattern = Pattern(left_agents + right_agents)
-        return pattern.n_automorphisms()
+        return pattern.n_isomorphisms(pattern)
 
     def rate(self, system: "System") -> float:
         """Evaluate the stochastic rate expression.

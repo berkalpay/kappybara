@@ -519,14 +519,6 @@ class Component(Counted):
             return
         yield from self.embeddings(other, exact=True)
 
-    def automorphisms(self) -> Iterator[dict[Agent, Agent]]:
-        """Find the automorphisms of the component.
-
-        Returns:
-            Valid isomorphisms from the component onto itself.
-        """
-        return self.isomorphisms(self)
-
     @cached_property
     def n_automorphisms(self) -> int:
         """Returns the number of automorphisms of the component.
@@ -539,7 +531,7 @@ class Component(Counted):
         Returns:
             The number of isomorphisms of the component onto itself.
         """
-        return len(list(self.automorphisms()))
+        return len(list(self.isomorphisms(self)))
 
     @property
     def diameter(self) -> int:
@@ -731,11 +723,3 @@ class Pattern:
                 temp *= len(list(l.isomorphisms(r)))
             res += temp
         return res
-
-    def n_automorphisms(self) -> int:
-        """Counts the number of automorphisms of the pattern.
-
-        Returns:
-            The number of isomorphisms from the pattern onto itself.
-        """
-        return self.n_isomorphisms(self)
