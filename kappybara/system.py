@@ -28,6 +28,7 @@ class System:
         monitor: Optional Monitor object for tracking simulation history.
         time: Current simulation time.
         tallies: Dictionary tracking rule application counts.
+        correct_rule_symmetries: Option for adjusting rule reactivities by a symmetry factor.
     """
 
     mixture: Mixture
@@ -211,6 +212,7 @@ class System:
         observables: Optional[dict[str, Expression]] = None,
         variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
+        correct_rule_symmetries: bool = True,
     ):
         """Initialize a new System.
 
@@ -254,6 +256,8 @@ class System:
             self.monitor.update()
         else:
             self.monitor = None
+
+        self.correct_rule_symmetries = correct_rule_symmetries
 
     def __str__(self):
         return self.kappa_str

@@ -172,6 +172,24 @@ class KappaRule(Rule):
         """
         return f"{self.left.kappa_str} -> {self.right.kappa_str} @ {self.stochastic_rate.kappa_str}"
 
+    def reactivity(self, system: "System") -> float:
+        """Calculate the total reactivity of this rule in the given system.
+
+        Args:
+            system: System containing the mixture and parameters.
+
+        Returns:
+            Product of number of embeddings and reaction rate (accounting
+            for rule symmetry if enabled in `system`)
+        """
+        print(self)
+        n_embeddings = self.n_embeddings(system.mixture)
+
+        if system.correct_rule_symmetries:
+            n_embeddings /= self.n_symmetries
+
+        return n_embeddings * self.rate(system)
+
     @cached_property
     def n_symmetries(self) -> int:
         """The factor by which this rule will "overcount" embeddings into a mixture,
@@ -208,10 +226,8 @@ class KappaRule(Rule):
             l.interface["__temp__"] = l_site
             r.interface["__temp__"] = r_site
 
-            print(l)
-            print(r)
-
         pattern = Pattern(left_agents + right_agents)
+        print(pattern.kappa_str)
         return pattern.n_automorphisms()
 
     def rate(self, system: "System") -> float:
