@@ -474,6 +474,10 @@ class Component(Counted):
                     b_site = b[a_site.label]
 
                     if a_site.coupled:
+                        if not b_site.coupled:
+                            root_failed = True
+                            break
+
                         a_partner = a_site.partner.agent
                         b_partner = b_site.partner.agent
 
