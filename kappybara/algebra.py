@@ -218,7 +218,10 @@ class Expression:
                     raise ValueError(
                         f"{self} needs a System to evaluate pattern {component}"
                     )
-                return len(system.mixture.embeddings(component))
+                return (
+                    len(system.mixture.embeddings(component))
+                    // component.n_automorphisms
+                )
             else:
                 raise NotImplementedError(
                     f"Reserved variable {value.type} not implemented yet."

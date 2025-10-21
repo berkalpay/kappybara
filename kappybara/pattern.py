@@ -1,5 +1,6 @@
 from collections import defaultdict
 from functools import cached_property
+from itertools import permutations
 from typing import Self, Optional, Iterator, Iterable, Union, NamedTuple, TYPE_CHECKING
 
 from kappybara.utils import Counted, IndexedSet, Property
@@ -473,6 +474,10 @@ class Component(Counted):
                     b_site = b[a_site.label]
 
                     if a_site.coupled:
+                        if not b_site.coupled:
+                            root_failed = True
+                            break
+
                         a_partner = a_site.partner.agent
                         b_partner = b_site.partner.agent
 
@@ -513,6 +518,20 @@ class Component(Counted):
         if len(self.agents) != len(other.agents):
             return
         yield from self.embeddings(other, exact=True)
+
+    @cached_property
+    def n_automorphisms(self) -> int:
+        """Returns the number of automorphisms of the component.
+
+        Note:
+            This uses a cached result, and thus should only be used
+            for static components, i.e. the ones in rules and observables.
+            Do not use this for components in a mixture that can change.
+
+        Returns:
+            The number of isomorphisms of the component onto itself.
+        """
+        return len(list(self.isomorphisms(self)))
 
     @property
     def diameter(self) -> int:
@@ -681,3 +700,26 @@ class Pattern:
             True if any agent is None or underspecified.
         """
         return any(agent is None or agent.underspecified for agent in self.agents)
+
+    def n_isomorphisms(self, other: Self) -> int:
+        """Counts the number of bijections which respect links in the site graph.
+
+        Note:
+            Runtime is exponential in the number of components; use with caution.
+
+        Args:
+            other: `Pattern` to count isomorphisms with.
+
+        Returns:
+            The number of isomorphisms between the patterns.
+        """
+        if len(self.components) != len(other.components):
+            return 0
+
+        res = 0
+        for perm in permutations(other.components):
+            temp = 1
+            for l, r in zip(self.components, perm):
+                temp *= len(list(l.isomorphisms(r)))
+            res += temp
+        return res

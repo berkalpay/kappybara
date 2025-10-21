@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from math import prod
 from abc import ABC, abstractmethod
 from typing import Optional, Self, TYPE_CHECKING
+from functools import cached_property
+from copy import deepcopy
 
 from kappybara.pattern import Pattern, Component, Agent, Site
 from kappybara.mixture import Mixture, ComponentMixture, MixtureUpdate
@@ -170,6 +172,55 @@ class KappaRule(Rule):
         """
         return f"{self.left.kappa_str} -> {self.right.kappa_str} @ {self.stochastic_rate.kappa_str}"
 
+    def reactivity(self, system: "System") -> float:
+        """Calculate the total reactivity of this rule in the given system.
+
+        Args:
+            system: System containing the mixture and parameters.
+
+        Returns:
+            Product of number of embeddings and reaction rate, accounting
+            for rule symmetry.
+        """
+        return (
+            self.n_embeddings(system.mixture) // self.n_symmetries * self.rate(system)
+        )
+
+    @cached_property
+    def n_symmetries(self) -> int:
+        """
+        The number of distinct automorphisms of the graph containing both left- and
+        right-hand side agents, augmented with edges between positionally corresponding agents.
+        For example, if a rule looks like "l1(...), l2(...) -> r1(...), r2(...)",
+        this method draws artifical edges between l1 and r1, and between l2 and r2,
+        then returns the number of symmetries of the resulting graph by counting
+        how many ways it can be mapped onto itself.
+
+        Returns:
+            The number of symmetries exhibited by the rule.
+        """
+        left_agents = deepcopy(self.left.agents)
+        right_agents = deepcopy(self.right.agents)
+
+        for i in range(len(left_agents)):
+            l = left_agents[i]
+            r = right_agents[i]
+
+            l_site = Site("__temp__", "?", partner=None)
+            r_site = Site("__temp__", "?", partner=None)
+
+            l_site.agent = l
+            l_site.partner = r_site
+
+            r_site.agent = r
+            r_site.partner = l_site
+
+            l.interface["__temp__"] = l_site
+            r.interface["__temp__"] = r_site
+
+        pattern = Pattern(left_agents + right_agents)
+        return pattern.n_isomorphisms(pattern)
+
     def rate(self, system: "System") -> float:
         """Evaluate the stochastic rate expression.
 
@@ -183,6 +234,10 @@ class KappaRule(Rule):
 
     def n_embeddings(self, mixture: Mixture) -> int:
         """Count embeddings in the mixture.
+
+        Note:
+            This doesn't do any symmetry correction, though `System`
+            applies this correction when calculating rule reactivities.
 
         Args:
             mixture: Current mixture state.

@@ -188,3 +188,16 @@ def test_simple_bimolecular_rule_application(n_copies):
         system.mixture.apply_update(update)
         assert rule1.n_embeddings(system.mixture) == 2 * comb(n_copies - 2 * i, 2)
         assert system["o0"] == i
+
+
+@pytest.mark.parametrize(
+    "rule_str, n_symmetries_expected",
+    [
+        ("A(a[1], b{u}), A(a[1], b{u}) -> A(), A()", 2),
+        ("A(a[1], b{u}), A(a[1], b{u}) -> A(b{u}), A(b{p})", 1),
+        ("A(x[.]), B(x[.]) -> A(x[1]), B(x[1])", 1),
+    ],
+)
+def test_rule_symmetries(rule_str, n_symmetries_expected):
+    rule = KappaRule.from_kappa(f"{rule_str} @ 1.0")
+    assert rule.n_symmetries == n_symmetries_expected
