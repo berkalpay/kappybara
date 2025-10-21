@@ -186,7 +186,7 @@ class KappaRule(Rule):
         n_embeddings = self.n_embeddings(system.mixture)
 
         if system.correct_symmetries:
-            n_embeddings /= self.n_symmetries
+            n_embeddings //= self.n_symmetries
 
         return n_embeddings * self.rate(system)
 
@@ -243,6 +243,11 @@ class KappaRule(Rule):
 
     def n_embeddings(self, mixture: Mixture) -> int:
         """Count embeddings in the mixture.
+
+        Note:
+            This doesn't do any symmetry correction, although `System`
+            will apply this correction by default when calculating final
+            rule reactivities (see the `reactivity` method above).
 
         Args:
             mixture: Current mixture state.
