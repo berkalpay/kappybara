@@ -712,6 +712,23 @@ in a mixture and potentially between rule patterns.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="kappybara.pattern.Component.n_automorphisms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_automorphisms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#kappybara.pattern.Component.n_automorphisms" title="Link to this definition">#</a></dt>
+<dd><p>Returns the number of automorphisms of the component.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This uses a cached result, and thus should only be used
+for static components, i.e. the ones in rules and observables.
+Do not use this for components in a mixture that can change.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of isomorphisms of the component onto itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1">
 <span class="sig-name descname"><span class="pre">n_copies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#id1" title="Link to this definition">#</a></dt>
@@ -805,6 +822,27 @@ in a mixture and potentially between rule patterns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Kappa string representation of the pattern.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="kappybara.pattern.Pattern.n_isomorphisms">
+<span class="sig-name descname"><span class="pre">n_isomorphisms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/kappybara/pattern.html#Pattern.n_isomorphisms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#kappybara.pattern.Pattern.n_isomorphisms" title="Link to this definition">#</a></dt>
+<dd><p>Counts the number of bijections which respect links in the site graph.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Runtime is exponential in the number of components; use with caution.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>Self</em>) – <cite>Pattern</cite> to count isomorphisms with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of isomorphisms between the patterns.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>

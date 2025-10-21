@@ -345,6 +345,7 @@
   <h1>Source code for kappybara.pattern</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">permutations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">NamedTuple</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">kappybara.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counted</span><span class="p">,</span> <span class="n">IndexedSet</span><span class="p">,</span> <span class="n">Property</span>
@@ -855,6 +856,10 @@
                     <span class="n">b_site</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="n">a_site</span><span class="o">.</span><span class="n">label</span><span class="p">]</span>
 
                     <span class="k">if</span> <span class="n">a_site</span><span class="o">.</span><span class="n">coupled</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">b_site</span><span class="o">.</span><span class="n">coupled</span><span class="p">:</span>
+                            <span class="n">root_failed</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+
                         <span class="n">a_partner</span> <span class="o">=</span> <span class="n">a_site</span><span class="o">.</span><span class="n">partner</span><span class="o">.</span><span class="n">agent</span>
                         <span class="n">b_partner</span> <span class="o">=</span> <span class="n">b_site</span><span class="o">.</span><span class="n">partner</span><span class="o">.</span><span class="n">agent</span>
 
@@ -899,6 +904,20 @@
             <span class="k">return</span>
         <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">embeddings</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
+
+    <span class="nd">@cached_property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_automorphisms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the number of automorphisms of the component.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            This uses a cached result, and thus should only be used</span>
+<span class="sd">            for static components, i.e. the ones in rules and observables.</span>
+<span class="sd">            Do not use this for components in a mixture that can change.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The number of isomorphisms of the component onto itself.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isomorphisms</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">diameter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1075,7 +1094,33 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            True if any agent is None or underspecified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">agent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">agent</span><span class="o">.</span><span class="n">underspecified</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">agent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">agent</span><span class="o">.</span><span class="n">underspecified</span> <span class="k">for</span> <span class="n">agent</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Pattern.n_isomorphisms">
+<a class="viewcode-back" href="../../api/generated/kappybara.pattern.html#kappybara.pattern.Pattern.n_isomorphisms">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_isomorphisms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Counts the number of bijections which respect links in the site graph.</span>
+
+<span class="sd">        Note:</span>
+<span class="sd">            Runtime is exponential in the number of components; use with caution.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            other: `Pattern` to count isomorphisms with.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The number of isomorphisms between the patterns.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">components</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">perm</span> <span class="ow">in</span> <span class="n">permutations</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">components</span><span class="p">):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">l</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">,</span> <span class="n">perm</span><span class="p">):</span>
+                <span class="n">temp</span> <span class="o">*=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">isomorphisms</span><span class="p">(</span><span class="n">r</span><span class="p">)))</span>
+            <span class="n">res</span> <span class="o">+=</span> <span class="n">temp</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+</div>
 
 </pre></div>
 

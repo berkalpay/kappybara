@@ -512,6 +512,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IndexedSet</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get embeddings of a tracked component.</span>
 
+<span class="sd">        Notes:</span>
+<span class="sd">            Returns the number of matches directly returned</span>
+<span class="sd">            by subgraph isomorphism, i.e. not accounting for symmetries.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            component: Component to get embeddings for.</span>
 
