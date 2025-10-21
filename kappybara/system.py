@@ -38,6 +38,7 @@ class System:
     monitor: Optional["Monitor"]
     time: float
     tallies: defaultdict[str, dict[str, int]]
+    correct_rule_symmetries: bool
 
     @classmethod
     def read_ka(cls, filepath: str) -> Self:
@@ -53,11 +54,12 @@ class System:
             return cls.from_ka(f.read())
 
     @classmethod
-    def from_ka(cls, ka_str: str) -> Self:
+    def from_ka(cls, ka_str: str, correct_rule_symmetries=True) -> Self:
         """Create a System from a Kappa (.ka style) string.
 
         Args:
             ka_str: Kappa language string containing a system definition.
+            correct_rule_symmetries: Whether to adjust rule reactivities by a symmetry factor.
 
         Returns:
             A new System instance parsed from the string.
@@ -146,7 +148,13 @@ class System:
             else:
                 raise TypeError(f"Unsupported input type: {tag}")
 
-        system = cls(None, rules, observables, variables)
+        system = cls(
+            None,
+            rules,
+            observables,
+            variables,
+            correct_rule_symmetries=correct_rule_symmetries,
+        )
         for init in inits:
             system.mixture.instantiate(init[1], int(init[0].evaluate(system)))
         return system
@@ -158,6 +166,7 @@ class System:
         rules: Optional[Iterable[str]] = None,
         observables: Optional[list[str] | dict[str, str]] = None,
         variables: Optional[dict[str, str]] = None,
+        correct_rule_symmetries: bool = True,
         *args,
         **kwargs,
     ) -> Self:
@@ -168,6 +177,7 @@ class System:
             rules: Iterable of rule strings in Kappa format.
             observables: List of observable expressions or dict mapping names to expressions.
             variables: Dictionary mapping variable names to expressions.
+            correct_rule_symmetries: Whether to adjust rule reactivities by a symmetry factor.
             *args: Additional arguments passed to System constructor.
             **kwargs: Additional keyword arguments passed to System constructor.
 
@@ -201,6 +211,7 @@ class System:
             real_rules,
             real_observables,
             real_variables,
+            correct_rule_symmetries=correct_rule_symmetries,
             *args,
             **kwargs,
         )
