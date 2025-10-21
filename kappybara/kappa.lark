@@ -116,16 +116,31 @@ rate : algebraic_expression
 
 variable_declaration : "%var:" declared_variable_name algebraic_expression
 declared_variable_name : LABEL
-!algebraic_expression : defined_constant
-                      | declared_variable_name
-                      | reserved_variable_name
-                      | binary_op_expression
-                      | "(" algebraic_expression ")"
-                      | unary_op_expression
-                      | list_op_expression
-                      | conditional_expression
-                      | SIGNED_FLOAT
-                      | SIGNED_INT
+!algebraic_expression: sum
+
+?sum: product
+    | sum PLUS product   -> binary_op_expression
+    | sum MINUS product  -> binary_op_expression
+
+?product: power
+    | product MULT power -> binary_op_expression
+    | product DIV power  -> binary_op_expression
+    | product MOD power  -> binary_op_expression
+
+?power: atom
+    | power POW atom     -> binary_op_expression
+
+?atom:
+    | defined_constant
+    | declared_variable_name
+    | reserved_variable_name
+    | unary_op_expression
+    | list_op_expression
+    | conditional_expression
+    | SIGNED_FLOAT
+    | SIGNED_INT
+    | "(" algebraic_expression ")"
+
 reserved_variable_name : "[E]"    -> productive_events
                        | "[E-]"   -> null_events
                        | "[T]"    -> simulated_time
@@ -145,8 +160,6 @@ reserved_variable_name : "[E]"    -> productive_events
 
 unary_op_expression : unary_op "(" algebraic_expression ")"
 unary_op : LOG | EXP | SIN | COS | TAN | SQRT
-binary_op_expression : algebraic_expression binary_op algebraic_expression
-binary_op : PLUS | MINUS |  MULT | DIV | POW | MOD
 defined_constant : PI
 list_op_expression: list_op "(" algebraic_expression ")" "(" algebraic_expression ")"
 list_op : MAX | MIN
