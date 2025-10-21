@@ -234,6 +234,8 @@ class System:
             variables: Dictionary of variable expressions.
             monitor: Whether to enable monitoring of simulation history.
         """
+        self.correct_rule_symmetries = correct_rule_symmetries
+
         self.rules = (
             {} if rules is None else {f"r{i}": rule for i, rule in enumerate(rules)}
         )
@@ -267,8 +269,6 @@ class System:
             self.monitor.update()
         else:
             self.monitor = None
-
-        self.correct_rule_symmetries = correct_rule_symmetries
 
     def __str__(self):
         return self.kappa_str

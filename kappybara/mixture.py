@@ -148,6 +148,12 @@ class Mixture:
     def embeddings(self, component: Component) -> IndexedSet[Embedding]:
         """Get embeddings of a tracked component.
 
+        Notes:
+            This always returns the number of matches directly returned
+            by subgraph isomorphism, i.e., it does not account for rule
+            symmetries. The default system behavior is to do this automatically,
+            but if you are using this function directly, be awere of this.
+
         Args:
             component: Component to get embeddings for.
 
