@@ -220,7 +220,7 @@ class Expression:
                     )
 
                 res = len(system.mixture.embeddings(component))
-                if system.correct_rule_symmetries:
+                if system.correct_symmetries:
                     res //= len(list(component.automorphisms()))
 
                 return res

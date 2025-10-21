@@ -185,7 +185,7 @@ class KappaRule(Rule):
         print(self)
         n_embeddings = self.n_embeddings(system.mixture)
 
-        if system.correct_rule_symmetries:
+        if system.correct_symmetries:
             n_embeddings /= self.n_symmetries
 
         return n_embeddings * self.rate(system)

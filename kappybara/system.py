@@ -28,7 +28,8 @@ class System:
         monitor: Optional Monitor object for tracking simulation history.
         time: Current simulation time.
         tallies: Dictionary tracking rule application counts.
-        correct_rule_symmetries: Option for adjusting rule reactivities by a symmetry factor.
+        correct_symmetries: Whether to adjust rule and observable
+                            embedding counts by a symmetry factor.
     """
 
     mixture: Mixture
@@ -38,7 +39,7 @@ class System:
     monitor: Optional["Monitor"]
     time: float
     tallies: defaultdict[str, dict[str, int]]
-    correct_rule_symmetries: bool
+    correct_symmetries: bool
 
     @classmethod
     def read_ka(cls, filepath: str) -> Self:
@@ -54,12 +55,13 @@ class System:
             return cls.from_ka(f.read())
 
     @classmethod
-    def from_ka(cls, ka_str: str, correct_rule_symmetries=True) -> Self:
+    def from_ka(cls, ka_str: str, correct_symmetries=True) -> Self:
         """Create a System from a Kappa (.ka style) string.
 
         Args:
             ka_str: Kappa language string containing a system definition.
-            correct_rule_symmetries: Whether to adjust rule reactivities by a symmetry factor.
+            correct_symmetries: Whether to adjust rule and observable
+                                embedding counts by a symmetry factor.
 
         Returns:
             A new System instance parsed from the string.
@@ -153,7 +155,7 @@ class System:
             rules,
             observables,
             variables,
-            correct_rule_symmetries=correct_rule_symmetries,
+            correct_symmetries=correct_symmetries,
         )
         for init in inits:
             system.mixture.instantiate(init[1], int(init[0].evaluate(system)))
@@ -166,7 +168,7 @@ class System:
         rules: Optional[Iterable[str]] = None,
         observables: Optional[list[str] | dict[str, str]] = None,
         variables: Optional[dict[str, str]] = None,
-        correct_rule_symmetries: bool = True,
+        correct_symmetries: bool = True,
         *args,
         **kwargs,
     ) -> Self:
@@ -177,7 +179,8 @@ class System:
             rules: Iterable of rule strings in Kappa format.
             observables: List of observable expressions or dict mapping names to expressions.
             variables: Dictionary mapping variable names to expressions.
-            correct_rule_symmetries: Whether to adjust rule reactivities by a symmetry factor.
+            correct_symmetries: Whether to adjust rule and observable embedding counts
+                                by a symmetry factor.
             *args: Additional arguments passed to System constructor.
             **kwargs: Additional keyword arguments passed to System constructor.
 
@@ -211,7 +214,7 @@ class System:
             real_rules,
             real_observables,
             real_variables,
-            correct_rule_symmetries=correct_rule_symmetries,
+            correct_symmetries=correct_symmetries,
             *args,
             **kwargs,
         )
@@ -223,7 +226,7 @@ class System:
         observables: Optional[dict[str, Expression]] = None,
         variables: Optional[dict[str, Expression]] = None,
         monitor: bool = True,
-        correct_rule_symmetries: bool = True,
+        correct_symmetries: bool = True,
     ):
         """Initialize a new System.
 
@@ -233,8 +236,10 @@ class System:
             observables: Dictionary of observable expressions.
             variables: Dictionary of variable expressions.
             monitor: Whether to enable monitoring of simulation history.
+            correct_symmetries: Whether to adjust rule and observable embedding counts
+                                by a symmetry factor.
         """
-        self.correct_rule_symmetries = correct_rule_symmetries
+        self.correct_symmetries = correct_symmetries
 
         self.rules = (
             {} if rules is None else {f"r{i}": rule for i, rule in enumerate(rules)}
