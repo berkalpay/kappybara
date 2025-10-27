@@ -202,21 +202,18 @@ class KappaRule(Rule):
         left_agents = deepcopy(self.left.agents)
         right_agents = deepcopy(self.right.agents)
 
-        for i in range(len(left_agents)):
-            l = left_agents[i]
-            r = right_agents[i]
+        for l, r in zip(left_agents, right_agents):
+            if l is not None and r is not None:
+                l_site = Site("__temp__", "?", partner=None)
+                r_site = Site("__temp__", "?", partner=None)
 
-            l_site = Site("__temp__", "?", partner=None)
-            r_site = Site("__temp__", "?", partner=None)
+                l_site.agent = l
+                l_site.partner = r_site
+                l.interface["__temp__"] = l_site
 
-            l_site.agent = l
-            l_site.partner = r_site
-
-            r_site.agent = r
-            r_site.partner = l_site
-
-            l.interface["__temp__"] = l_site
-            r.interface["__temp__"] = r_site
+                r_site.agent = r
+                r_site.partner = l_site
+                r.interface["__temp__"] = r_site
 
         pattern = Pattern(left_agents + right_agents)
         return pattern.n_isomorphisms(pattern)
