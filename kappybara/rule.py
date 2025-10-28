@@ -182,9 +182,7 @@ class KappaRule(Rule):
             Product of number of embeddings and reaction rate, accounting
             for rule symmetry.
         """
-        return (
-            self.n_embeddings(system.mixture) // self.n_symmetries * self.rate(system)
-        )
+        return self.n_embeddings(system.mixture) * self.rate(system)
 
     @cached_property
     def n_symmetries(self) -> int:
