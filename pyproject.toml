@@ -10,6 +10,12 @@ dependencies = [
     "matplotlib>=3.10.3",
 ]
 
+[project.urls]
+Homepage = "https://kappybara.io"
+Documentation = "https://kappybara.io/api/index.html"
+Repository = "https://github.com/berkalpay/kappybara"
+Issues = "https://github.com/berkalpay/kappybara/issues"
+
 [tool.setuptools.package-data]
 kappybara = ["*.lark"]
 
