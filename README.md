@@ -1,5 +1,7 @@
 # kappybara
 
+[![PyPI](https://img.shields.io/pypi/v/kappybara)](https://pypi.org/project/kappybara)
+
 Kappybara is a Python package for working with rule-based models.
 It supports simulation and analysis of a wide variety of systems whose individual components interact as described by rules that transform these components in specified ways and at specified rates.
 See our website [kappybara.io](https://kappybara.io) for a tutorial, examples, and documentation.
