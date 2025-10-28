@@ -473,6 +473,12 @@ class Component(Counted):
                     break
 
                 for a_site in a:
+                    if a_site.label not in b.interface:
+                        if not a_site.undetermined:
+                            root_failed = True
+                            break
+                        else:
+                            continue
                     b_site = b[a_site.label]
 
                     if a_site.coupled:
