@@ -304,11 +304,13 @@ class Agent(Counted):
         b_sites_leftover = set(other.interface)
         for site_name, a_site in self.interface.items():
             # Check that `b` has a site with the same name and state
-            if site_name not in other.interface and not a_site.undetermined:
-                return False
-            b_sites_leftover.remove(site_name)
-            if a_site.state != other[site_name].state:
-                return False
+            if site_name in other.interface:
+                b_sites_leftover.remove(site_name)
+                if a_site.state != other[site_name].state:
+                    return False
+            else:
+                if not a_site.undetermined:
+                    return False
 
         # Check that sites in `other` not mentioned in `self`are undetermined
         return all(other[site_name].undetermined for site_name in b_sites_leftover)
