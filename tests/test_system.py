@@ -47,17 +47,15 @@ def test_basic_system():
 def test_basic_observable_symmetry():
     system = System.from_ka(
         """
+        %init: 1 V(v[1]), V(v[1])
         %init: 100 V(v[.])
-
-        %obs: 'monomer' |V(v[.])|
+        
         %obs: 'dimer' |V(v[1]), V(v[1])|
-        %obs: 'total' 2 * |V(v[1]), V(v[1])| + |V(v[.])|
-
-        V(v[.]), V(v[.]) <-> V(v[1]), V(v[1]) @ 1.0, 1.0
+        %obs: 'total' 2 * 'dimer' + |V(v[.])|
         """
     )
-
-    assert system["total"] == 100
+    assert system["dimer"] == 1
+    assert system["total"] == 102
 
 
 def test_system_from_kappa():

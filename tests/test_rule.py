@@ -196,6 +196,11 @@ def test_simple_bimolecular_rule_application(n_copies):
         ("A(a[1], b{u}), A(a[1], b{u}) -> A(), A()", 2),
         ("A(a[1], b{u}), A(a[1], b{u}) -> A(b{u}), A(b{p})", 1),
         ("A(x[.]), B(x[.]) -> A(x[1]), B(x[1])", 1),
+        (". -> A()", 1),
+        ("A() -> .", 1),
+        ("., . -> A(), B()", 1),
+        ("., . -> A(), A()", 2),
+        ("A(), ., . -> A(), B(), C()", 2),
     ],
 )
 def test_rule_symmetries(rule_str, n_symmetries_expected):
