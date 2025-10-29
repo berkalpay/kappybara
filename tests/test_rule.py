@@ -200,7 +200,7 @@ def test_simple_bimolecular_rule_application(n_copies):
         ("A() -> .", 1),
         ("., . -> A(), B()", 1),
         ("., . -> A(), A()", 2),
-        ("A(), ., . -> A(), B(), C()", 2),
+        ("A(), ., . -> A(), B(), C()", 1),
     ],
 )
 def test_rule_symmetries(rule_str, n_symmetries_expected):

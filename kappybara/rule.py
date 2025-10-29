@@ -214,10 +214,12 @@ class KappaRule(Rule):
 
                 l_site.agent = l
                 l_site.partner = r_site
+                l_site.state = "left"
                 l.interface["__temp__"] = l_site
 
                 r_site.agent = r
                 r_site.partner = l_site
+                r_site.state = "right"
                 r.interface["__temp__"] = r_site
 
         pattern = Pattern(left_agents + right_agents)
