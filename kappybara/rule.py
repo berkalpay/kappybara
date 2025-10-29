@@ -94,7 +94,6 @@ class Rule(ABC):
         pass
 
 
-@dataclass
 class KappaRule(Rule):
     """Standard Kappa rule with left-hand side, right-hand side, and rate.
 
@@ -146,6 +145,11 @@ class KappaRule(Rule):
             len(rules) == 1
         ), "The given rule expression represents more than one rule."
         return rules[0]
+
+    def __init__(self, left: Pattern, right: Pattern, stochastic_rate: Expression):
+        self.left = left
+        self.right = right
+        self.stochastic_rate = stochastic_rate
 
     def __post_init__(self):
         l = len(self.left.agents)
@@ -349,7 +353,6 @@ class KappaRule(Rule):
         return update
 
 
-@dataclass
 class KappaRuleUnimolecular(KappaRule):
     """Unimolecular Kappa rule that acts within a single component.
 
@@ -425,7 +428,6 @@ class KappaRuleUnimolecular(KappaRule):
         return self._produce_update(selection_map, mixture)
 
 
-@dataclass
 class KappaRuleBimolecular(KappaRule):
     """Bimolecular Kappa rule.
 
