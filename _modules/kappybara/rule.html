@@ -459,7 +459,6 @@
 
 <div class="viewcode-block" id="KappaRule">
 <a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRule">[docs]</a>
-<span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">KappaRule</span><span class="p">(</span><span class="n">Rule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Standard Kappa rule with left-hand side, right-hand side, and rate.</span>
 
@@ -518,6 +517,11 @@
         <span class="k">return</span> <span class="n">rules</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">right</span><span class="p">:</span> <span class="n">Pattern</span><span class="p">,</span> <span class="n">stochastic_rate</span><span class="p">:</span> <span class="n">Expression</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">right</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stochastic_rate</span> <span class="o">=</span> <span class="n">stochastic_rate</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
         <span class="n">r</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
@@ -530,6 +534,9 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">yield from</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">agents</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="o">.</span><span class="n">agents</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(kappa_str=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">kappa_str</span><span class="si">}</span><span class="s1">&quot;)&#39;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kappa_str</span>
@@ -735,7 +742,6 @@
 
 <div class="viewcode-block" id="KappaRuleUnimolecular">
 <a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleUnimolecular">[docs]</a>
-<span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">KappaRuleUnimolecular</span><span class="p">(</span><span class="n">KappaRule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Unimolecular Kappa rule that acts within a single component.</span>
 
@@ -820,7 +826,6 @@
 
 <div class="viewcode-block" id="KappaRuleBimolecular">
 <a class="viewcode-back" href="../../api/generated/kappybara.rule.html#kappybara.rule.KappaRuleBimolecular">[docs]</a>
-<span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">KappaRuleBimolecular</span><span class="p">(</span><span class="n">KappaRule</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bimolecular Kappa rule.</span>
 
