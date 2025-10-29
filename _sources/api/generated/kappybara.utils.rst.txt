@@ -9,6 +9,7 @@
    .. autosummary::
    
       rejection_sample
+      str_table
    
    .. rubric:: Classes
 
