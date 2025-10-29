@@ -164,6 +164,9 @@ class KappaRule(Rule):
     def __iter__(self):
         yield from zip(self.left.agents, self.right.agents)
 
+    def __repr__(self):
+        return f'{type(self).__name__}(kappa_str="{self.kappa_str}")'
+
     def __str__(self):
         return self.kappa_str
 
