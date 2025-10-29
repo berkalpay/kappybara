@@ -15,6 +15,7 @@ from kappybara.mixture import Mixture, ComponentMixture
 from kappybara.rule import Rule, KappaRule, KappaRuleUnimolecular, KappaRuleBimolecular
 from kappybara.pattern import Component, Pattern
 from kappybara.algebra import Expression
+from kappybara.utils import str_table
 
 
 class System:
@@ -303,14 +304,13 @@ class System:
 
     @property
     def tallies_str(self) -> str:
-        """A formatted string showing how many times each rule has been applied.
-
-        Returns:
-            Tab-separated string showing applied and failed counts for each rule.
-        """
-        return "Rule\tApplied\tFailed\n" + "\n".join(
-            f"{rule_str}\t{tallies["applied"]}\t{tallies["failed"]}"
-            for rule_str, tallies in self.tallies.items()
+        """A formatted string showing how many times each rule has been applied."""
+        return str_table(
+            [
+                [str(rule), tallies["applied"], tallies["failed"]]
+                for rule, tallies in self.tallies.items()
+            ],
+            header=["Rule", "Applied", "Failed"],
         )
 
     @property

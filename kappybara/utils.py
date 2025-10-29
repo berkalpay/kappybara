@@ -4,6 +4,32 @@ from collections import defaultdict
 from collections.abc import Callable, Hashable
 
 
+def str_table(rows: list[list], header: Optional[list] = None) -> str:
+    """Format rows into a table with aligned columns.
+
+    Args:
+        rows: List of data rows
+        header: Optional header row
+
+    Returns:
+        Formatted table string
+    """
+    all_rows = [header] + rows if header else rows
+
+    num_cols = len(all_rows[0])
+    col_widths = [max(len(str(row[i])) for row in all_rows) for i in range(num_cols)]
+
+    formatted_rows = []
+    for i, row in enumerate(all_rows):
+        formatted_rows.append(
+            " | ".join(f"{str(item):<{col_widths[j]}}" for j, item in enumerate(row))
+        )
+        if i == 0 and header:
+            formatted_rows.append("-" * len(formatted_rows[-1]))
+
+    return "\n".join(formatted_rows)
+
+
 def rejection_sample(population: Iterable, excluded: Iterable, max_attempts: int = 100):
     population = list(population)
     if not population:
